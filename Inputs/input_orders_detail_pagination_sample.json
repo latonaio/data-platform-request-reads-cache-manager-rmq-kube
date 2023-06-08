@@ -1,0 +1,11 @@
+{
+  "ui_function": "OrdersDetailPagination",
+  "ui_key_function_url": "101@gmail.com/orders/detail/pagination/user=Buyer/orderID=1",
+  "runtime_session_id": "4163d11b175d48cc80295d734c9ce79e",
+  "Params": {
+    "UserType": "Buyer",
+    "OrderId": 1,
+    "Language": "JA",
+    "BusinessPartner": 101
+  }
+}

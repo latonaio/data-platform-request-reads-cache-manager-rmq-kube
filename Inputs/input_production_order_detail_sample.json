@@ -1,0 +1,17 @@
+{
+  "runtime_session_id": "cc45f715586040f8b902f405eb1e9fdd",
+  "ui_function": "ProductionOrderDetail",
+  "ui_key_function_url": "201@gmail.com/production-order/detail/??",
+  "ui_key_general_business_partner": "production-order/detail/businessPartnerID=201",
+  "ui_key_general_user_id": "production-order/detail/userID=201@gmail.com",
+  "ui_key_general_user_language": "production-order/detail/language=JA",
+  "Params": {
+    "ProductionOrder": 240000000,
+    "ProductionOrderItem": 1,
+    "BusinessPartner": 201,
+    "Language": "JA",
+    "OwnerProductionPlantBusinessPartner": 201,
+    "User": "OwnerProductionPlantBusinessPartner",
+    "UserId": "201@gmail.com"
+  }
+}

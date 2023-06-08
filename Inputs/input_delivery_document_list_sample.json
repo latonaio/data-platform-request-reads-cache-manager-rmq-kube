@@ -1,0 +1,16 @@
+{
+  "ui_key_general_user_id": "delivery-document/list/userID=102@gmail.com",
+  "ui_key_general_user_language": "delivery-document/list/language=JA",
+  "ui_key_general_business_partner": "delivery-document/list/businessPartnerID=102",
+  "ui_function": "DeliveryDocumentList",
+  "ui_key_function_url": "102@gmail.com/delivery-document/list/User=DeliverToParty/language=JA/businessPartner=102/headerCompleteDeliveryIsDefined=false/headerDeliveryStatus=false/headerBillingStatus=false/headerDeliveryBlockStatus=false/headerIssuingBlockStatus=false/headerReceivingBlockStatus=false/headerBillingBlockStatus=false/isCancelled=false/isMarkedForDeletion=false",
+  "runtime_session_id": "a94ac496634b4fc2b14383af70cc0f2b",
+  "Params": {
+    "User": "DeliverToParty",
+    "DeliverToParty": 102,
+    "Language": "JA",
+    "BusinessPartner": 102,
+    "UserId": "102@gmail.com",
+    "HeaderBillingStatusException": "CL"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "Params": {
+    "BillFromParty": 201,
+    "BusinessPartner": 201,
+    "HeaderPaymentBlockStatus": false,
+    "Language": "JA",
+    "User": "BillFromParty",
+    "UserId": "201@gmail.com"
+  },
+  "runtime_session_id": "2f02aec87ce9417c94adc71f4bf877b9",
+  "ui_function": "InvoiceDocumentList",
+  "ui_key_function_url": "201@gmail.com/invoiceDocument/list/user=BillFromParty/businessPartner=201/headerPaymentBlockStatus=false",
+  "ui_key_general_business_partner": "invoiceDocument/list/businessPartnerID=201",
+  "ui_key_general_user_id": "invoiceDocument/list/userID=201@gmail.com",
+  "ui_key_general_user_language": "invoiceDocument/list/language=JA"
+}

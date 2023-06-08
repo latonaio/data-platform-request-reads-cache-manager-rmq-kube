@@ -1,0 +1,16 @@
+{
+  "runtime_session_id": "cc45f715586040f8b902f405eb1e9fdd",
+  "ui_function": "ProductDetailExconfList",
+  "ui_key_function_url": "101@gmail.com/product/detail/list/user=OwnerProductionPlantBusinessPartner/headerIsMarkedForDeletion=false",
+  "ui_key_general_business_partner": "product/detail/list/businessPartnerID=101",
+  "ui_key_general_user_id": "product/detail/list/userID=101@gmail.com",
+  "ui_key_general_user_language": "product/detail/list/language=JA",
+  "Params": {
+    "Product": "A3750",
+    "BusinessPartner": 101,
+    "IsMarkedForDeletion": false,
+    "Language": "JA",
+    "UserId": "101@gmail.com",
+    "User": "BusinessPartner"
+  }
+}

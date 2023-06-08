@@ -1,0 +1,16 @@
+{
+  "Params": {
+    "BusinessPartner": 101,
+    "HeaderIsMarkedForDeletion": false,
+    "Language": "JA",
+    "OwnerProductionPlantBusinessPartner": 101,
+    "User": "OwnerProductionPlantBusinessPartner",
+    "UserId": "101@gmail.com"
+  },
+  "runtime_session_id": "cc45f715586040f8b902f405eb1e9fdd",
+  "ui_function": "ProductionOrderList",
+  "ui_key_function_url": "101@gmail.com/production-order/list/user=OwnerProductionPlantBusinessPartner/headerIsMarkedForDeletion=false",
+  "ui_key_general_business_partner": "production-order/list/businessPartnerID=101",
+  "ui_key_general_user_id": "production-order/list/userID=101@gmail.com",
+  "ui_key_general_user_language": "production-order/list/language=JA"
+}

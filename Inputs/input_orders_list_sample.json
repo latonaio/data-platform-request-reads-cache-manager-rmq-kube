@@ -1,0 +1,20 @@
+{
+  "ui_key_general_user_id": "orders/list/userID=101@gmail.com",
+  "ui_key_general_user_language": "orders/list/language=JA",
+  "ui_key_general_business_partner": "orders/list/businessPartnerID=101",
+  "ui_function": "OrdersListBuyer",
+  "ui_key_function_url": "101@gmail.com/orders/list/user=Buyer/headerCompleteDeliveryIsDefined=false/headerDeliveryStatus=false/headerDeliveryBlockStatus=false/isCancelled=false/isMarkedForDeletion=false",
+  "runtime_session_id": "6da63e3423104fa085d60933a3181ff7",
+  "Params": {
+    "User": "Buyer",
+    "Buyer": 101,
+    "HeaderCompleteDeliveryIsDefined": false,
+    "HeaderDeliveryStatus": false,
+    "HeaderDeliveryBlockStatus": false,
+    "IsCancelled": false,
+    "IsMarkedForDeletion": false,
+    "Language": "JA",
+    "BusinessPartner": 101,
+    "UserId": "101@gmail.com"
+  }
+}
