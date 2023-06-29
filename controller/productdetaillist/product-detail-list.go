@@ -224,65 +224,65 @@ func (c *ProductDetailListCtrl) fin(
 	pmRes *apiresponses.ProductMasterRes,
 	url, api string, setFlag *RedisCacheApiName,
 ) error {
-	generalExconf := dpfm_api_output_formatter.Exconf{
+	generalExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "General",
 		Exist:   isExist[apiresponses.PMGeneral](pmRes.Message.General),
 		Param:   pmRes.Message.General,
 	}
-	textExconf := dpfm_api_output_formatter.Exconf{
+	textExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "Text",
 		Exist:   isExist[apiresponses.ProductDescription](pmRes.Message.ProductDescription),
 		Param:   pmRes.Message.ProductDescription,
 	}
-	bpExconf := dpfm_api_output_formatter.Exconf{
+	bpExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "BP",
 		Exist:   isExist[apiresponses.BusinessPartner](pmRes.Message.BusinessPartner),
 		Param:   pmRes.Message.BusinessPartner,
 	}
 
-	bpTextExconf := dpfm_api_output_formatter.Exconf{
+	bpTextExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "BPText",
 		Exist:   isExist[apiresponses.ProductDescByBP](pmRes.Message.ProductDescByBP),
 		Param:   pmRes.Message.ProductDescByBP,
 	}
-	bpPlantExconf := dpfm_api_output_formatter.Exconf{
+	bpPlantExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "BPPlant",
 		Exist:   isExist[apiresponses.BPPlant](pmRes.Message.BPPlant),
 		Param:   pmRes.Message.BPPlant,
 	}
-	storageLocationExconf := dpfm_api_output_formatter.Exconf{
+	storageLocationExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "StorageLocation",
 		Exist:   isExist[apiresponses.StorageLocation](pmRes.Message.StorageLocation),
 		Param:   pmRes.Message.StorageLocation,
 	}
 
-	storageBinExconf := dpfm_api_output_formatter.Exconf{
+	storageBinExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "StorageBin",
 		Exist:   isExist[apiresponses.PMStorageBin](pmRes.Message.StorageBin),
 		Param:   pmRes.Message.StorageBin,
 	}
-	mrpAreaExconf := dpfm_api_output_formatter.Exconf{
+	mrpAreaExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "MRPArea",
 		Exist:   isExist[apiresponses.MRPArea](pmRes.Message.MRPArea),
 		Param:   pmRes.Message.MRPArea,
 	}
-	workScheduleExconf := dpfm_api_output_formatter.Exconf{
+	workScheduleExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "WorkSchedule",
 		Exist:   isExist[apiresponses.WorkScheduling](pmRes.Message.WorkScheduling),
 		Param:   pmRes.Message.WorkScheduling,
 	}
 
-	qualityExconf := dpfm_api_output_formatter.Exconf{
+	qualityExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "Quality",
 		Exist:   isExist[apiresponses.Quality](pmRes.Message.Quality),
 		Param:   pmRes.Message.Quality,
 	}
-	taxExconf := dpfm_api_output_formatter.Exconf{
+	taxExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "Tax",
 		Exist:   isExist[apiresponses.Tax](pmRes.Message.Tax),
 		Param:   pmRes.Message.Tax,
 	}
-	accountingExconf := dpfm_api_output_formatter.Exconf{
+	accountingExconf := dpfm_api_output_formatter.ProductDetailExconf{
 		Content: "Accounting",
 		Exist:   isExist[apiresponses.PMAccounting](pmRes.Message.Accounting),
 		Param:   pmRes.Message.Accounting,
@@ -310,7 +310,7 @@ func (c *ProductDetailListCtrl) fin(
 			Index: idx,
 			Key:   key,
 		},
-		Existences: []dpfm_api_output_formatter.Exconf{
+		Existences: []dpfm_api_output_formatter.ProductDetailExconf{
 			generalExconf, textExconf, bpExconf,
 			bpTextExconf, bpPlantExconf, storageLocationExconf,
 			storageBinExconf, mrpAreaExconf, workScheduleExconf,

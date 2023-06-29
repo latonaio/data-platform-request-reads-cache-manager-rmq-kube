@@ -1,22 +1,22 @@
 package models
 
 type ProductionVersionReq struct {
-	ConnectionKey     string                  `json:"connection_key"`
-	Result            bool                    `json:"result"`
-	RedisKey          string                  `json:"redis_key"`
-	Filepath          string                  `json:"filepath"`
-	APIStatusCode     int                     `json:"api_status_code"`
-	RuntimeSessionID  string                  `json:"runtime_session_id"`
-	BusinessPartnerID *int                    `json:"business_partner"`
-	ServiceLabel      string                  `json:"service_label"`
-	APIType           string                  `json:"api_type"`
-	General           ProductionVersionHeader `json:"ProductionVersionHeader"`
-	APISchema         string                  `json:"api_schema"`
-	Accepter          []string                `json:"accepter"`
-	Deleted           bool                    `json:"deleted"`
+	ConnectionKey     string            `json:"connection_key"`
+	Result            bool              `json:"result"`
+	RedisKey          string            `json:"redis_key"`
+	Filepath          string            `json:"filepath"`
+	APIStatusCode     int               `json:"api_status_code"`
+	RuntimeSessionID  string            `json:"runtime_session_id"`
+	BusinessPartnerID *int              `json:"business_partner"`
+	ServiceLabel      string            `json:"service_label"`
+	APIType           string            `json:"api_type"`
+	ProductionVersion ProductionVersion `json:"ProductionVersion"`
+	APISchema         string            `json:"api_schema"`
+	Accepter          []string          `json:"accepter"`
+	Deleted           bool              `json:"deleted"`
 }
 
-type ProductionVersionHeader struct {
+type ProductionVersion struct {
 	ProductionVersion       int                     `json:"ProductionVersion"`
 	Product                 string                  `json:"Product"`
 	OwnerBusinessPartner    int                     `json:"OwnerBusinessPartner"`

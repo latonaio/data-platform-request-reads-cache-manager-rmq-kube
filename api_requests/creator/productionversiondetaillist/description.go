@@ -8,12 +8,12 @@ import (
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 )
 
-func CreateDescriptionReq(param *dpfm_api_input_reader.ProductionVersionDetailListParams, pdRes *apiresponses.ProductionVersionRes, sID string, log *logger.Logger) *models.ProductMasterReq {
+func CreateDescriptionReq(param *dpfm_api_input_reader.ProductionVersionDetailListParams, pvRes *apiresponses.ProductionVersionRes, sID string, log *logger.Logger) *models.ProductMasterReq {
 	descByBP := make([]models.ProductDescByBP, 0)
-	for _, v := range *pdRes.Message.Header {
+	for _, v := range *pvRes.Message.Item {
 		descByBP = append(descByBP, models.ProductDescByBP{
 			Product:         v.Product,
-			BusinessPartner: v.OwnerBusinessPartner,
+			BusinessPartner: v.BusinessPartner,
 			Language:        *param.Language,
 		})
 	}

@@ -287,12 +287,12 @@ func (c *OperationsListCtrl) fin(
 		}
 
 		operationsionOrders = append(operationsionOrders, dpfm_api_output_formatter.Operations{
-			Operations:          v.Operations,
-			Product:             &v.Product,
-			ProductDescription:  descriptionMapper[v.Product].ProductDescription,
-			PlantName:           plantMapper[v.OwnerPlant].PlantName,
-			ValidityStartDate:   v.ValidityStartDate,
-			IsMarkedForDeletion: v.IsMarkedForDeletion,
+			Operations:               v.Operations,
+			Product:                  &v.Product,
+			ProductDescription:       descriptionMapper[v.Product].ProductDescription,
+			OwnerProductionPlantName: plantMapper[v.OwnerProductionPlant].PlantName,
+			ValidityStartDate:        v.ValidityStartDate,
+			IsMarkedForDeletion:      v.IsMarkedForDeletion,
 			Images: dpfm_api_output_formatter.Images{
 				Operations: img,
 			},

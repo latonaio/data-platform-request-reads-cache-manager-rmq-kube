@@ -9,13 +9,14 @@ import (
 
 func CreatePriceMasterDetailReq(param *dpfm_api_input_reader.PriceMasterDetailListParams, sID string, log *logger.Logger) *models.PriceMasterDetailReq {
 	priceMasterDetail := models.PriceMasterDetail{
-		Buyer:  param.Buyer,
-		Seller: param.Seller,
+		Buyer:                     param.Buyer,
+		Seller:                    param.Seller,
+		SupplyChainRelationshipID: param.SupplyChainRelationshipID,
 	}
 	return &models.PriceMasterDetailReq{
 		PriceMasterDetail: priceMasterDetail,
 		Accepter: []string{
-			"Headers",
+			"PriceMasters",
 		},
 		RuntimeSessionID: sID,
 	}

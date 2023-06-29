@@ -59,6 +59,7 @@ type ProductionVersionItem struct {
 	Product                 string  `json:"Product"`
 	BusinessPartner         int     `json:"BusinessPartner"`
 	Plant                   string  `json:"Plant"`
+	PlantName               *string `json:"PlantName"`
 	BillOfMaterial          int     `json:"BillOfMaterial"`
 	Operations              int     `json:"Operations"`
 	ProductionVersionText   *string `json:"ProductionVersionText"`

@@ -111,12 +111,12 @@ func callProcess(msg rabbitmq.RabbitmqMessage, cacheCtrl *controller.Controller,
 		err = cacheCtrl.BillOfMaterialDetailList.BillOfMaterialDetailList(msg)
 	case "ProductionVersionList":
 		err = cacheCtrl.ProductionVersionList.ProductionVersionList(msg)
-	// case "ProductionVersionDetailList":
-	// 	err = cacheCtrl.ProductionVersionDetailList.ProductionVersionDetailList(msg)
+	case "ProductionVersionDetailList":
+		err = cacheCtrl.ProductionVersionDetailList.ProductionVersionDetailList(msg)
 	case "OperationsList":
 		err = cacheCtrl.OperationsList.OperationsList(msg, l)
-	// case "OperationsDetailList":
-	// 	err = cacheCtrl.OperationsDetailList.OperationsDetailList(msg)
+	case "OperationsDetailList":
+		err = cacheCtrl.OperationsDetailList.OperationsDetailList(msg)
 	case "EquipmentList":
 		err = cacheCtrl.EquipmentList.EquipmentList(msg)
 	// case "EquipmentDetailList":
@@ -127,6 +127,9 @@ func callProcess(msg rabbitmq.RabbitmqMessage, cacheCtrl *controller.Controller,
 	// 	err = cacheCtrl.WorkCenterDetailList.WorkCenterDetailList(msg)
 	case "SupplyChainRelationshipList":
 		err = cacheCtrl.SupplyChainRelationshipList.SupplyChainRelationshipList(msg, l)
+	case "SupplyChainRelationshipExconfList":
+		//err = cacheCtrl.SupplyChainRelationshipDetailList.SupplyChainRelationshipDetailList(msg, l)
+		err = cacheCtrl.SupplyChainRelationshipExconfList.SupplyChainRelationshipExconfList(msg, l)
 	case "BusinessPartnerList":
 		err = cacheCtrl.BusinessPartnerList.BusinessPartnerList(msg, l)
 
@@ -136,6 +139,8 @@ func callProcess(msg rabbitmq.RabbitmqMessage, cacheCtrl *controller.Controller,
 		// 	err = cacheCtrl.WorkCenterDetailList.WorkCenterDetailList(msg)
 	case "PriceMasterList":
 		err = cacheCtrl.PriceMasterList.PriceMasterList(msg, l)
+	case "PriceMasterDetailList":
+		err = cacheCtrl.PriceMasterDetailList.PriceMasterDetailList(msg, l)
 	case "update":
 		err = cacheCtrl.Update.Update(msg)
 	default:

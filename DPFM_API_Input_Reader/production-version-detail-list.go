@@ -20,16 +20,15 @@ type ProductionVersionDetailList struct {
 
 type ProductionVersionDetailListParams struct {
 	BusinessPartner     *int    `json:"BusinessPartner"`
-	UserID              *string `json:"UserId"`
-	User                *string `json:"User"`
+	UserID              string  `json:"UserId"`
+	User                string  `json:"User"`
 	Language            *string `json:"Language"`
 	IsCancelled         *bool   `json:"IsCancelled"`
 	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
-
-	ProductionVersion  *int    `json:"ProductionVersion"`
-	ValidityStartDate  *string `json:"ValidityStartDate"`
-	OwnerPlant         *string `json:"OwnerPlant"`
-	ProductDescription *string `json:"ProductDescription"`
+	ProductionVersion   *int    `json:"ProductionVersion"`
+	// ValidityStartDate  *string `json:"ValidityStartDate"`
+	// OwnerPlant         *string `json:"OwnerPlant"`
+	// ProductDescription *string `json:"ProductDescription"`
 }
 
 func ReadProductionVersionDetailList(msg rabbitmq.RabbitmqMessage) *ProductionVersionDetailList {

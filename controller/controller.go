@@ -2,6 +2,8 @@ package controller
 
 import (
 	"context"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/operationsdetaillist"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/supplychainrelationshipexconflist"
 
 	"data-platform-api-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/billofmaterialdetaillist"
@@ -20,14 +22,17 @@ import (
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/ordersdetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/ordersdetailpagination"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/orderslist"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/pricemasterdetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/pricemasterlist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productdetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionorderdetail"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionorderdetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionorderdetailpagination"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionorderlist"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionversiondetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productionversionlist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/productlist"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/supplychainrelationshipdetaillist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/supplychainrelationshiplist"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/update"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/workcenterlist"
@@ -62,18 +67,21 @@ type Controller struct {
 	BillOfMaterialList               *billofmateriallist.BillOfMaterialListCtrl
 	BillOfMaterialDetailList         *billofmaterialdetaillist.BillOfMaterialDetailListCtrl
 	// ProductionVersionList            *productionversionlist.ProductionVersionListCtrl
-	// ProductionVersionDetailList      *productionversiondetaillist.ProductionVersionDetailListCtrl
-	OperationsList *operationslist.OperationsListCtrl
-	// OperationsDetailList             *operationsdetaillist.OperationsDetailListCtrl
-	EquipmentList *equipmentlist.EquipmentListCtrl
+	ProductionVersionDetailList *productionversiondetaillist.ProductionVersionDetailListCtrl
+	OperationsList              *operationslist.OperationsListCtrl
+	OperationsDetailList        *operationsdetaillist.OperationsDetailListCtrl
+	EquipmentList               *equipmentlist.EquipmentListCtrl
 	// EquipmentDetailList              *equipmentdetaillist.EquipmentDetailListCtrl
 	WorkCenterList *workcenterlist.WorkCenterListCtrl
 	// WorkCenterDetailList             *workcenterdetaillist.WorkCenterDetailListCtrl
-	ProductionVersionList       *productionversionlist.ProductionVersionListCtrl
-	SupplyChainRelationshipList *supplychainrelationshiplist.SupplyChainRelationshipListCtrl
-	BusinessPartnerList         *businesspartnerlist.BusinessPartnerListCtrl
-	PriceMasterList             *pricemasterlist.PriceMasterListCtrl
-	Update                      *update.Update
+	ProductionVersionList             *productionversionlist.ProductionVersionListCtrl
+	SupplyChainRelationshipList       *supplychainrelationshiplist.SupplyChainRelationshipListCtrl
+	SupplyChainRelationshipDetailList *supplychainrelationshipdetaillist.SupplyChainRelationshipDetailListCtrl
+	SupplyChainRelationshipExconfList *supplychainrelationshipexconflist.SupplyChainRelationshipExconfListCtrl
+	BusinessPartnerList               *businesspartnerlist.BusinessPartnerListCtrl
+	PriceMasterList                   *pricemasterlist.PriceMasterListCtrl
+	PriceMasterDetailList             *pricemasterdetaillist.PriceMasterDetailListCtrl
+	Update                            *update.Update
 }
 
 func NewController(ctx context.Context, c *cache.Cache, rmq *rmqsessioncontroller.RMQSessionCtrl, log *logger.Logger) *Controller {
@@ -102,17 +110,19 @@ func NewController(ctx context.Context, c *cache.Cache, rmq *rmqsessioncontrolle
 		BillOfMaterialList:               billofmateriallist.NewBillOfMaterialListCtrl(ctx, c, rmq, log),
 		BillOfMaterialDetailList:         billofmaterialdetaillist.NewBillOfMaterialDetailListCtrl(ctx, c, rmq, log),
 		ProductionVersionList:            productionversionlist.NewProductionVersionListCtrl(ctx, c, rmq, log),
-		// ProductionVersionDetailList:      productionversiondetaillist.NewProductionVersionDetailListCtrl(ctx, c, rmq, log),
-		OperationsList: operationslist.NewOperationsListCtrl(ctx, c, rmq, log),
-		// OperationstDetailList:            operationsdetaillist.NewOperationsDetailListCtrl(ctx, c, rmq, log),
-		EquipmentList: equipmentlist.NewEquipmentListCtrl(ctx, c, rmq, log),
+		ProductionVersionDetailList:      productionversiondetaillist.NewProductionVersionDetailListCtrl(ctx, c, rmq, log),
+		OperationsList:                   operationslist.NewOperationsListCtrl(ctx, c, rmq, log),
+		OperationsDetailList:             operationsdetaillist.NewOperationsDetailListCtrl(ctx, c, rmq, log),
+		EquipmentList:                    equipmentlist.NewEquipmentListCtrl(ctx, c, rmq, log),
 		// EquipmenttDetailList:             equipmentdetaillist.NewEquipmentDetailListCtrl(ctx, c, rmq, log),
 		WorkCenterList: workcenterlist.NewWorkCenterListCtrl(ctx, c, rmq, log),
 		// WorkCentertDetailList:            workcenterdetaillist.NewWorkCenterDetailListCtrl(ctx, c, rmq, log),
-		SupplyChainRelationshipList: supplychainrelationshiplist.NewSupplyChainRelationshipListCtrl(ctx, c, rmq, log),
-		PriceMasterList:             pricemasterlist.NewPriceMasterListCtrl(ctx, c, rmq, log),
-
-		BusinessPartnerList: businesspartnerlist.NewBusinessPartnerListCtrl(ctx, c, rmq, log),
-		Update:              update.NewUpdateCtrl(ctx, c, rmq, log),
+		SupplyChainRelationshipList:       supplychainrelationshiplist.NewSupplyChainRelationshipListCtrl(ctx, c, rmq, log),
+		SupplyChainRelationshipDetailList: supplychainrelationshipdetaillist.NewSupplyChainRelationshipDetailListCtrl(ctx, c, rmq, log),
+		SupplyChainRelationshipExconfList: supplychainrelationshipexconflist.NewSupplyChainRelationshipExconfListCtrl(ctx, c, rmq, log),
+		PriceMasterList:                   pricemasterlist.NewPriceMasterListCtrl(ctx, c, rmq, log),
+		PriceMasterDetailList:             pricemasterdetaillist.NewPriceMasterDetailListCtrl(ctx, c, rmq, log),
+		BusinessPartnerList:               businesspartnerlist.NewBusinessPartnerListCtrl(ctx, c, rmq, log),
+		Update:                            update.NewUpdateCtrl(ctx, c, rmq, log),
 	}
 }

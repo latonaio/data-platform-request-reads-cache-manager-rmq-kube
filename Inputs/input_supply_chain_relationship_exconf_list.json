@@ -1,0 +1,17 @@
+{
+  "ui_key_general_user_id": "supplyChainRelationship/exconf/list/userID=101@gmail.com",
+  "ui_key_general_user_language": "supplyChainRelationship/exconf/list/language=JA",
+  "ui_key_general_business_partner": "supplyChainRelationship/exconf/list/businessPartnerID=101",
+  "ui_function": "SupplyChainRelationshipExconfList",
+  "ui_key_function_url": "101@gmail.com/supplychainrelationship/exconf/list/user=Buyer/isMarkedForDeletion=false",
+  "runtime_session_id": "a94ac496634b4fc2b14383af70cc0f2b",
+  "Params": {
+    "SupplyChainRelationshipID": 100000000,
+    "Buyer": 101,
+    "Seller": 201,
+    "BusinessPartner": 101,
+    "UserId": "101@gmail.com",
+    "User": "Buyer",
+    "Language": "JA"
+  }
+}

@@ -13,7 +13,7 @@ func CreateDescriptionReq(param *dpfm_api_input_reader.OperationsListParams, opR
 	for _, v := range *opRes.Message.Header {
 		descByBP = append(descByBP, models.ProductDescByBP{
 			Product:         v.Product,
-			BusinessPartner: v.OwnerBusinessPartner,
+			BusinessPartner: v.OwnerProductionPlantBusinessPartner,
 			Language:        *param.Language,
 		})
 	}

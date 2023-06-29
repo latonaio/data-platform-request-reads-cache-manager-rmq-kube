@@ -5,11 +5,11 @@ type OperationsList struct {
 }
 
 type Operations struct {
-	Operations          int     `json:"Operations"`
-	Product             *string `json:"Product"`
-	ProductDescription  *string `json:"ProductDescription"`
-	PlantName           *string `json:"PlantName"`
-	ValidityStartDate   *string `json:"ValidityStartDate"`
-	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
-	Images              Images  `json:"Images"`
+	Operations               int     `json:"Operations"`
+	Product                  *string `json:"Product"`
+	ProductDescription       *string `json:"ProductDescription"`
+	OwnerProductionPlantName *string `json:"OwnerProductionPlantName"`
+	ValidityStartDate        *string `json:"ValidityStartDate"`
+	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
+	Images                   Images  `json:"Images"`
 }

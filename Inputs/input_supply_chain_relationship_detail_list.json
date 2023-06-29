@@ -1,0 +1,32 @@
+{
+    "ui_key_general_user_id": "supplychainrelationship/detail/list/userID=101@gmail.com",
+    "ui_key_general_user_language": "supplychainrelationship/detail/list/language=JA",
+    "ui_key_general_business_partner": "supplychainrelationship/detail/list/businessPartnerID=101",
+    "ui_function": "SupplyChainRelationshipDetailList",
+    "ui_key_function_url": "101@gmail.com/supplychainrelationship/detail/list/user=Buyer/isMarkedForDeletion=false",
+    "runtime_session_id": "a94ac496634b4fc2b14383af70cc0f2b",
+    "Params": {
+        "SupplyChainRelationship":10000000,
+        "SupplyChainRelationshipID":100000000,
+        "SupplyChainRelationshipBillingID":120000000,
+        "SupplyChainRelationshipPaymentID":130000000,
+        "SupplyChainRelationshipProductionPlantID":180000000,
+        "SupplyChainRelationshipDeliveryPlantID":120000000,
+        "BusinessPartner":101,
+        "UserID": "101@gmail.com",
+        "User":"Buyer",
+        "Buyer":101,
+        "Seller":201,
+        "Payer":101,
+        "Payee":201,
+        "BillToParty":101,
+        "BillFromParty":201,
+        "DeliverToParty":101,
+        "DeliverFromParty":201,
+        "DeliverToPlant":"AB01",
+        "DeliverFromPlant":"TE01",
+        "Language":"JA",
+        "IsCancelled":false,
+        "IsMarkedForDeletion":false
+    }
+  }

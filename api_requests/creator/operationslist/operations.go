@@ -11,11 +11,11 @@ func CreateOperationsRequest(param *dpfm_api_input_reader.OperationsListParams, 
 	return &models.OperationsReq{
 		BusinessPartnerID: param.BusinessPartner,
 		Header: models.OperationsHeader{
-			OwnerBusinessPartner: param.BusinessPartner,
-			IsMarkedForDeletion:  param.IsMarkedForDeletion,
+			OwnerProductionPlantBusinessPartner: *param.BusinessPartner,
+			IsMarkedForDeletion:                 param.IsMarkedForDeletion,
 		},
 		Accepter: []string{
-			"Headers",
+			"HeaderByOwnerProductionPlantBP",
 		},
 		RuntimeSessionID: sID,
 	}

@@ -39,7 +39,6 @@ func NewPriceMasterDetailListCtrl(ctx context.Context, c *cache.Cache, rmq *rmqs
 func (c *PriceMasterDetailListCtrl) PriceMasterDetailList(msg rabbitmq.RabbitmqMessage, l *logger.Logger) error {
 	start := time.Now()
 	params := extractPriceMasterDetailListParam(msg)
-	pmparams := extractPriceMasterListParam(msg)
 	reqKey, err := getRequestKey(msg.Data())
 	if err != nil {
 		return xerrors.Errorf("reqKey error: %w", err)
@@ -64,9 +63,14 @@ func (c *PriceMasterDetailListCtrl) PriceMasterDetailList(msg rabbitmq.RabbitmqM
 		return err
 	}
 
-	drRes, err := c.descriptionRequest(&pmparams.Params, pmdRes, sID, reqKey, &cacheResult)
+	drRes, err := c.descriptionRequest(&params.Params, pmdRes, sID, reqKey, &cacheResult)
 	if err != nil {
 		return err
+	}
+
+	err = c.addHeaderInfo(&params.Params, sID, &cacheResult)
+	if err != nil {
+		return xerrors.Errorf("search header error: %w", err)
 	}
 
 	c.fin(params, pmdRes, drRes, reqKey, "PriceMasterDetailList", &cacheResult)
@@ -75,7 +79,7 @@ func (c *PriceMasterDetailListCtrl) PriceMasterDetailList(msg rabbitmq.RabbitmqM
 }
 
 func (c *PriceMasterDetailListCtrl) descriptionRequest(
-	params *dpfm_api_input_reader.PriceMasterListParams,
+	params *dpfm_api_input_reader.PriceMasterDetailListParams,
 	pmdRes *apiresponses.PriceMasterDetailRes,
 	sID string,
 	reqKey string,
@@ -103,16 +107,51 @@ func (c *PriceMasterDetailListCtrl) priceMasterDetailRequest(
 	l *logger.Logger,
 ) (*apiresponses.PriceMasterDetailRes, error) {
 	defer recovery(c.log)
-	scrReq := pricemasterdetaillist.CreatePriceMasterDetailReq(params, sID, c.log)
-	res, err := c.request("data-platform-api-price-master-master-reads-queue", scrReq, sID, reqKey, "PriceMasterDetail", setFlag)
+	pmdReq := pricemasterdetaillist.CreatePriceMasterDetailReq(params, sID, c.log)
+	res, err := c.request("data-platform-api-price-master-reads-queue", pmdReq, sID, reqKey, "PriceMasterDetail", setFlag)
 	if err != nil {
 		return nil, xerrors.Errorf("price master cache set error: %w", err)
 	}
-	scrRes, err := apiresponses.CreatePriceMasterDetailRes(res)
+	pmdRes, err := apiresponses.CreatePriceMasterDetailRes(res)
 	if err != nil {
 		return nil, xerrors.Errorf("Price Master master response parse error: %w", err)
 	}
-	return scrRes, nil
+	return pmdRes, nil
+}
+
+func (c *PriceMasterDetailListCtrl) addHeaderInfo(
+	params *dpfm_api_input_reader.PriceMasterDetailListParams,
+	url string, setFlag *RedisCacheApiName,
+) error {
+	//101@gmail.com/priceMaster/list/user=buyer
+	//101@gmail.com/priceMaster/list/user=Buyer/PriceMasterList
+	key := fmt.Sprintf(`%s/priceMaster/list/user=%s/PriceMasterList`,
+		params.UserID, params.User)
+	api := "PriceMasterDetailListHeader"
+	m, err := c.cache.GetMap(c.ctx, key)
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	pList := dpfm_api_output_formatter.PriceMasterList{}
+	err = json.Unmarshal(b, &pList)
+	if err != nil {
+		return err
+	}
+
+	idx := -1
+	for i, v := range pList.PriceMasters {
+		if v.SupplyChainRelationshipID == params.SupplyChainRelationshipID {
+			idx = i
+			break
+		}
+	}
+
+	(*setFlag)["redisCacheApiName"][api] = map[string]interface{}{"keyName": key, "index": idx}
+	return nil
 }
 
 func (c *PriceMasterDetailListCtrl) request(queue string, req interface{}, sID string, url, api string, setFlag *RedisCacheApiName) (rabbitmq.RabbitmqMessage, error) {
@@ -132,11 +171,6 @@ func (c *PriceMasterDetailListCtrl) request(queue string, req interface{}, sID s
 
 func extractPriceMasterDetailListParam(msg rabbitmq.RabbitmqMessage) *dpfm_api_input_reader.PriceMasterDetailList {
 	data := dpfm_api_input_reader.ReadPriceMasterDetailList(msg)
-	return data
-}
-
-func extractPriceMasterListParam(msg rabbitmq.RabbitmqMessage) *dpfm_api_input_reader.PriceMasterList {
-	data := dpfm_api_input_reader.ReadPriceMasterList(msg)
 	return data
 }
 
@@ -190,26 +224,61 @@ func (c *PriceMasterDetailListCtrl) fin(
 		buyerID        int
 		deliveryStatus string
 	}
+
+	//101@gmail.com/priceMaster/list/user=buyer
+	key := fmt.Sprintf(`%s/priceMaster/list/user=%s/PriceMasterList`,
+		params.Params.UserID, params.Params.User)
+	m, err := c.cache.GetMap(c.ctx, key)
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	pList := dpfm_api_output_formatter.PriceMasterList{}
+	err = json.Unmarshal(b, &pList)
+	if err != nil {
+		return err
+	}
+
+	idx := -1
+	for i, v := range pList.PriceMasters {
+		if v.SupplyChainRelationshipID == params.Params.SupplyChainRelationshipID {
+			idx = i
+			break
+		}
+	}
+
+	header := dpfm_api_output_formatter.PriceMasterDetailHeader{
+		Index: idx,
+		Key:   key,
+	}
+
 	descriptionMapper := map[string]apiresponses.ProductDescByBP{}
 	for _, v := range *pmasRes.Message.ProductDescByBP {
 		descriptionMapper[v.Product] = v
 	}
 
-	data := dpfm_api_output_formatter.PriceMasterDetailList{}
+	details := make([]dpfm_api_output_formatter.PriceMasterDetail, 0, len(pmRes.Message.PriceMasterDetail))
 	for _, v := range pmRes.Message.PriceMasterDetail {
-		data.PriceMasterDetail = append(data.PriceMasterDetail,
-			dpfm_api_output_formatter.PriceMasterDetail{
-				Product:                   *v.Product,
-				ProductionDescription:     *descriptionMapper[*v.Product].ProductDescription,
-				ConditionRateValue:        *v.ConditionRateValue,
-				ConditionScaleQuantity:    *v.ConditionScaleQuantity,
-				BaseUnit:                  *v.BaseUnit,
-				ConditionCurrency:         *v.ConditionCurrency,
-				ConditionRecord:           v.ConditionRecord,
-				ConditionSequentialNumber: v.ConditionSequentialNumber,
-				IsMarkedForDeletion:       *v.ConditionIsDeleted,
-			},
-		)
+		details = append(details, dpfm_api_output_formatter.PriceMasterDetail{
+			Product:                   *v.Product,
+			ProductionDescription:     *descriptionMapper[*v.Product].ProductDescription,
+			ConditionRateValue:        *v.ConditionRateValue,
+			ConditionScaleQuantity:    v.ConditionScaleQuantity,
+			ConditionRateValueUnit:    v.ConditionRateValueUnit,
+			ConditionType:             v.ConditionType,
+			ConditionCurrency:         v.ConditionCurrency,
+			ConditionRecord:           v.ConditionRecord,
+			ConditionSequentialNumber: v.ConditionSequentialNumber,
+			IsMarkedForDeletion:       v.IsMarkedForDeletion,
+		})
+	}
+
+	data := dpfm_api_output_formatter.PriceMasterDetailList{
+		PriceMasterDetailHeader: header,
+		PriceMasterDetail:       details,
 	}
 
 	if params.ReqReceiveQueue != nil {
@@ -221,8 +290,8 @@ func (c *PriceMasterDetailListCtrl) fin(
 
 	redisKey := strings.Join([]string{url, api}, "/")
 	// redisKey := strings.Join([]string{url, api, params.User}, "/")
-	b, _ := json.Marshal(data)
-	err := c.cache.Set(c.ctx, redisKey, b, 0)
+	b, _ = json.Marshal(data)
+	err = c.cache.Set(c.ctx, redisKey, b, 0)
 	if err != nil {
 		return nil
 	}

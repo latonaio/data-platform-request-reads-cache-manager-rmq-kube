@@ -32,7 +32,7 @@ type PriceMasterDetailRes struct {
 }
 
 type PriceMasterDetailMessage struct {
-	PriceMasterDetail []PriceMasterDetail `json:"General"`
+	PriceMasterDetail []PriceMasterDetail `json:"PriceMaster"`
 }
 
 type PriceMasterDetail struct {
@@ -41,20 +41,17 @@ type PriceMasterDetail struct {
 	Seller                     int      `json:"Seller"`
 	ConditionRecord            int      `json:"ConditionRecord"`
 	ConditionSequentialNumber  int      `json:"ConditionSequentialNumber"`
-	ConditionValidityEndDate   string   `json:"ConditionValidityEndDate"`
 	ConditionValidityStartDate string   `json:"ConditionValidityStartDate"`
+	ConditionValidityEndDate   string   `json:"ConditionValidityEndDate"`
 	Product                    *string  `json:"Product"`
 	ConditionType              *string  `json:"ConditionType"`
 	CreationDate               *string  `json:"CreationDate"`
 	LastChangeDate             *string  `json:"LastChangeDate"`
 	ConditionRateValue         *float32 `json:"ConditionRateValue"`
-	ConditionRateValueUnit     *string  `json:"ConditionRateValueUnit"`
-	ConditionScaleQuantity     *float32 `json:"ConditionScaleQuantity"`
-	ConditionRateRatio         *float32 `json:"ConditionRateRatio"`
-	ConditionRateRatioUnit     *string  `json:"ConditionRateRatioUnit"`
+	ConditionRateValueUnit     *int     `json:"ConditionRateValueUnit"`
+	ConditionScaleQuantity     *int     `json:"ConditionScaleQuantity"`
 	ConditionCurrency          *string  `json:"ConditionCurrency"`
-	BaseUnit                   *string  `json:"BaseUnit"`
-	ConditionIsDeleted         *bool    `json:"ConditionIsDeleted"`
+	IsMarkedForDeletion        *bool    `json:"IsMarkedForDeletion"`
 }
 
 func CreatePriceMasterDetailRes(msg rabbitmq.RabbitmqMessage) (*PriceMasterDetailRes, error) {

@@ -243,9 +243,9 @@ func (c *BillOfMaterialListCtrl) fin(
 
 		for _, pmdResHeaderV := range *pmdRes.Message.HeaderDoc {
 			if &pmdResHeaderV.DocIssuerBusinessPartner != nil &&
-				pmdResHeaderV.DocIssuerBusinessPartner == *v.OwnerBusinessPartner &&
+				pmdResHeaderV.DocIssuerBusinessPartner == v.OwnerProductionPlantBusinessPartner &&
 				&v.Product != nil &&
-				pmdResHeaderV.Product == *v.Product {
+				pmdResHeaderV.Product == v.Product {
 				img = &dpfm_api_output_formatter.ProductImage{
 					BusinessPartnerID: pmdResHeaderV.DocIssuerBusinessPartner,
 					DocID:             pmdResHeaderV.DocID,
@@ -256,13 +256,13 @@ func (c *BillOfMaterialListCtrl) fin(
 
 		data.BillOfMaterials = append(data.BillOfMaterials,
 			dpfm_api_output_formatter.BillOfMaterial{
-				Product:             v.Product,
-				BillOfMaterial:      v.BillOfMaterial,
-				ProductDescription:  descriptionMapper[*v.Product].ProductDescription,
-				OwnerPlant:          v.OwnerPlant,
-				OwnerPlantName:      plantMapper[*v.OwnerPlant].PlantName,
-				ValidityStartDate:   v.ValidityStartDate,
-				IsMarkedForDeletion: v.IsMarkedForDeletion,
+				Product:                  v.Product,
+				BillOfMaterial:           v.BillOfMaterial,
+				ProductDescription:       descriptionMapper[v.Product].ProductDescription,
+				OwnerProductionPlant:     v.OwnerProductionPlant,
+				OwnerProductionPlantName: plantMapper[v.OwnerProductionPlant].PlantName,
+				ValidityStartDate:        v.ValidityStartDate,
+				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: dpfm_api_output_formatter.Images{
 					Product: img,
 				},

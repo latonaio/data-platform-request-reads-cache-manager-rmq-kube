@@ -9,7 +9,7 @@ import (
 
 func CreateProductionVersionReq(param *dpfm_api_input_reader.ProductionVersionListParams, sID string, log *logger.Logger) *models.ProductionVersionReq {
 	req := &models.ProductionVersionReq{
-		General: models.ProductionVersionHeader{
+		ProductionVersion: models.ProductionVersion{
 			OwnerBusinessPartner: *param.BusinessPartner,
 			IsMarkedForDeletion:  param.IsMarkedForDeletion,
 		},

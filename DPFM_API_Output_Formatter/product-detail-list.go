@@ -1,11 +1,11 @@
 package dpfm_api_output_formatter
 
 type ProductDetailList struct {
-	Header     ProductDetailHeader `json:"Header"`
-	Existences []Exconf            `json:"Existences"`
+	Header     ProductDetailHeader   `json:"Header"`
+	Existences []ProductDetailExconf `json:"Existences"`
 }
 
-type Exconf struct {
+type ProductDetailExconf struct {
 	Content string      `json:"Content"`
 	Exist   *bool       `json:"Exist"`
 	Param   interface{} `json:"Param"`

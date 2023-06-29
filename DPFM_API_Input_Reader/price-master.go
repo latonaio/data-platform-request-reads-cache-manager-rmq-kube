@@ -23,8 +23,8 @@ type PriceMasterListParams struct {
 	UserID              *string `json:"UserId"`
 	User                *string `json:"User"`
 	Language            *string `json:"Language"`
-	Buyer               *int    `json:"Buyer"`
-	Seller              *int    `json:"Seller"`
+	Buyer               int     `json:"Buyer"`
+	Seller              int     `json:"Seller"`
 	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
 }
 

@@ -22,19 +22,19 @@ func CreatePriceMasterReq(param *dpfm_api_input_reader.PriceMasterListParams, sI
 	}
 }
 
-func CreateBusinessPartnerReq(param *dpfm_api_input_reader.PriceMasterListParams, scrRes *apiresponses.PriceMasterRes, sID string, log *logger.Logger) *models.BusinessPartnerReq {
+func CreateBusinessPartnerReq(param *dpfm_api_input_reader.PriceMasterListParams, pmRes *apiresponses.PriceMasterRes, sID string, log *logger.Logger) *models.BusinessPartnerReq {
 	bpIDs := make([]int, 0)
 	dupCheck := make(map[int]struct{})
-	for _, v := range *scrRes.Message.PriceMaster {
-		id := *v.Seller
+	for _, v := range *pmRes.Message.PriceMaster {
+		id := v.Seller
 		if _, ok := dupCheck[id]; ok {
 			continue
 		}
 		dupCheck[id] = struct{}{}
 		bpIDs = append(bpIDs, id)
 	}
-	for _, v := range *scrRes.Message.PriceMaster {
-		id := *v.Buyer
+	for _, v := range *pmRes.Message.PriceMaster {
+		id := v.Buyer
 		if _, ok := dupCheck[id]; ok {
 			continue
 		}

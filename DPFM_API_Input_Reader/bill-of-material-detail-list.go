@@ -21,6 +21,7 @@ type BillOfMaterialDetailList struct {
 type BillOfMaterialDetailListParams struct {
 	UserID              string  `json:"UserID"`
 	User                string  `json:"User"`
+	Language            *string `json:"Language"`
 	BusinessPartner     int     `json:"BusinessPartner"`
 	BillOfMaterial      int     `json:"BillOfMaterial"`
 	ValidityStartDate   *string `json:"ValidityStartDate"`

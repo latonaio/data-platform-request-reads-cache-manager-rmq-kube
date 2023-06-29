@@ -61,20 +61,46 @@ func (c *BillOfMaterialDetailListCtrl) BillOfMaterialDetailList(msg rabbitmq.Rab
 	if err != nil {
 		return xerrors.Errorf("billOfMaterialRequest error: %w", err)
 	}
-	if bomRes.Message.Header == nil || len(*bomRes.Message.Header) == 0 {
+
+	plRes, err := c.plantRequest(&params.Params, bomRes, sID, reqKey, &cacheResult)
+	if err != nil {
+		return xerrors.Errorf("plantRequest error: %w", err)
+	}
+
+	/*if bomRes.Message.Header == nil || len(*bomRes.Message.Header) == 0 {
 		c.finEmptyProcess(params, reqKey, "BillOfMaterialDetailList", &cacheResult)
 		c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 		return nil
-	}
+	}*/
 
 	err = c.addHeaderInfo(&params.Params, sID, &cacheResult)
 	if err != nil {
 		return xerrors.Errorf("search header error: %w", err)
 	}
 
-	c.fin(params, bomRes, reqKey, "BillOfMaterialDetailList", &cacheResult)
+	c.fin(params, bomRes, plRes, reqKey, "BillOfMaterialDetailList", &cacheResult)
 	c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 	return nil
+}
+
+func (c *BillOfMaterialDetailListCtrl) plantRequest(
+	params *dpfm_api_input_reader.BillOfMaterialDetailListParams,
+	pvRes *apiresponses.BillOfMaterialRes,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+) (*apiresponses.PlantRes, error) {
+	defer recovery(c.log)
+	plReq := billofmaterialdetail.CreatePlantReq(params, pvRes, sID, c.log)
+	res, err := c.request("data-platform-api-plant-reads-queue", plReq, sID, reqKey, "EquipmentList", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant cache set error: %w", err)
+	}
+	plRes, err := apiresponses.CreatePlantRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant response parse error: %w", err)
+	}
+	return plRes, nil
 }
 
 func (c *BillOfMaterialDetailListCtrl) billOfMaterialRequest(
@@ -100,9 +126,9 @@ func (c *BillOfMaterialDetailListCtrl) addHeaderInfo(
 	params *dpfm_api_input_reader.BillOfMaterialDetailListParams,
 	url string, setFlag *RedisCacheApiName,
 ) error {
-	//201@gmail.com/billOfMaterial/list/user=BillToParty/businessPartner=201/headerBillOfMaterial=false/headerValidityStartDate=false/headerOwnerPlantName=false/headerProductDescription=false=/headerPaymentBlockStatus=false/BillOfMaterialList
-	key := fmt.Sprintf(`%s/billOfMaterial/list/user=%s/businessPartner=%d/headerBillOfMaterial=%d/headerValidityStartDate=%d/headerOwnerPlantName=%d/headerProductDescription=%d/headerPaymentBlockStatus=%v/BillOfMaterialList`,
-		params.UserID, params.User, params.BusinessPartner, params.BillOfMaterial, params.ValidityStartDate, params.OwnerPlantName, params.ProductDescription, false)
+	//201@gmail.com/billOfMaterial/list/user=OwnerBusinessPartner
+	key := fmt.Sprintf(`%s/billOfMaterial/list/user=%s/BillOfMaterialList`,
+		params.UserID, params.User)
 	api := "BillOfMaterialDetailListHeader"
 	m, err := c.cache.GetMap(c.ctx, key)
 	if err != nil {
@@ -184,12 +210,14 @@ func getSessionID(req interface{}) (string, error) {
 func (c *BillOfMaterialDetailListCtrl) fin(
 	params *dpfm_api_input_reader.BillOfMaterialDetailList,
 	bomRes *apiresponses.BillOfMaterialRes,
+	plRes *apiresponses.PlantRes,
 	url,
 	api string,
 	setFlag *RedisCacheApiName,
 ) error {
-	key := fmt.Sprintf(`%s/billOfMaterial/list/user=%s/businessPartner=%d/headerBillOfMaterial=%d/headerValidityStartDate=%d/headerOwnerPlantName=%d/headerProductDescription=%d/headerPaymentBlockStatus=%v/BillOfMaterialList`,
-		params.Params.UserID, params.Params.User, params.Params.BusinessPartner, params.Params.BillOfMaterial, params.Params.ValidityStartDate, params.Params.OwnerPlantName, params.Params.ProductDescription, false)
+	//201@gmail.com/billOfMaterial/list/user=OwnerBusinessPartner
+	key := fmt.Sprintf(`%s/billOfMaterial/list/user=%s/BillOfMaterialList`,
+		params.Params.UserID, params.Params.User)
 	m, err := c.cache.GetMap(c.ctx, key)
 	if err != nil {
 		return err
@@ -203,7 +231,7 @@ func (c *BillOfMaterialDetailListCtrl) fin(
 	if err != nil {
 		return err
 	}
-	idx := -1
+	idx := 0
 	for i, v := range bomList.BillOfMaterials {
 		if v.BillOfMaterial == params.Params.BillOfMaterial {
 			idx = i
@@ -216,16 +244,23 @@ func (c *BillOfMaterialDetailListCtrl) fin(
 		Key:   key,
 	}
 
+	plantMapper := map[string]apiresponses.PlantGeneral{}
+	for _, v := range *plRes.Message.Generals {
+		plantMapper[v.Plant] = v
+	}
+
 	details := make([]dpfm_api_output_formatter.BillOfMaterialDetail, 0, len(*bomRes.Message.Item))
 	for _, v := range *bomRes.Message.Item {
 		details = append(details, dpfm_api_output_formatter.BillOfMaterialDetail{
-			ComponentProduct:          *v.ComponentProduct,
-			BillOfMaterialItemText:    *v.BillOfMaterialItemText,
-			StockConfirmationPlant:    *v.StockConfirmationPlant,
-			BOMItemQuantityInBaseUnit: *v.BOMItemQuantityInBaseUnit,
-			BOMItemBaseUnit:           *v.BOMItemBaseUnit,
-			ValidityStartDate:         *v.ValidityStartDate,
-			IsMarkedForDeletion:       *v.IsMarkedForDeletion,
+			ComponentProduct:                            v.ComponentProduct,
+			BillOfMaterialItem:                          v.BillOfMaterialItem,
+			BillOfMaterialItemText:                      v.BillOfMaterialItemText,
+			StockConfirmationPlantName:                  plantMapper[*v.StockConfirmationPlant].PlantName,
+			StockConfirmationPlant:                      v.StockConfirmationPlant,
+			ComponentProductStandardQuantityInBaseUnuit: v.ComponentProductStandardQuantityInBaseUnuit,
+			ComponentProductBaseUnit:                    v.ComponentProductBaseUnit,
+			ValidityStartDate:                           v.ValidityStartDate,
+			IsMarkedForDeletion:                         v.IsMarkedForDeletion,
 		})
 	}
 

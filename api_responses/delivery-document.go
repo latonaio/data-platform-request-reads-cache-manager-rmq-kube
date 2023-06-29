@@ -239,8 +239,14 @@ type DeliveryDocumentItem struct {
 	ItemIssuingBlockStatus                        *bool    `json:"ItemIssuingBlockStatus,omitempty"`
 	ItemReceivingBlockStatus                      *bool    `json:"ItemReceivingBlockStatus,omitempty"`
 	ItemBillingBlockStatus                        *bool    `json:"ItemBillingBlockStatus,omitempty"`
-	IsCancelled                                   *bool    `json:"ItemIsCancelled,omitempty"`
-	IsMarkedForDeletion                           *bool    `json:"ItemIsMarkedForDeletion,omitempty"`
+	IsCancelled                                   *bool    `json:"IsCancelled,omitempty"`
+	IsMarkedForDeletion                           *bool    `json:"IsMarkedForDeletion,omitempty"`
+	ProductionOrder                               *int     `json:"ProductionOrder,omitempty"`
+	ProductionOrderItem                           *int     `json:"ProductionOrderItem,omitempty"`
+	Operations                                    *int     `json:"Operations,omitempty"`
+	OperationsItem                                *int     `json:"OperationsItem,omitempty"`
+	BillOfMaterial                                *int     `json:"BillOfMaterial,omitempty"`
+	BillOfMaterialItem                            *int     `json:"BillOfMaterialItem,omitempty"`
 }
 
 type DeliveryDocumentAddress struct {

@@ -19,9 +19,15 @@ type PriceMasterDetailList struct {
 }
 
 type PriceMasterDetailListParams struct {
-	SupplyChainRelationshipID int `json:"Product"`
+	SupplyChainRelationshipID int `json:"SupplyChainRelationshipID"`
 	Buyer                     int `json:"Buyer"`
 	Seller                    int `json:"Seller"`
+
+	UserID              string `json:"UserID"`
+	User                string `json:"User"`
+	Language            string `json:"Language"`
+	BusinessPartner     int    `json:"BusinessPartner"`
+	IsMarkedForDeletion bool   `json:"IsMarkedForDeletion"`
 }
 
 func ReadPriceMasterDetailList(msg rabbitmq.RabbitmqMessage) *PriceMasterDetailList {

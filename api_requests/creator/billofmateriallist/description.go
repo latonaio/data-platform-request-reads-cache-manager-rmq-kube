@@ -12,8 +12,8 @@ func CreateDescriptionReq(param *dpfm_api_input_reader.BillOfMaterialListParams,
 	descByBP := make([]models.ProductDescByBP, 0)
 	for _, v := range *pvRes.Message.Header {
 		descByBP = append(descByBP, models.ProductDescByBP{
-			Product:         *v.Product,
-			BusinessPartner: *v.OwnerBusinessPartner,
+			Product:         v.Product,
+			BusinessPartner: v.OwnerProductionPlantBusinessPartner,
 			Language:        *param.Language,
 		})
 	}

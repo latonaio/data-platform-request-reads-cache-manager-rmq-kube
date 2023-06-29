@@ -22,24 +22,10 @@ spec:
           image: latonaio/data-platform-api-request-reads-cache-manager-rmq-kube
           imagePullPolicy: Always
           env:
-            - name: "RMQ_USER"
-              value: "XXXX"
-            - name: "RMQ_PASS"
-              value: "XXXX"
-            - name: "RMQ_ADDRESS"
-              value: "rabbitmq"
-            - name: "RMQ_PORT"
-              value: "5672"
             - name: "RMQ_QUEUE_FROM"
               value: "data-platform-api-request-reads-cache-manager-queue"
             - name: "RMQ_SESSION_CONTROL_QUEUE"
               value: "data-platform-api-request-reads-cache-manager-receive-queue"
-            - name: "RMQ_VHOST"
-              value: "data-platform"
-            - name: "REDIS_ADDR"
-              value: "redis-kube"
-            - name: "REDIS_PORT"
-              value: "6379"
           envFrom:
             - configMapRef:
                 name: env-config

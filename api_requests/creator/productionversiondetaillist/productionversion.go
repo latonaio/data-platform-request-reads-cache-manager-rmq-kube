@@ -9,13 +9,13 @@ import (
 
 func CreateProductionVersionDetailReq(param *dpfm_api_input_reader.ProductionVersionDetailListParams, sID string, log *logger.Logger) *models.ProductionVersionReq {
 	req := &models.ProductionVersionReq{
-		General: models.ProductionVersionHeader{
+		ProductionVersion: models.ProductionVersion{
 			ProductionVersion: *param.ProductionVersion,
-			Item: []models.ProductionVersionItem{
+			/*Item: []models.ProductionVersionItem{
 				{
 					IsMarkedForDeletion: param.IsMarkedForDeletion,
 				},
-			},
+			},*/
 		},
 		Accepter: []string{
 			"Items",

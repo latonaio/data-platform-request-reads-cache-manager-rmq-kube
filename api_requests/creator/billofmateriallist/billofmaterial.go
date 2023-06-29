@@ -14,7 +14,7 @@ func CreateBillOfMaterialReq(param *dpfm_api_input_reader.BillOfMaterialListPara
 			IsMarkedForDeletion:  param.IsMarkedForDeletion,
 		},
 		Accepter: []string{
-			"Headers",
+			"HeaderByOwnerProductionPlantBP",
 		},
 		RuntimeSessionID: sID,
 	}

@@ -17,20 +17,33 @@ type OperationsReq struct {
 }
 
 type OperationsHeader struct {
-	Operations              int              `json:"Operations"`
-	Product                 *string          `json:"Product"`
-	OwnerBusinessPartner    *int             `json:"OwnerBusinessPartner"`
-	OwnerPlant              *string          `json:"OwnerPlant"`
-	OperationsText          *string          `json:"OperationsText"`
-	OperationsStatus        *string          `json:"OperationsStatus"`
-	ResponsiblePlannerGroup *string          `json:"ResponsiblePlannerGroup"`
-	ValidityStartDate       *string          `json:"ValidityStartDate"`
-	ValidityEndDate         *string          `json:"ValidityEndDate"`
-	CreationDate            *string          `json:"CreationDate"`
-	LastChangeDate          *string          `json:"LastChangeDate"`
-	PlainLongText           *string          `json:"PlainLongText"`
-	IsMarkedForDeletion     *bool            `json:"IsMarkedForDeletion"`
-	Item                    []OperationsItem `json:"Item"`
+	Operations                               int              `json:"Operations"`
+	SupplyChainRelationshipID                int              `json:"SupplyChainRelationshipID"`
+	SupplyChainRelationshipDeliveryID        int              `json:"SupplyChainRelationshipDeliveryID"`
+	SupplyChainRelationshipDeliveryPlantID   int              `json:"SupplyChainRelationshipDeliveryPlantID"`
+	SupplyChainRelationshipProductionPlantID int              `json:"SupplyChainRelationshipProductionPlantID"`
+	Product                                  string           `json:"Product"`
+	Buyer                                    int              `json:"Buyer"`
+	Seller                                   int              `json:"Seller"`
+	DepartureDeliverFromParty                int              `json:"DepartureDeliverFromParty"`
+	DepartureDeliverFromPlant                string           `json:"DepartureDeliverFromPlant"`
+	DestinationDeliverToParty                int              `json:"DestinationDeliverToParty"`
+	DestinationDeliverToPlant                string           `json:"DestinationDeliverToPlant"`
+	OwnerProductionPlantBusinessPartner      int              `json:"OwnerProductionPlantBusinessPartner"`
+	OwnerProductionPlant                     string           `json:"OwnerProductionPlant"`
+	ProductBaseUnit                          string           `json:"ProductBaseUnit"`
+	ProductDeliveryUnit                      string           `json:"ProductDeliveryUnit"`
+	ProductProductionUnit                    string           `json:"ProductProductionUnit"`
+	OperationsText                           string           `json:"OperationsText"`
+	OperationsStatus                         *string          `json:"OperationsStatus"`
+	ResponsiblePlannerGroup                  *string          `json:"ResponsiblePlannerGroup"`
+	PlainLongText                            *string          `json:"PlainLongText"`
+	ValidityStartDate                        *string          `json:"ValidityStartDate"`
+	ValidityEndDate                          *string          `json:"ValidityEndDate"`
+	CreationDate                             string           `json:"CreationDate"`
+	LastChangeDate                           string           `json:"LastChangeDate"`
+	IsMarkedForDeletion                      *bool            `json:"IsMarkedForDeletion"`
+	Item                                     []OperationsItem `json:"Item"`
 }
 
 type OperationsItem struct {

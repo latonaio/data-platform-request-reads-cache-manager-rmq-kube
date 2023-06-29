@@ -8,22 +8,22 @@ import (
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 )
 
-func CreateDescriptionReq(param *dpfm_api_input_reader.PriceMasterListParams, pmdRes *apiresponses.PriceMasterDetailRes, sID string, log *logger.Logger) *models.ProductMasterReq {
+func CreateDescriptionReq(param *dpfm_api_input_reader.PriceMasterDetailListParams, pmdRes *apiresponses.PriceMasterDetailRes, sID string, log *logger.Logger) *models.ProductMasterReq {
 	descByBP := make([]models.ProductDescByBP, 0)
 	for _, v := range pmdRes.Message.PriceMasterDetail {
 		descByBP = append(descByBP, models.ProductDescByBP{
 			Product:         *v.Product,
 			BusinessPartner: v.Buyer,
-			Language:        *param.Language,
+			Language:        param.Language,
 		})
 	}
 	return &models.ProductMasterReq{
-		BusinessPartnerID: param.BusinessPartner,
+		BusinessPartnerID: &param.BusinessPartner,
 		General: models.PMGeneral{
-			IsMarkedForDeletion: param.IsMarkedForDeletion,
+			IsMarkedForDeletion: &param.IsMarkedForDeletion,
 			BusinessPartner: []models.PMBusinessPartner{
 				{
-					BusinessPartner: *param.BusinessPartner,
+					BusinessPartner: param.BusinessPartner,
 					ProductDescription: []models.ProductDescription{
 						{
 							ProductDescByBP: descByBP,

@@ -13,7 +13,7 @@ func CreateProductMaterialReq(param *dpfm_api_input_reader.OrdersDetailParams, b
 	for _, v := range *bmRes.Message.Item {
 		pdByBPs = append(pdByBPs, models.ProductDescByBP{
 			Product:         *v.ComponentProduct,
-			BusinessPartner: *v.ComponentProductBusinessPartner,
+			BusinessPartner: *v.StockConfirmationBusinessPartner,
 			Language:        param.Language,
 		})
 	}

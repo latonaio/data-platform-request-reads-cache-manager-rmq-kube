@@ -61,10 +61,15 @@ func (c *ProductionVersionDetailListCtrl) ProductionVersionDetailList(msg rabbit
 	if err != nil {
 		return xerrors.Errorf("productionVersionRequest error: %w", err)
 	}
-	if pvdRes.Message.Header == nil || len(*pvdRes.Message.Header) == 0 {
+	/*if pvdRes.Message.Header == nil || len(*pvdRes.Message.Header) == 0 {
 		c.finEmptyProcess(params, reqKey, "ProductionVersionDetailList", &cacheResult)
 		c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 		return nil
+	}*/
+
+	plRes, err := c.plantRequest(&params.Params, pvdRes, sID, reqKey, &cacheResult)
+	if err != nil {
+		return xerrors.Errorf("plantRequest error: %w", err)
 	}
 
 	drRes, err := c.descriptionRequest(&params.Params, pvdRes, sID, reqKey, &cacheResult)
@@ -72,7 +77,12 @@ func (c *ProductionVersionDetailListCtrl) ProductionVersionDetailList(msg rabbit
 		return err
 	}
 
-	c.fin(params, pvdRes, drRes, reqKey, "ProductionVersionDetailList", &cacheResult)
+	err = c.addHeaderInfo(&params.Params, sID, &cacheResult)
+	if err != nil {
+		return xerrors.Errorf("search header error: %w", err)
+	}
+
+	c.fin(params, pvdRes, drRes, plRes, reqKey, "ProductionVersionDetailList", &cacheResult)
 	c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 	return nil
 }
@@ -105,7 +115,8 @@ func (c *ProductionVersionDetailListCtrl) descriptionRequest(
 ) (*apiresponses.ProductMasterRes, error) {
 	defer recovery(c.log)
 	drReq := productionversiondetaillist.CreateDescriptionReq(params, pvRes, sID, c.log)
-	res, err := c.request("data-platform-api-product-master-reads-queue", drReq, sID, reqKey, "ProductionVersionList", setFlag)
+	res, err := c.request("data-platform-api-product-master-reads-queue", drReq, sID, reqKey, "ProductionVersionDetailList", setFlag)
+	//c.log.JsonParseOut(drReq)
 	if err != nil {
 		return nil, xerrors.Errorf("description cache set error: %w", err)
 	}
@@ -117,13 +128,33 @@ func (c *ProductionVersionDetailListCtrl) descriptionRequest(
 	return drRes, nil
 }
 
+func (c *ProductionVersionDetailListCtrl) plantRequest(
+	params *dpfm_api_input_reader.ProductionVersionDetailListParams,
+	pvRes *apiresponses.ProductionVersionRes,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+) (*apiresponses.PlantRes, error) {
+	defer recovery(c.log)
+	plReq := productionversiondetaillist.CreatePlantReq(params, pvRes, sID, c.log)
+	res, err := c.request("data-platform-api-plant-reads-queue", plReq, sID, reqKey, "EquipmentList", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant cache set error: %w", err)
+	}
+	plRes, err := apiresponses.CreatePlantRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant response parse error: %w", err)
+	}
+	return plRes, nil
+}
+
 func (c *ProductionVersionDetailListCtrl) addHeaderInfo(
 	params *dpfm_api_input_reader.ProductionVersionDetailListParams,
 	url string, setFlag *RedisCacheApiName,
 ) error {
-	//201@gmail.com/productionVersion/list/user=BillToParty/businessPartner=201/headerProductionVersion=false/headerValidityStartDate=false/headerOwnerPlantName=false/headerProductDescription=false=/headerPaymentBlockStatus=false/ProductionVersionlList
-	key := fmt.Sprintf(`%s/invoiceDocument/list/user=%s/businessPartner=%d/headerProductionVersion=%v/headerValidityStartDate=%v/headerOwnerPlant=%v/headerProductDescription=%v/InvoiceDocumentList`,
-		params.UserID, params.User, params.BusinessPartner, params.ProductionVersion, params.ValidityStartDate, params.OwnerPlant, params.ProductDescription, false)
+	//201@gmail.com/productionVersion/list/user=OwnerProductionPlantBusinessPartner/headerIsMarkedForDeletion=false/ProductionVersionList
+	key := fmt.Sprintf(`%s/productionVersion/list/user=%s/ProductionVersionList`,
+		params.UserID, params.User)
 	api := "ProductionVersionDetailListHeader"
 	m, err := c.cache.GetMap(c.ctx, key)
 	if err != nil {
@@ -206,10 +237,11 @@ func (c *ProductionVersionDetailListCtrl) fin(
 	params *dpfm_api_input_reader.ProductionVersionDetailList,
 	pvRes *apiresponses.ProductionVersionRes,
 	pmRes *apiresponses.ProductMasterRes,
+	plRes *apiresponses.PlantRes,
 	url, api string, setFlag *RedisCacheApiName,
 ) error {
-	key := fmt.Sprintf(`%s/invoiceDocument/list/user=%s/businessPartner=%d/headerProductionVersion=%v/headerValidityStartDate=%v/headerOwnerPlant=%v/headerProductDescription=%v/InvoiceDocumentList`,
-		params.Params.UserID, params.Params.User, params.Params.BusinessPartner, params.Params.ProductionVersion, params.Params.ValidityStartDate, params.Params.OwnerPlant, params.Params.ProductDescription, false)
+	key := fmt.Sprintf(`%s/productionVersion/list/user=%s/ProductionVersionList`,
+		params.Params.UserID, params.Params.User)
 	m, err := c.cache.GetMap(c.ctx, key)
 	if err != nil {
 		return err
@@ -241,16 +273,24 @@ func (c *ProductionVersionDetailListCtrl) fin(
 		descriptionMapper[v.Product] = v
 	}
 
+	plantMapper := map[string]apiresponses.PlantGeneral{}
+	for _, v := range *plRes.Message.Generals {
+		plantMapper[v.Plant] = v
+	}
+
 	details := make([]dpfm_api_output_formatter.ProductionVersionDetail, 0, len(*pvRes.Message.Item))
 	for _, v := range *pvRes.Message.Item {
 		details = append(details, dpfm_api_output_formatter.ProductionVersionDetail{
-			Product:             &v.Product,
-			ProductDescription:  descriptionMapper[v.Product].ProductDescription,
-			Plant:               &v.Plant,
-			BillOfMaterial:      &v.BillOfMaterial,
-			Operations:          &v.Operations,
-			ValidityStartDate:   v.ValidityStartDate,
-			IsMarkedForDeletion: v.IsMarkedForDeletion,
+			ProductionVersion:     &v.ProductionVersion,
+			ProductionVersionItem: &v.ProductionVersionItem,
+			Product:               &v.Product,
+			ProductDescription:    descriptionMapper[v.Product].ProductDescription,
+			Plant:                 &v.Plant,
+			PlantName:             plantMapper[v.Plant].PlantName,
+			BillOfMaterial:        &v.BillOfMaterial,
+			Operations:            &v.Operations,
+			ValidityStartDate:     v.ValidityStartDate,
+			IsMarkedForDeletion:   v.IsMarkedForDeletion,
 		})
 	}
 

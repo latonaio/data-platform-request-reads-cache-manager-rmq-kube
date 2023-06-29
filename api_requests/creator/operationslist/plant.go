@@ -11,7 +11,7 @@ import (
 func CreatePlantReq(param *dpfm_api_input_reader.OperationsListParams, opRes *apiresponses.OperationsRes, sID string, log *logger.Logger) *models.PlantReq {
 	generals := make(models.PlantGenerals, len(*opRes.Message.Header))
 	for i, v := range *opRes.Message.Header {
-		generals[i].Plant = &v.OwnerPlant
+		generals[i].Plant = &v.OwnerProductionPlant
 		generals[i].Language = param.Language
 	}
 

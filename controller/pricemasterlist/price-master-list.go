@@ -81,27 +81,27 @@ func (c *PriceMasterListCtrl) priceMasterRequest(
 	l *logger.Logger,
 ) (*apiresponses.PriceMasterRes, error) {
 	defer recovery(c.log)
-	scrReq := pricemasterlist.CreatePriceMasterReq(params, sID, c.log)
-	res, err := c.request("data-platform-api-price-master-reads-queue", scrReq, sID, reqKey, "PriceMaster", setFlag)
+	pmReq := pricemasterlist.CreatePriceMasterReq(params, sID, c.log)
+	res, err := c.request("data-platform-api-price-master-reads-queue", pmReq, sID, reqKey, "PriceMaster", setFlag)
 	if err != nil {
 		return nil, xerrors.Errorf("price master cache set error: %w", err)
 	}
-	scrRes, err := apiresponses.CreatePriceMasterRes(res)
+	pmRes, err := apiresponses.CreatePriceMasterRes(res)
 	if err != nil {
 		return nil, xerrors.Errorf("Price Master master response parse error: %w", err)
 	}
-	return scrRes, nil
+	return pmRes, nil
 }
 
 func (c *PriceMasterListCtrl) businessPartnerRequest(
 	params *dpfm_api_input_reader.PriceMasterListParams,
-	scrRes *apiresponses.PriceMasterRes,
+	pmRes *apiresponses.PriceMasterRes,
 	sID string,
 	reqKey string,
 	setFlag *RedisCacheApiName,
 ) (*apiresponses.BusinessPartnerRes, error) {
 	defer recovery(c.log)
-	bpReq := pricemasterlist.CreateBusinessPartnerReq(params, scrRes, sID, c.log)
+	bpReq := pricemasterlist.CreateBusinessPartnerReq(params, pmRes, sID, c.log)
 	res, err := c.request("data-platform-api-business-partner-reads-general-queue", bpReq, sID, reqKey, "BusinessPartner", setFlag)
 	if err != nil {
 		return nil, xerrors.Errorf("business partner cache set error: %w", err)
@@ -187,21 +187,21 @@ func (c *PriceMasterListCtrl) fin(
 	priceMasters := make([]dpfm_api_output_formatter.PriceMasters, 0)
 	for _, v := range *pmRes.Message.PriceMaster {
 		if *params.Params.User == "Buyer" {
-			if *v.Buyer != *params.Params.Buyer {
+			if v.Buyer != params.Params.Buyer {
 				continue
 			}
 		} else if *params.Params.User == "Seller" {
-			if *v.Seller != *params.Params.Seller {
+			if v.Seller != params.Params.Seller {
 				continue
 			}
 		}
 		buyerName := ""
 		sellerName := ""
-		buyer, ok := bpMapper[*v.Buyer]
+		buyer, ok := bpMapper[v.Buyer]
 		if ok {
 			buyerName = *buyer.BusinessPartnerFullName
 		}
-		seller, ok := bpMapper[*v.Seller]
+		seller, ok := bpMapper[v.Seller]
 		if ok {
 			sellerName = *seller.BusinessPartnerFullName
 		}
@@ -209,9 +209,9 @@ func (c *PriceMasterListCtrl) fin(
 		priceMasters = append(priceMasters,
 			dpfm_api_output_formatter.PriceMasters{
 				SupplyChainRelationshipID: v.SupplyChainRelationshipID,
-				Buyer:                     v.Buyer,
+				Buyer:                     &v.Buyer,
 				BuyerName:                 buyerName,
-				Seller:                    v.Seller,
+				Seller:                    &v.Seller,
 				SellerName:                sellerName,
 			},
 		)

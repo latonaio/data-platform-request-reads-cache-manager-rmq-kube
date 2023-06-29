@@ -67,15 +67,21 @@ func (c *ProductionVersionListCtrl) ProductionVersionList(msg rabbitmq.RabbitmqM
 		return nil
 	}
 
+	plRes, err := c.plantRequest(&params.Params, pvRes, sID, reqKey, &cacheResult)
+	if err != nil {
+		return xerrors.Errorf("plantRequest error: %w", err)
+	}
+
 	drRes, err := c.descriptionRequest(&params.Params, pvRes, sID, reqKey, &cacheResult)
 	if err != nil {
 		return err
 	}
+
 	pvdRes, err := c.productionVersionDocRequest(&params.Params, pvRes, sID, reqKey, &cacheResult)
 	if err != nil {
 		return err
 	}
-	c.fin(params, pvRes, drRes, pvdRes, reqKey, "ProductionVersionList", &cacheResult)
+	c.fin(params, pvRes, drRes, pvdRes, plRes, reqKey, "ProductionVersionList", &cacheResult)
 	c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 	return nil
 }
@@ -139,6 +145,27 @@ func (c *ProductionVersionListCtrl) descriptionRequest(
 
 	return drRes, nil
 }
+
+func (c *ProductionVersionListCtrl) plantRequest(
+	params *dpfm_api_input_reader.ProductionVersionListParams,
+	pvRes *apiresponses.ProductionVersionRes,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+) (*apiresponses.PlantRes, error) {
+	defer recovery(c.log)
+	plReq := productionversionlist.CreatePlantReq(params, pvRes, sID, c.log)
+	res, err := c.request("data-platform-api-plant-reads-queue", plReq, sID, reqKey, "EquipmentList", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant cache set error: %w", err)
+	}
+	plRes, err := apiresponses.CreatePlantRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("Plant response parse error: %w", err)
+	}
+	return plRes, nil
+}
+
 func (c *ProductionVersionListCtrl) request(queue string, req interface{}, sID string, url, api string, setFlag *RedisCacheApiName) (rabbitmq.RabbitmqMessage, error) {
 	resFunc := c.rmq.SessionRequest(queue, req, sID)
 	res := resFunc()
@@ -195,6 +222,7 @@ func (c *ProductionVersionListCtrl) fin(
 	pvRes *apiresponses.ProductionVersionRes,
 	pmRes *apiresponses.ProductMasterRes,
 	pmdRes *apiresponses.ProductMasterDocRes,
+	plRes *apiresponses.PlantRes,
 	url, api string, setFlag *RedisCacheApiName,
 ) error {
 	descriptionMapper := map[string]apiresponses.ProductDescByBP{}
@@ -205,6 +233,11 @@ func (c *ProductionVersionListCtrl) fin(
 	imgMapper := map[string]apiresponses.PMDHeaderDoc{}
 	for _, v := range *pmdRes.Message.HeaderDoc {
 		imgMapper[v.Product] = v
+	}
+
+	plantMapper := map[string]apiresponses.PlantGeneral{}
+	for _, v := range *plRes.Message.Generals {
+		plantMapper[v.Plant] = v
 	}
 
 	data := dpfm_api_output_formatter.ProductionVersionList{}
@@ -224,7 +257,10 @@ func (c *ProductionVersionListCtrl) fin(
 				ProductionVersion:   v.ProductionVersion,
 				ProductDescription:  descriptionMapper[v.Product].ProductDescription,
 				OwnerPlant:          &v.OwnerPlant,
+				OwnerPlantName:      plantMapper[v.OwnerPlant].PlantName,
 				BillOfMaterial:      &v.BillOfMaterial,
+				Operations:          &v.Operations,
+				ValidityStartDate:   v.ValidityStartDate,
 				IsMarkedForDeletion: v.IsMarkedForDeletion,
 				Images: dpfm_api_output_formatter.Images{
 					ProductionVersion: img,

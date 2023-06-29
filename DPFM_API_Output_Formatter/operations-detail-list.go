@@ -1,20 +1,18 @@
 package dpfm_api_output_formatter
 
 type OperationsDetailList struct {
-	Operations []OperationsDetail       `json:"Operations"`
-	Details    []OperationsDetailHeader `json:"Details"`
+	OperationsDetailHeader OperationsDetailHeader `json:"OperationsDetailHeader"`
+	OperationsDetail       []OperationsDetail     `json:"OperationsDetail"`
 }
 
 type OperationsDetail struct {
-	Operations              int     `json:"Operations"`
-	Product                 *string `json:"Product"`
-	OperationsText          *string `json:"OperationsText"`
-	Plant                   *string `json:"Plant"`
-	StandardLotSizeQuantity *string `json:"StandardLotSizeQuantity"`
-	OperationsUnit          *string `json:"OperationsUnit"`
-	ValidityStartDate       *string `json:"ValidityStartDate"`
-	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
-	Images                  Images  `json:"Images"`
+	OperationsItem          int      `json:"OperationsItem"`
+	OperationsText          *string  `json:"OperationsText"`
+	ProductionPlantName     *string  `json:"ProductionPlantName"`
+	StandardLotSizeQuantity *float32 `json:"StandardLotSizeQuantity"`
+	OperationsUnit          *string  `json:"OperationsUnit"`
+	ValidityStartDate       *string  `json:"ValidityStartDate"`
+	IsMarkedForDeletion     *bool    `json:"IsMarkedForDeletion"`
 }
 
 type OperationsDetailHeader struct {

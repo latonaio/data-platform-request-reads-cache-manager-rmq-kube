@@ -11,7 +11,7 @@ import (
 func CreatePlantReq(param *dpfm_api_input_reader.BillOfMaterialListParams, bomRes *apiresponses.BillOfMaterialRes, sID string, log *logger.Logger) *models.PlantReq {
 	generals := make(models.PlantGenerals, len(*bomRes.Message.Header))
 	for i, v := range *bomRes.Message.Header {
-		generals[i].Plant = v.OwnerPlant
+		generals[i].Plant = &v.OwnerProductionPlant
 		generals[i].Language = param.Language
 	}
 
