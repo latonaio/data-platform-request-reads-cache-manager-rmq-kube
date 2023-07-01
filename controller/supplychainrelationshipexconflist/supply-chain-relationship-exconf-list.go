@@ -60,34 +60,291 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 		return xerrors.Errorf("search header error: %w", err)
 	}
 
-	scrRes, err := c.supplyChainRelationshipGeneralRequest(&params.Params, sID, reqKey, &cacheResult, l)
+	scrRes, err := c.supplyChainRelationshipRequest(&params.Params, sID, reqKey, &cacheResult, l)
 	if err != nil {
 		return err
 	}
 
-	c.fin(params, scrRes, reqKey, "SupplyChainRelationshipExconfList", &cacheResult)
+	scrGeneralRes, err := c.supplyChainRelationshipGeneralRequest(
+		&params.Params,
+		scrRes,
+		[]string{"General"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	scrDeliveryRelationRes, err := c.supplyChainRelationshipDeliveryRequest(
+		&params.Params,
+		scrRes,
+		[]string{"DeliveryRelationBySRCID"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	scrDeliveryPlantRes, err := c.supplyChainRelationshipDeliveryPlantRequest(
+		&params.Params,
+		scrRes,
+		[]string{"DeliveryPlantBySRCID"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	scrDeliveryBillingRes, err := c.supplyChainRelationshipBillingRequest(
+		&params.Params,
+		scrRes,
+		[]string{"BillingBySRCID"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	scrDeliveryPaymentRes, err := c.supplyChainRelationshipPaymentRequest(
+		&params.Params,
+		scrRes,
+		[]string{"PaymentBySRCID"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	scrDeliveryTransactionRes, err := c.supplyChainRelationshipTransactionRequest(
+		&params.Params,
+		scrRes,
+		[]string{"TransactionBySRCID"},
+		sID,
+		reqKey,
+		&cacheResult,
+		l,
+	)
+	if err != nil {
+		return err
+	}
+
+	c.fin(
+		params,
+		scrGeneralRes,
+		scrDeliveryRelationRes,
+		scrDeliveryPlantRes,
+		scrDeliveryBillingRes,
+		scrDeliveryPaymentRes,
+		scrDeliveryTransactionRes,
+		reqKey,
+		"SupplyChainRelationshipExconfList",
+		&cacheResult,
+	)
 	c.log.Info("Fin: %d ms\n", time.Since(start).Milliseconds())
 	return nil
 }
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipGeneralRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
 	sID string,
 	reqKey string,
 	setFlag *RedisCacheApiName,
 	l *logger.Logger,
 ) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
 	defer recovery(c.log)
-	scrReq := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipGeneralRequest(params, sID, c.log)
-	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", scrReq, sID, reqKey, "SupplyChainRelationship", setFlag)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipGeneralRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
 	if err != nil {
 		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
 	}
-	scrRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
 	if err != nil {
 		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
 	}
-	return scrRes, nil
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipDeliveryRelationRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
+	}
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
+	}
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryPlantRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipDeliveryPlantRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
+	}
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
+	}
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipBillingRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipBillingRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
+	}
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
+	}
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipPaymentRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipPaymentRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
+	}
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
+	}
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipTransactionRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	srcRes *apiresponses.SupplyChainRelationshipRes,
+	accepter []string,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipExconfRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipTransactionRequest(
+		params,
+		srcRes,
+		accepter,
+		sID,
+		c.log,
+	)
+	res, err := c.request("data-platform-api-supply-chain-relationship-exconf-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf cache set error: %w", err)
+	}
+	scrGeneralRes, err := apiresponses.CreateSupplyChainRelationshipExconfRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship exconf response parse error: %w", err)
+	}
+	return scrGeneralRes, nil
+}
+
+func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipRequest(
+	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
+	sID string,
+	reqKey string,
+	setFlag *RedisCacheApiName,
+	l *logger.Logger,
+) (*apiresponses.SupplyChainRelationshipRes, error) {
+	defer recovery(c.log)
+	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipListRequest(params, sID, c.log)
+	res, err := c.request("data-platform-api-supply-chain-rel-master-reads-queue", req, sID, reqKey, "SupplyChainRelationship", setFlag)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship cache set error: %w", err)
+	}
+	resBody, err := apiresponses.CreateSupplyChainRelationshipRes(res)
+	if err != nil {
+		return nil, xerrors.Errorf("supply chain relationship response parse error: %w", err)
+	}
+	return resBody, nil
 }
 
 func (c *SupplyChainRelationshipExconfListCtrl) request(queue string, req interface{}, sID string, url, api string, setFlag *RedisCacheApiName) (rabbitmq.RabbitmqMessage, error) {
@@ -150,14 +407,50 @@ type RedisCacheApiName map[string]map[string]interface{}
 
 func (c *SupplyChainRelationshipExconfListCtrl) fin(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfList,
-	scrRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrGeneralRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrDeliveryRelationRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrDeliveryPlantRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrDeliveryBillingRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrDeliveryPaymentRes *apiresponses.SupplyChainRelationshipExconfRes,
+	scrDeliveryTransactionRes *apiresponses.SupplyChainRelationshipExconfRes,
+	//scrRes *apiresponses.SupplyChainRelationshipRes,
 	url, api string, setFlag *RedisCacheApiName,
 ) error {
 
 	generalExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
 		Content: "General",
-		Exist:   scrRes.SupplyChainRelationshipGeneral.ExistenceConf,
-		Param:   scrRes.SupplyChainRelationshipGeneral,
+		Exist:   scrGeneralRes.SupplyChainRelationshipGeneral.ExistenceConf,
+		Param:   scrGeneralRes.SupplyChainRelationshipGeneral,
+	}
+
+	deliveryExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
+		Content: "Delivery",
+		Exist:   scrDeliveryRelationRes.SupplyChainRelationshipDeliveryRelation.ExistenceConf,
+		Param:   scrDeliveryRelationRes.SupplyChainRelationshipDeliveryRelation,
+	}
+
+	deliveryPlantExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
+		Content: "DeliveryPlant",
+		Exist:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlant.ExistenceConf,
+		Param:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlant,
+	}
+
+	billingExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
+		Content: "Billing",
+		Exist:   scrDeliveryBillingRes.SupplyChainRelationshipBilling.ExistenceConf,
+		Param:   scrDeliveryBillingRes.SupplyChainRelationshipBilling,
+	}
+
+	paymentExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
+		Content: "Payment",
+		Exist:   scrDeliveryBillingRes.SupplyChainRelationshipPayment.ExistenceConf,
+		Param:   scrDeliveryBillingRes.SupplyChainRelationshipPayment,
+	}
+
+	transactionExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
+		Content: "Transaction",
+		Exist:   scrDeliveryBillingRes.SupplyChainRelationshipTransaction.ExistenceConf,
+		Param:   scrDeliveryBillingRes.SupplyChainRelationshipTransaction,
 	}
 
 	// 201@gmail.com/SupplyChainRelationship/list/user=BusinessPartner/SupplyChainRelationshipList
@@ -193,6 +486,11 @@ func (c *SupplyChainRelationshipExconfListCtrl) fin(
 		},
 		Existences: []dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
 			generalExconf,
+			deliveryExconf,
+			deliveryPlantExconf,
+			billingExconf,
+			paymentExconf,
+			transactionExconf,
 		},
 	}
 

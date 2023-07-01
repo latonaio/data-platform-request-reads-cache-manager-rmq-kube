@@ -1,19 +1,39 @@
 package models
 
 type SupplyChainRelationshipGeneralReq struct {
-	ConnectionKey                  string                         `json:"connection_key"`
-	Result                         bool                           `json:"result"`
-	RedisKey                       string                         `json:"redis_key"`
-	Filepath                       string                         `json:"filepath"`
-	APIStatusCode                  int                            `json:"api_status_code"`
-	RuntimeSessionID               string                         `json:"runtime_session_id"`
-	BusinessPartnerID              *int                           `json:"business_partner"`
-	ServiceLabel                   string                         `json:"service_label"`
-	APIType                        string                         `json:"api_type"`
-	SupplyChainRelationshipGeneral SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipGeneral"`
-	APISchema                      string                         `json:"api_schema"`
-	Accepter                       []string                       `json:"accepter"`
-	Deleted                        bool                           `json:"deleted"`
+	RuntimeSessionID               string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipGeneral *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipGeneral"`
+	Accepter                       []string                        `json:"accepter"`
+}
+
+type SupplyChainRelationshipDeliveryRelationReq struct {
+	RuntimeSessionID                        string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipDeliveryRelation *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipDeliveryRelation"`
+	Accepter                                []string                        `json:"accepter"`
+}
+
+type SupplyChainRelationshipDeliveryPlantReq struct {
+	RuntimeSessionID                             string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipDeliveryPlantRelation *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipDeliveryPlantRelation"`
+	Accepter                                     []string                        `json:"accepter"`
+}
+
+type SupplyChainRelationshipBillingReq struct {
+	RuntimeSessionID                       string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipBillingRelation *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipBillingRelation"`
+	Accepter                               []string                        `json:"accepter"`
+}
+
+type SupplyChainRelationshipPaymentReq struct {
+	RuntimeSessionID                       string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipPaymentRelation *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipPaymentRelation"`
+	Accepter                               []string                        `json:"accepter"`
+}
+
+type SupplyChainRelationshipTransactionReq struct {
+	RuntimeSessionID                   string                          `json:"runtime_session_id"`
+	SupplyChainRelationshipTransaction *SupplyChainRelationshipGeneral `json:"SupplyChainRelationshipTransaction"`
+	Accepter                           []string                        `json:"accepter"`
 }
 
 type SupplyChainRelationshipGeneral struct {
