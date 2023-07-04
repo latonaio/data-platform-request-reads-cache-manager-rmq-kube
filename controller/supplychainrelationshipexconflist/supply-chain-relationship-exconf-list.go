@@ -81,7 +81,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 	scrDeliveryRelationRes, err := c.supplyChainRelationshipDeliveryRequest(
 		&params.Params,
 		scrRes,
-		[]string{"DeliveryRelationBySRCID"},
+		[]string{"DeliveryRelationBySCRID"},
 		sID,
 		reqKey,
 		&cacheResult,
@@ -94,7 +94,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 	scrDeliveryPlantRes, err := c.supplyChainRelationshipDeliveryPlantRequest(
 		&params.Params,
 		scrRes,
-		[]string{"DeliveryPlantBySRCID"},
+		[]string{"DeliveryPlantBySCRID"},
 		sID,
 		reqKey,
 		&cacheResult,
@@ -107,7 +107,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 	scrDeliveryBillingRes, err := c.supplyChainRelationshipBillingRequest(
 		&params.Params,
 		scrRes,
-		[]string{"BillingBySRCID"},
+		[]string{"BillingBySCRID"},
 		sID,
 		reqKey,
 		&cacheResult,
@@ -120,7 +120,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 	scrDeliveryPaymentRes, err := c.supplyChainRelationshipPaymentRequest(
 		&params.Params,
 		scrRes,
-		[]string{"PaymentBySRCID"},
+		[]string{"PaymentBySCRID"},
 		sID,
 		reqKey,
 		&cacheResult,
@@ -133,7 +133,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 	scrDeliveryTransactionRes, err := c.supplyChainRelationshipTransactionRequest(
 		&params.Params,
 		scrRes,
-		[]string{"TransactionBySRCID"},
+		[]string{"TransactionBySCRID"},
 		sID,
 		reqKey,
 		&cacheResult,
@@ -161,7 +161,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) SupplyChainRelationshipExconfLis
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipGeneralRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -171,7 +171,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipGeneralRe
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipGeneralRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -189,7 +189,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipGeneralRe
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -199,7 +199,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryR
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipDeliveryRelationRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -217,7 +217,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryR
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryPlantRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -227,7 +227,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryP
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipDeliveryPlantRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -245,7 +245,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipDeliveryP
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipBillingRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -255,7 +255,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipBillingRe
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipBillingRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -273,7 +273,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipBillingRe
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipPaymentRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -283,7 +283,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipPaymentRe
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipPaymentRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -301,7 +301,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipPaymentRe
 
 func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipTransactionRequest(
 	params *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	reqKey string,
@@ -311,7 +311,7 @@ func (c *SupplyChainRelationshipExconfListCtrl) supplyChainRelationshipTransacti
 	defer recovery(c.log)
 	req := supplychainrelationshipdetaillist.CreateSupplyChainRelationshipTransactionRequest(
 		params,
-		srcRes,
+		scrRes,
 		accepter,
 		sID,
 		c.log,
@@ -431,8 +431,8 @@ func (c *SupplyChainRelationshipExconfListCtrl) fin(
 
 	deliveryPlantExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{
 		Content: "DeliveryPlant",
-		Exist:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlant.ExistenceConf,
-		Param:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlant,
+		Exist:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlantRelation.ExistenceConf,
+		Param:   scrDeliveryPlantRes.SupplyChainRelationshipDeliveryPlantRelation,
 	}
 
 	billingExconf := dpfm_api_output_formatter.SupplyChainRelationshipExconfList{

@@ -77,9 +77,13 @@ type DeliveryRelation struct {
 	SupplyChainRelationshipID         int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID int     `json:"SupplyChainRelationshipDeliveryID"`
 	Buyer                             int     `json:"Buyer"`
+	BuyerName                         *string `json:"BuyerName"`
 	Seller                            int     `json:"Seller"`
+	SellerName                        *string `json:"SellerName"`
 	DeliverToParty                    int     `json:"DeliverToParty"`
+	DeliverToPartyName                *string `json:"DeliverToPartyName"`
 	DeliverFromParty                  int     `json:"DeliverFromParty"`
+	DeliverFromPartyName              *string `json:"DeliverFromPartyName"`
 	DefaultRelation                   *bool   `json:"DefaultRelation"`
 	CreationDate                      *string `json:"CreationDate"`
 	LastChangeDate                    *string `json:"LastChangeDate"`
@@ -131,9 +135,13 @@ type DeliveryPlantRelation struct {
 	Buyer                                  int     `json:"Buyer"`
 	Seller                                 int     `json:"Seller"`
 	DeliverToParty                         int     `json:"DeliverToParty"`
+	DeliverToPartyName                     *string `json:"DeliverToPartyName"`
 	DeliverFromParty                       int     `json:"DeliverFromParty"`
+	DeliverFromPartyName                   *string `json:"DeliverFromPartyName"`
 	DeliverToPlant                         string  `json:"DeliverToPlant"`
+	DeliverToPlantName                     *string `json:"DeliverToPlantName"`
 	DeliverFromPlant                       string  `json:"DeliverFromPlant"`
+	DeliverFromPlantName                   *string `json:"DeliverFromPlantName"`
 	DefaultRelation                        *bool   `json:"DefaultRelation"`
 	MRPType                                *string `json:"MRPType"`
 	MRPController                          *string `json:"MRPController"`

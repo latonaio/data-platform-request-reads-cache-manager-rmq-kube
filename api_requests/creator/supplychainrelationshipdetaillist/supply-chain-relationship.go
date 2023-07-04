@@ -52,7 +52,7 @@ func CreateSupplyChainRelationshipRequest(param *dpfm_api_input_reader.SupplyCha
 
 func CreateSupplyChainRelationshipGeneralRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,
@@ -70,7 +70,7 @@ func CreateSupplyChainRelationshipGeneralRequest(
 
 func CreateSupplyChainRelationshipDeliveryRelationRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,
@@ -88,7 +88,7 @@ func CreateSupplyChainRelationshipDeliveryRelationRequest(
 
 func CreateSupplyChainRelationshipDeliveryPlantRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,
@@ -106,7 +106,7 @@ func CreateSupplyChainRelationshipDeliveryPlantRequest(
 
 func CreateSupplyChainRelationshipBillingRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,
@@ -124,7 +124,7 @@ func CreateSupplyChainRelationshipBillingRequest(
 
 func CreateSupplyChainRelationshipPaymentRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,
@@ -142,7 +142,7 @@ func CreateSupplyChainRelationshipPaymentRequest(
 
 func CreateSupplyChainRelationshipTransactionRequest(
 	param *dpfm_api_input_reader.SupplyChainRelationshipExconfListParams,
-	srcRes *apiresponses.SupplyChainRelationshipRes,
+	scrRes *apiresponses.SupplyChainRelationshipRes,
 	accepter []string,
 	sID string,
 	log *logger.Logger,

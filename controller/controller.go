@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/operationsdetaillist"
+	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/supplychainrelationshipdetail"
 	"data-platform-api-request-reads-cache-manager-rmq-kube/controller/supplychainrelationshipexconflist"
 
 	"data-platform-api-request-reads-cache-manager-rmq-kube/cache"
@@ -77,6 +78,7 @@ type Controller struct {
 	ProductionVersionList             *productionversionlist.ProductionVersionListCtrl
 	SupplyChainRelationshipList       *supplychainrelationshiplist.SupplyChainRelationshipListCtrl
 	SupplyChainRelationshipDetailList *supplychainrelationshipdetaillist.SupplyChainRelationshipDetailListCtrl
+	SupplyChainRelationshipDetail     *supplychainrelationshipdetail.SupplyChainRelationshipDetailCtrl
 	SupplyChainRelationshipExconfList *supplychainrelationshipexconflist.SupplyChainRelationshipExconfListCtrl
 	BusinessPartnerList               *businesspartnerlist.BusinessPartnerListCtrl
 	PriceMasterList                   *pricemasterlist.PriceMasterListCtrl
@@ -119,6 +121,7 @@ func NewController(ctx context.Context, c *cache.Cache, rmq *rmqsessioncontrolle
 		// WorkCentertDetailList:            workcenterdetaillist.NewWorkCenterDetailListCtrl(ctx, c, rmq, log),
 		SupplyChainRelationshipList:       supplychainrelationshiplist.NewSupplyChainRelationshipListCtrl(ctx, c, rmq, log),
 		SupplyChainRelationshipDetailList: supplychainrelationshipdetaillist.NewSupplyChainRelationshipDetailListCtrl(ctx, c, rmq, log),
+		SupplyChainRelationshipDetail:     supplychainrelationshipdetail.NewSupplyChainRelationshipDetailCtrl(ctx, c, rmq, log),
 		SupplyChainRelationshipExconfList: supplychainrelationshipexconflist.NewSupplyChainRelationshipExconfListCtrl(ctx, c, rmq, log),
 		PriceMasterList:                   pricemasterlist.NewPriceMasterListCtrl(ctx, c, rmq, log),
 		PriceMasterDetailList:             pricemasterdetaillist.NewPriceMasterDetailListCtrl(ctx, c, rmq, log),

@@ -7,23 +7,23 @@ import (
 )
 
 type SupplyChainRelationshipExconfRes struct {
-	ConnectionKey                           string                                  `json:"connection_key"`
-	Result                                  bool                                    `json:"result"`
-	RedisKey                                string                                  `json:"redis_key"`
-	Filepath                                string                                  `json:"filepath"`
-	APIStatusCode                           int                                     `json:"api_status_code"`
-	RuntimeSessionID                        string                                  `json:"runtime_session_id"`
-	BusinessPartnerID                       *int                                    `json:"business_partner"`
-	ServiceLabel                            string                                  `json:"service_label"`
-	SupplyChainRelationshipGeneral          SupplyChainRelationshipGeneral          `json:"SupplyChainRelationshipGeneral"`
-	SupplyChainRelationshipDeliveryRelation SupplyChainRelationshipDeliveryRelation `json:"SupplyChainRelationshipDeliveryRelation"`
-	SupplyChainRelationshipDeliveryPlant    SupplyChainRelationshipDeliveryPlant    `json:"SupplyChainRelationshipDeliveryPlant"`
-	SupplyChainRelationshipBilling          SupplyChainRelationshipBilling          `json:"SupplyChainRelationshipBilling"`
-	SupplyChainRelationshipPayment          SupplyChainRelationshipPayment          `json:"SupplyChainRelationshipPayment"`
-	SupplyChainRelationshipTransaction      SupplyChainRelationshipTransaction      `json:"SupplyChainRelationshipTransaction"`
-	APISchema                               string                                  `json:"api_schema"`
-	Accepter                                []string                                `json:"accepter"`
-	Deleted                                 bool                                    `json:"deleted"`
+	ConnectionKey                                string                                       `json:"connection_key"`
+	Result                                       bool                                         `json:"result"`
+	RedisKey                                     string                                       `json:"redis_key"`
+	Filepath                                     string                                       `json:"filepath"`
+	APIStatusCode                                int                                          `json:"api_status_code"`
+	RuntimeSessionID                             string                                       `json:"runtime_session_id"`
+	BusinessPartnerID                            *int                                         `json:"business_partner"`
+	ServiceLabel                                 string                                       `json:"service_label"`
+	SupplyChainRelationshipGeneral               SupplyChainRelationshipGeneral               `json:"SupplyChainRelationshipGeneral"`
+	SupplyChainRelationshipDeliveryRelation      SupplyChainRelationshipDeliveryRelation      `json:"SupplyChainRelationshipDeliveryRelation"`
+	SupplyChainRelationshipDeliveryPlantRelation SupplyChainRelationshipDeliveryPlantRelation `json:"SupplyChainRelationshipDeliveryPlantRelation"`
+	SupplyChainRelationshipBilling               SupplyChainRelationshipBilling               `json:"SupplyChainRelationshipBilling"`
+	SupplyChainRelationshipPayment               SupplyChainRelationshipPayment               `json:"SupplyChainRelationshipPayment"`
+	SupplyChainRelationshipTransaction           SupplyChainRelationshipTransaction           `json:"SupplyChainRelationshipTransaction"`
+	APISchema                                    string                                       `json:"api_schema"`
+	Accepter                                     []string                                     `json:"accepter"`
+	Deleted                                      bool                                         `json:"deleted"`
 }
 
 type SupplyChainRelationshipGeneral struct {
@@ -43,23 +43,27 @@ type SupplyChainRelationshipDeliveryRelation struct {
 	ExistenceConf                     bool `json:"ExistenceConf"`
 }
 
-type SupplyChainRelationshipDeliveryPlant struct {
+type SupplyChainRelationshipDeliveryPlantRelation struct {
+	SupplyChainRelationshipID              int    `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID      int    `json:"SupplyChainRelationshipDeliveryID"`
 	SupplyChainRelationshipDeliveryPlantID int    `json:"SupplyChainRelationshipDeliveryPlantID"`
-	DeliverToParty                         string `json:"DeliverToParty"`
-	DeliverFromParty                       string `json:"DeliverFromParty"`
+	Buyer                                  int    `json:"Buyer"`
+	Seller                                 int    `json:"Seller"`
+	DeliverToParty                         int    `json:"DeliverToParty"`
+	DeliverFromParty                       int    `json:"DeliverFromParty"`
 	DeliverToPlant                         string `json:"DeliverToPlant"`
 	DeliverFromPlant                       string `json:"DeliverFromPlant"`
-	IsMarkedForDeletion                    bool   `json:"IsMarkedForDeletion"`
 	ExistenceConf                          bool   `json:"ExistenceConf"`
 }
 
 type SupplyChainRelationshipBilling struct {
-	SupplyChainRelationshipBillingID int    `json:"SupplyChainRelationshipBillingID"`
-	BillToParty                      string `json:"BillToParty"`
-	BillFromParty                    string `json:"BillFromParty"`
-	IsMarkedForDeletion              bool   `json:"IsMarkedForDeletion"`
-	ExistenceConf                    bool   `json:"ExistenceConf"`
+	SupplyChainRelationshipID        int  `json:"SupplyChainRelationshipID"`
+	SupplyChainRelationshipBillingID int  `json:"SupplyChainRelationshipBillingID"`
+	Buyer                            int  `json:"Buyer"`
+	Seller                           int  `json:"Seller"`
+	BillToParty                      int  `json:"BillToParty"`
+	BillFromParty                    int  `json:"BillFromParty"`
+	ExistenceConf                    bool `json:"ExistenceConf"`
 }
 
 type SupplyChainRelationshipPayment struct {

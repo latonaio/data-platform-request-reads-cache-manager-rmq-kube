@@ -127,6 +127,8 @@ func callProcess(msg rabbitmq.RabbitmqMessage, cacheCtrl *controller.Controller,
 	// 	err = cacheCtrl.WorkCenterDetailList.WorkCenterDetailList(msg)
 	case "SupplyChainRelationshipList":
 		err = cacheCtrl.SupplyChainRelationshipList.SupplyChainRelationshipList(msg, l)
+	case "SupplyChainRelationshipDetail":
+		err = cacheCtrl.SupplyChainRelationshipDetail.SupplyChainRelationshipDetail(msg, l)
 	case "SupplyChainRelationshipExconfList":
 		//err = cacheCtrl.SupplyChainRelationshipDetailList.SupplyChainRelationshipDetailList(msg, l)
 		err = cacheCtrl.SupplyChainRelationshipExconfList.SupplyChainRelationshipExconfList(msg, l)
