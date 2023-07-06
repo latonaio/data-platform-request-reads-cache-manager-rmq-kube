@@ -9,12 +9,12 @@ spec:
   selector:
     matchLabels:
       run: data-platform-api-request-reads-cache-manager-rmq-kube
-      app: ORDERS
+      app: NONE
   template:
     metadata:
       labels:
         run: data-platform-api-request-reads-cache-manager-rmq-kube
-        app: ORDERS
+        app: NONE
     spec:
       hostname: data-platform-api-request-reads-cache-manager-rmq-kube
       containers:

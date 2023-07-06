@@ -1,12 +1,14 @@
 package cache
 
 import (
-	"context"
+	"data-platform-request-reads-cache-manager-rmq-kube/services"
 	"encoding/json"
 	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/go-redis/redis"
+	"strings"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 	"golang.org/x/xerrors"
 )
@@ -31,8 +33,49 @@ func NewCache(addr string, port interface{}, log *logger.Logger) *Cache {
 	}
 }
 
-func (c *Cache) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	res := c.rds.Set(ctx, key, value, expiration)
+func (c *Cache) CreateKey(
+	controller *beego.Controller,
+	categories []string,
+) string {
+	userInfo := services.UserRequestParams(controller)
+
+	category := strings.Join(categories, "/")
+
+	redisKey := strings.Join([]string{
+		*userInfo.UserID,
+		category,
+	}, "/")
+
+	return redisKey
+}
+
+func (c *Cache) ConfirmCashDataExisting(
+	redisKey string,
+) ([]byte, error) {
+	data, err := c.GetRaw(redisKey)
+	if err != nil {
+		return nil, xerrors.Errorf("cache data does not exist: %w", err)
+	}
+	return data, nil
+}
+
+func (c *Cache) SetCache(
+	redisKey string,
+	data interface{},
+) error {
+	var expiration time.Duration
+
+	b, err := json.Marshal(data)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Set(redisKey, b, expiration)
+}
+
+func (c *Cache) Set(key string, value interface{}, expiration time.Duration) error {
+	res := c.rds.Set(key, value, expiration)
 	if err := res.Err(); err != nil {
 		return xerrors.Errorf("cache set error: %w", err)
 	}
@@ -40,8 +83,8 @@ func (c *Cache) Set(ctx context.Context, key string, value interface{}, expirati
 	return nil
 }
 
-func (c *Cache) GetRaw(ctx context.Context, key string) ([]byte, error) {
-	res := c.rds.Get(ctx, key)
+func (c *Cache) GetRaw(key string) ([]byte, error) {
+	res := c.rds.Get(key)
 	if err := res.Err(); err != nil {
 		return []byte{}, xerrors.Errorf("cache get error: %w", err)
 	}
@@ -51,9 +94,9 @@ func (c *Cache) GetRaw(ctx context.Context, key string) ([]byte, error) {
 	}
 	return d, nil
 }
-func (c *Cache) GetSlice(ctx context.Context, key string) ([]map[string]interface{}, error) {
+func (c *Cache) GetSlice(key string) ([]map[string]interface{}, error) {
 	d := []map[string]interface{}{}
-	b, err := c.GetRaw(ctx, key)
+	b, err := c.GetRaw(key)
 	if err != nil {
 		return d, xerrors.Errorf("cache get raw error: %w", err)
 	}
@@ -63,9 +106,9 @@ func (c *Cache) GetSlice(ctx context.Context, key string) ([]map[string]interfac
 	}
 	return d, nil
 }
-func (c *Cache) GetMap(ctx context.Context, key string) (map[string]interface{}, error) {
+func (c *Cache) GetMap(key string) (map[string]interface{}, error) {
 	d := map[string]interface{}{}
-	b, err := c.GetRaw(ctx, key)
+	b, err := c.GetRaw(key)
 	if err != nil {
 		return d, xerrors.Errorf("cache get raw error: %w", err)
 	}
@@ -77,7 +120,7 @@ func (c *Cache) GetMap(ctx context.Context, key string) (map[string]interface{},
 }
 
 func (c *Cache) GetAllKeys() ([]string, error) {
-	keys, _, err := c.rds.Scan(c.rds.Context(), 0, "prefix:*", 0).Result()
+	keys, _, err := c.rds.Scan(0, "prefix:*", 0).Result()
 	if err != nil {
 		return nil, err
 	}

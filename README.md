@@ -1,29 +1,18 @@
-# README #
+# Beego-Example
+My RESTful API using the Beego Framework in Go
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Things that should be edited: 
+  - In the docker-compose file please fill these fields : - POSTGRES_USER=
+            - POSTGRES_PASSWORD=
+            - POSTGRES_DB=
+    - In the database/database.go im using postgres as databse, please fill these fields (line 21) : 	orm.RegisterDataBase("default", "postgres", "user= password= host= port= dbname= sslmode=disable")
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+To compile: 
 
-### How do I get set up? ###
+- go get -u github.com/beego/bee
+- $ export PATH=$PATH:$(go env GOPATH)/bin
+- bee run
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+By the way for the registration i did not hash the passwords

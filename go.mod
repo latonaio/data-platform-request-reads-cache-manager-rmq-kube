@@ -1,24 +1,20 @@
-module data-platform-api-request-reads-cache-manager-rmq-kube
+module data-platform-request-reads-cache-manager-rmq-kube
 
 go 1.19
 
 require (
-	github.com/go-redis/redis/v8 v8.11.5
+	github.com/astaxie/beego v1.12.0
+	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/latonaio/golang-logging-library-for-data-platform v1.0.4
-	github.com/latonaio/rabbitmq-golang-client-for-data-platform v1.0.4
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 )
 
 require (
-	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/google/uuid v1.3.0 // indirect
-	github.com/streadway/amqp v1.0.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-)
-
-replace (
-	github.com/latonaio/golang-logging-library-for-data-platform v1.0.2 => /home/ampamman/go/src/latona/golang-logging-library-for-data-platform
-	github.com/latonaio/rabbitmq-golang-client-for-data-platform v1.0.3 => /home/ampamman/go/src/latona/rabbitmq-golang-client-for-data-platform
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.18.1 // indirect
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
+	golang.org/x/text v0.3.6 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

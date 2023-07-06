@@ -7,14 +7,18 @@ import (
 )
 
 type Conf struct {
-	RMQ   *RMQ
-	REDIS *REDIS
+	RMQ     *RMQ
+	REDIS   *REDIS
+	SERVER  *SERVER
+	REQUEST *REQUEST
 }
 
 func NewConf() *Conf {
 	return &Conf{
-		RMQ:   newRMQ(),
-		REDIS: newREDIS(),
+		RMQ:     newRMQ(),
+		REDIS:   newREDIS(),
+		SERVER:  newSERVER(),
+		REQUEST: newREQUEST(),
 	}
 }
 
