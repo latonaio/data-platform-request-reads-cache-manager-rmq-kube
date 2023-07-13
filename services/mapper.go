@@ -1,14 +1,17 @@
 package services
 
 import (
-	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses"
+	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
+	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
+	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
+	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 )
 
-func DescriptionMapper(
-	productDescByBP *[]apiModuleRuntimesResponses.ProductDescByBP,
-) map[string]apiModuleRuntimesResponses.ProductDescByBP {
-	descriptionMapper := map[string]apiModuleRuntimesResponses.ProductDescByBP{}
+func ProductDescByBPMapper(
+	productDescByBP *[]apiModuleRuntimesResponsesProductMaster.ProductDescByBP,
+) map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP {
+	descriptionMapper := map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP{}
 
 	for _, v := range *productDescByBP {
 		descriptionMapper[v.Product] = v
@@ -17,10 +20,38 @@ func DescriptionMapper(
 	return descriptionMapper
 }
 
+func ProductDescriptionMapper(
+	productDescription *[]apiModuleRuntimesResponsesProductMaster.ProductDescription,
+) map[string]apiModuleRuntimesResponsesProductMaster.ProductDescription {
+	descriptionMapper := map[string]apiModuleRuntimesResponsesProductMaster.ProductDescription{}
+
+	for _, v := range *productDescription {
+		descriptionMapper[v.Product] = v
+	}
+
+	return descriptionMapper
+}
+
+func BusinessPartnerNameMapper(
+	businessPartners *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+) map[int]apiModuleRuntimesResponsesBusinessPartner.General {
+	businessPartnerMapper := map[int]apiModuleRuntimesResponsesBusinessPartner.General{}
+
+	for _, v := range *businessPartners.Message.General {
+		//businessPartnerMapper[v.BusinessPartner] = v.BusinessPartnerName
+		businessPartnerMapper[v.BusinessPartner] = apiModuleRuntimesResponsesBusinessPartner.General{
+			BusinessPartner:     v.BusinessPartner,
+			BusinessPartnerName: v.BusinessPartnerName,
+		}
+	}
+
+	return businessPartnerMapper
+}
+
 func PlantMapper(
-	plantGeneral *[]apiModuleRuntimesResponses.PlantGeneral,
-) map[string]apiModuleRuntimesResponses.PlantGeneral {
-	plantMapper := map[string]apiModuleRuntimesResponses.PlantGeneral{}
+	plantGeneral *[]apiModuleRuntimesResponsesPlant.PlantGeneral,
+) map[string]apiModuleRuntimesResponsesPlant.PlantGeneral {
+	plantMapper := map[string]apiModuleRuntimesResponsesPlant.PlantGeneral{}
 
 	for _, v := range *plantGeneral {
 		plantMapper[v.Plant] = v

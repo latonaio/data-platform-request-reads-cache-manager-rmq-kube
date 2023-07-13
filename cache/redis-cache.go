@@ -14,22 +14,32 @@ import (
 )
 
 type Cache struct {
-	rds *redis.Client
-	log *logger.Logger
+	rds       *redis.Client
+	log       *logger.Logger
+	keyPrefix *string
 }
 
-func NewCache(addr string, port interface{}, log *logger.Logger) *Cache {
+func NewCache(
+	addr string,
+	port interface{},
+	log *logger.Logger,
+	databaseNumber int,
+	keyPrefix *string,
+) *Cache {
 	redisAddr := fmt.Sprintf("%s:%v", addr, port)
 	opt := redis.Options{
 		Addr: redisAddr,
-		DB:   0,
+		DB:   databaseNumber,
 		// Password: "",
+		//KeyPrefix: "",
 	}
 
 	cli := redis.NewClient(&opt)
+
 	return &Cache{
-		rds: cli,
-		log: log,
+		rds:       cli,
+		log:       log,
+		keyPrefix: keyPrefix,
 	}
 }
 
@@ -52,7 +62,7 @@ func (c *Cache) CreateKey(
 func (c *Cache) ConfirmCashDataExisting(
 	redisKey string,
 ) ([]byte, error) {
-	data, err := c.GetRaw(redisKey)
+	data, err := c.GetRaw(c.fixedRedisKey(redisKey))
 	if err != nil {
 		return nil, xerrors.Errorf("cache data does not exist: %w", err)
 	}
@@ -75,7 +85,7 @@ func (c *Cache) SetCache(
 }
 
 func (c *Cache) Set(key string, value interface{}, expiration time.Duration) error {
-	res := c.rds.Set(key, value, expiration)
+	res := c.rds.Set(c.fixedRedisKey(key), value, expiration)
 	if err := res.Err(); err != nil {
 		return xerrors.Errorf("cache set error: %w", err)
 	}
@@ -84,7 +94,7 @@ func (c *Cache) Set(key string, value interface{}, expiration time.Duration) err
 }
 
 func (c *Cache) GetRaw(key string) ([]byte, error) {
-	res := c.rds.Get(key)
+	res := c.rds.Get(c.fixedRedisKey(key))
 	if err := res.Err(); err != nil {
 		return []byte{}, xerrors.Errorf("cache get error: %w", err)
 	}
@@ -96,7 +106,7 @@ func (c *Cache) GetRaw(key string) ([]byte, error) {
 }
 func (c *Cache) GetSlice(key string) ([]map[string]interface{}, error) {
 	d := []map[string]interface{}{}
-	b, err := c.GetRaw(key)
+	b, err := c.GetRaw(c.fixedRedisKey(key))
 	if err != nil {
 		return d, xerrors.Errorf("cache get raw error: %w", err)
 	}
@@ -108,7 +118,7 @@ func (c *Cache) GetSlice(key string) ([]map[string]interface{}, error) {
 }
 func (c *Cache) GetMap(key string) (map[string]interface{}, error) {
 	d := map[string]interface{}{}
-	b, err := c.GetRaw(key)
+	b, err := c.GetRaw(c.fixedRedisKey(key))
 	if err != nil {
 		return d, xerrors.Errorf("cache get raw error: %w", err)
 	}
@@ -126,4 +136,19 @@ func (c *Cache) GetAllKeys() ([]string, error) {
 	}
 
 	return keys, nil
+}
+
+func (c *Cache) fixedRedisKey(
+	redisKey string,
+) string {
+	fixedRedisKey := redisKey
+
+	if c.keyPrefix != nil {
+		fixedRedisKey = strings.Join([]string{
+			fmt.Sprintf("%s:", *c.keyPrefix),
+			redisKey,
+		}, "")
+	}
+
+	return fixedRedisKey
 }

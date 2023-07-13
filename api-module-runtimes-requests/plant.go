@@ -1,6 +1,14 @@
 package apiModuleRuntimesRequests
 
-import apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
+import (
+	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
+	"data-platform-request-reads-cache-manager-rmq-kube/services"
+	"encoding/json"
+	"io/ioutil"
+	"strings"
+
+	"github.com/astaxie/beego"
+)
 
 type PlantReq struct {
 	General  PlantGeneral  `json:"Plant"`
@@ -71,4 +79,37 @@ func CreatePlantRequestGenerals(
 	}
 
 	return req
+}
+
+func PlantReads(
+	requestPram *apiInputReader.Request,
+	plantGenerals PlantGenerals,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_PLANT_SRV"
+	aPIType := "reads"
+
+	request := CreatePlantRequestGenerals(
+		requestPram,
+		plantGenerals,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+	)
+
+	return responseBody
+
 }

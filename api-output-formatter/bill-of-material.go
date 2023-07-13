@@ -1,10 +1,11 @@
 package apiOutputFormatter
 
-type BillOfMaterialList struct {
-	BillOfMaterials []BillOfMaterial `json:"BillOfMaterials"`
+type BillOfMaterial struct {
+	BillOfMaterialHeader []BillOfMaterialHeader `json:"Header"`
+	BillOfMaterialItem   []BillOfMaterialItem   `json:"Item"`
 }
 
-type BillOfMaterial struct {
+type BillOfMaterialHeader struct {
 	Product                  string  `json:"Product"`
 	BillOfMaterial           int     `json:"BillOfMaterial"`
 	ProductDescription       *string `json:"ProductDescription"`
@@ -13,4 +14,16 @@ type BillOfMaterial struct {
 	ValidityStartDate        *string `json:"ValidityStartDate"`
 	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 	Images                   Images  `json:"Images"`
+}
+
+type BillOfMaterialItem struct {
+	ComponentProduct                           string   `json:"ComponentProduct"`
+	BillOfMaterialItem                         int      `json:"BillOfMaterialItem"`
+	BillOfMaterialItemText                     string   `json:"BillOfMaterialItemText"`
+	StockConfirmationPlant                     *string  `json:"StockConfirmationPlant"`
+	StockConfirmationPlantName                 *string  `json:"StockConfirmationPlantName"`
+	ComponentProductStandardQuantityInBaseUnit *float32 `json:"ComponentProductStandardQuantityInBaseUnit"`
+	ComponentProductBaseUnit                   *string  `json:"ComponentProductBaseUnit"`
+	ValidityStartDate                          *string  `json:"ValidityStartDate"`
+	IsMarkedForDeletion                        *bool    `json:"IsMarkedForDeletion"`
 }
