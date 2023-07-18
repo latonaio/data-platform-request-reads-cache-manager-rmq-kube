@@ -41,6 +41,12 @@ type Header struct {
 	ReferenceDocumentItem                  *int      `json:"ReferenceDocumentItem"`
 	OrderID                                *int      `json:"OrderID"`
 	OrderItem                              *int      `json:"OrderItem"`
+	ProductionOrder                        *int      `json:"ProductionOrder"`
+	ProductionOrderItem                    *int      `json:"ProductionOrderItem"`
+	Operations                        	   *int      `json:"Operations"`
+	OperationsItem                    	   *int      `json:"OperationsItem"`
+	BillOfMaterial                    	   *int      `json:"BillOfMaterial"`
+	BillOfMaterialItem                 	   *int      `json:"BillOfMaterialItem"`
 	ContractType                           *string   `json:"ContractType"`
 	OrderValidityStartDate                 *string   `json:"OrderValidityStartDate"`
 	OrderValidityEndDate                   *string   `json:"OrderValidityEndDate"`
@@ -140,6 +146,9 @@ type Item struct {
 	ProductionPlantBatchValidityStartTime         *string       `json:"ProductionPlantBatchValidityStartTime"`
 	ProductionPlantBatchValidityEndDate           *string       `json:"ProductionPlantBatchValidityEndDate"`
 	ProductionPlantBatchValidityEndTime           *string       `json:"ProductionPlantBatchValidityEndTime"`
+	InspectionPlan								  *int	   		`json:"InspectionPlan"`
+	InspectionPlant								  *string  		`json:"InspectionPlant"`
+	InspectionOrder								  *int	   		`json:"InspectionOrder"`
 	DeliveryDocumentItemText                      *string       `json:"DeliveryDocumentItemText"`
 	DeliveryDocumentItemTextByBuyer               *string       `json:"DeliveryDocumentItemTextByBuyer"`
 	DeliveryDocumentItemTextBySeller              *string       `json:"DeliveryDocumentItemTextBySeller"`
@@ -267,8 +276,11 @@ func CreateDeliveryDocumentRequestItems(
 			DeliveryDocument: deliveryDocumentItems.OrderID,
 			Item: []Item{
 				{
-					IsCancelled: 		 deliveryDocumentItems.IsCancelled,
-					IsMarkedForDeletion: deliveryDocumentItems.IsMarkedForDeletion,
+					ItemCompleteDeliveryIsDefined:		deliveryDocumentItems.ItemCompleteDeliveryIsDefined,
+					ItemDeliveryBlockStatus:			deliveryDocumentItems.ItemDeliveryBlockStatus,
+					ItemDeliveryStatus:					deliveryDocumentItems.ItemDeliveryStatus,
+					IsCancelled: 		 				deliveryDocumentItems.IsCancelled,
+					IsMarkedForDeletion: 				deliveryDocumentItems.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -322,9 +334,11 @@ func DeliveryDocumentReads(
 		request = CreateDeliveryDocumentRequestItems(
 			requestPram,
 			&apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument:     input.DeliveryDocumentItems.DeliveryDocument,
-				IsCancelled:		  input.DeliveryDocumentItems.IsCancelled,
-				IsMarkedForDeletion:  input.DeliveryDocumentItems.IsMarkedForDeletion,
+				DeliveryDocument:					input.DeliveryDocumentItems.DeliveryDocument,
+				ItemCompleteDeliveryIsDefined:		input.DeliveryDocumentItems.ItemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:			input.DeliveryDocumentItems.ItemDeliveryBlockStatus,
+				IsCancelled:						input.DeliveryDocumentItems.IsCancelled,
+				IsMarkedForDeletion:				input.DeliveryDocumentItems.IsMarkedForDeletion,
 			},
 		)
 	}

@@ -2,10 +2,9 @@ package controllersProductMasterList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
+	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponsesProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -33,7 +32,7 @@ func (controller *ProductMasterListController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "product-master"
 	redisKeyCategory2 := "list"
-	userType := controller.GetString("userType")
+	userType := controller.GetString(":userType")
 
 	productMasterGeneral := apiInputReader.ProductMaster{
 		ProductMasterGeneral: &apiInputReader.ProductMasterGeneral{},
@@ -149,9 +148,9 @@ func (
 	controller *ProductMasterListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)

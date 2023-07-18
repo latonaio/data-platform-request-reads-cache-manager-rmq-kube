@@ -49,9 +49,7 @@ type Header struct {
 	HeaderCompleteDeliveryIsDefined  *bool    `json:"HeaderCompleteDeliveryIsDefined"`
 	Incoterms                        *string  `json:"Incoterms"`
 	PaymentTerms                     *string  `json:"PaymentTerms"`
-	PaymentTermsName                 *string  `json:"PaymentTermsName"`
 	PaymentMethod                    *string  `json:"PaymentMethod"`
-	PaymentMethodName                *string  `json:"PaymentMethodName"`
 	ReferenceDocument                *int     `json:"ReferenceDocument"`
 	ReferenceDocumentItem            *int     `json:"ReferenceDocumentItem"`
 	AccountAssignmentGroup           *string  `json:"AccountAssignmentGroup"`
@@ -68,7 +66,7 @@ type Header struct {
 	LastChangeTime                   *string  `json:"LastChangeTime"`
 	IsCancelled                      *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion              *bool    `json:"IsMarkedForDeletion"`
-	Item                        	 []Item      `json:"Item"`
+	Item                             []Item   `json:"Item"`
 }
 
 type Item struct {
@@ -184,9 +182,9 @@ type Item struct {
 	TaxRate                                       *float32 `json:"TaxRate"`
 	CountryOfOrigin                               *string  `json:"CountryOfOrigin"`
 	CountryOfOriginLanguage                       *string  `json:"CountryOfOriginLanguage"`
-	Equipment				                      *int	   `json:"Equipment"`
-	PlannedFreight				                  *int	   `json:"PlannedFreight"`
-	FreightOrder				                  *int	   `json:"FreightOrder"`
+	Equipment                                     *int     `json:"Equipment"`
+	PlannedFreight                                *int     `json:"PlannedFreight"`
+	FreightOrder                                  *int     `json:"FreightOrder"`
 	ItemBlockStatus                               *bool    `json:"ItemBlockStatus"`
 	ItemDeliveryBlockStatus                       *bool    `json:"ItemDeliveryBlockStatus"`
 	ItemBillingBlockStatus                        *bool    `json:"ItemBillingBlockStatus"`
@@ -204,12 +202,12 @@ func CreateOrdersRequestHeaderByBuyer(
 ) OrdersReq {
 	req := OrdersReq{
 		Header: Header{
-			Buyer:               				ordersHeader.Buyer,
-			HeaderCompleteDeliveryIsDefined:	ordersHeader.HeaderCompleteDeliveryIsDefined,
-			HeaderDeliveryBlockStatus:			ordersHeader.HeaderDeliveryBlockStatus,
-			HeaderDeliveryStatus:				ordersHeader.HeaderDeliveryStatus,
-			IsCancelled:						ordersHeader.IsCancelled,
-			IsMarkedForDeletion: 				ordersHeader.IsMarkedForDeletion,
+			Buyer:                           ordersHeader.Buyer,
+			HeaderCompleteDeliveryIsDefined: ordersHeader.HeaderCompleteDeliveryIsDefined,
+			HeaderDeliveryBlockStatus:       ordersHeader.HeaderDeliveryBlockStatus,
+			HeaderDeliveryStatus:            ordersHeader.HeaderDeliveryStatus,
+			IsCancelled:                     ordersHeader.IsCancelled,
+			IsMarkedForDeletion:             ordersHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"HeadersByBuyer",
@@ -224,12 +222,12 @@ func CreateOrdersRequestHeaderBySeller(
 ) OrdersReq {
 	req := OrdersReq{
 		Header: Header{
-			Seller:              				ordersHeader.Seller,
-			HeaderCompleteDeliveryIsDefined:	ordersHeader.HeaderCompleteDeliveryIsDefined,
-			HeaderDeliveryBlockStatus:			ordersHeader.HeaderDeliveryBlockStatus,
-			HeaderDeliveryStatus:				ordersHeader.HeaderDeliveryStatus,
-			IsCancelled:						ordersHeader.IsCancelled,
-			IsMarkedForDeletion: 				ordersHeader.IsMarkedForDeletion,
+			Seller:                          ordersHeader.Seller,
+			HeaderCompleteDeliveryIsDefined: ordersHeader.HeaderCompleteDeliveryIsDefined,
+			HeaderDeliveryBlockStatus:       ordersHeader.HeaderDeliveryBlockStatus,
+			HeaderDeliveryStatus:            ordersHeader.HeaderDeliveryStatus,
+			IsCancelled:                     ordersHeader.IsCancelled,
+			IsMarkedForDeletion:             ordersHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"HeadersBySeller",
@@ -244,14 +242,14 @@ func CreateOrdersRequestItems(
 ) OrdersReq {
 	req := OrdersReq{
 		Header: Header{
-			Orders: ordersItems.OrderID,
+			OrderID: ordersItems.OrderID,
 			Item: []Item{
 				{
-					ItemCompleteDeliveryIsDefined:		ordersItems.ItemCompleteDeliveryIsDefined,
-					ItemDeliveryBlockStatus:			ordersItems.ItemDeliveryBlockStatus,
-					ItemDeliveryStatus:					ordersItems.ItemDeliveryStatus,
-					IsCancelled: 		 				ordersItems.IsCancelled,
-					IsMarkedForDeletion: 				ordersItems.IsMarkedForDeletion,
+					ItemCompleteDeliveryIsDefined: ordersItems.ItemCompleteDeliveryIsDefined,
+					ItemDeliveryBlockStatus:       ordersItems.ItemDeliveryBlockStatus,
+					ItemDeliveryStatus:            ordersItems.ItemDeliveryStatus,
+					IsCancelled:                   ordersItems.IsCancelled,
+					IsMarkedForDeletion:           ordersItems.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -277,12 +275,12 @@ func OrdersReads(
 		request = CreateOrdersRequestHeaderByBuyer(
 			requestPram,
 			&apiInputReader.OrdersHeader{
-				Buyer:		 		 				input.OrdersHeader.Buyer,
-				HeaderCompleteDeliveryIsDefined:	input.OrdersHeader.HeaderCompleteDeliveryIsDefined,
-				HeaderDeliveryBlockStatus:			input.OrdersHeader.HeaderDeliveryBlockStatus,
-				HeaderDeliveryStatus:				input.OrdersHeader.HeaderDeliveryStatus,
-				IsCancelled: 		 				input.OrdersHeader.IsCancelled,
-				IsMarkedForDeletion: 				input.OrdersHeader.IsMarkedForDeletion,
+				Buyer:                           input.OrdersHeader.Buyer,
+				HeaderCompleteDeliveryIsDefined: input.OrdersHeader.HeaderCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       input.OrdersHeader.HeaderDeliveryBlockStatus,
+				HeaderDeliveryStatus:            input.OrdersHeader.HeaderDeliveryStatus,
+				IsCancelled:                     input.OrdersHeader.IsCancelled,
+				IsMarkedForDeletion:             input.OrdersHeader.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -291,12 +289,12 @@ func OrdersReads(
 		request = CreateOrdersRequestHeaderBySeller(
 			requestPram,
 			&apiInputReader.OrdersHeader{
-				Seller:								input.OrdersHeader.Seller,
-				HeaderCompleteDeliveryIsDefined:	input.OrdersHeader.HeaderCompleteDeliveryIsDefined,
-				HeaderDeliveryBlockStatus:			input.OrdersHeader.HeaderDeliveryBlockStatus,
-				HeaderDeliveryStatus:				input.OrdersHeader.HeaderDeliveryStatus,
-				IsCancelled:						input.OrdersHeader.IsCancelled,
-				IsMarkedForDeletion:				input.OrdersHeader.IsMarkedForDeletion,
+				Seller:                          input.OrdersHeader.Seller,
+				HeaderCompleteDeliveryIsDefined: input.OrdersHeader.HeaderCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       input.OrdersHeader.HeaderDeliveryBlockStatus,
+				HeaderDeliveryStatus:            input.OrdersHeader.HeaderDeliveryStatus,
+				IsCancelled:                     input.OrdersHeader.IsCancelled,
+				IsMarkedForDeletion:             input.OrdersHeader.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -305,12 +303,12 @@ func OrdersReads(
 		request = CreateOrdersRequestItems(
 			requestPram,
 			&apiInputReader.OrdersItems{
-				OrderID:              				input.OrdersItems.OrderID,
-				ItemCompleteDeliveryIsDefined:		input.OrdersItems.ItemCompleteDeliveryIsDefined,
-				ItemDeliveryBlockStatus:			input.OrdersItems.ItemDeliveryBlockStatus,
-				ItemDeliveryStatus:					input.OrdersItems.ItemDeliveryStatus,
-				IsCancelled:		  				input.OrdersItems.IsCancelled,
-				IsMarkedForDeletion:  				input.OrdersItems.IsMarkedForDeletion,
+				OrderID:                       input.OrdersItems.OrderID,
+				ItemCompleteDeliveryIsDefined: input.OrdersItems.ItemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       input.OrdersItems.ItemDeliveryBlockStatus,
+				ItemDeliveryStatus:            input.OrdersItems.ItemDeliveryStatus,
+				IsCancelled:                   input.OrdersItems.IsCancelled,
+				IsMarkedForDeletion:           input.OrdersItems.IsMarkedForDeletion,
 			},
 		)
 	}

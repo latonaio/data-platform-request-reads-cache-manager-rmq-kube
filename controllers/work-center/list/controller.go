@@ -2,18 +2,16 @@ package controllersWorkCenterList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
+	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesRequestsWorkCenter "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/work-center"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/produ\ct-master"
-	apiModuleRuntimesResponsesWorkCenter "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/work-center"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponsesProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
+	apiModuleRuntimesResponsesWorkCenter "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/work-center"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
 	"encoding/json"
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 	"io/ioutil"
@@ -40,9 +38,9 @@ func (controller *WorkCenterListController) Get() {
 	redisKeyCategory2 := "list"
 	//userType := BusinessPartner
 	workCenter, _ := controller.GetInt("workCenter")
-	userType := controller.GetString("userType")
+	userType := controller.GetString(":userType")
 
-	workCenter := apiInputReader.WorkCenter{
+	workCenterGeneral := apiInputReader.WorkCenter{
 		WorkCenterGeneral: &apiInputReader.WorkCenterGeneral{
 			WorkCenter:          workCenter,
 			IsMarkedForDeletion: &isMarkedForDeletion,
@@ -119,9 +117,9 @@ func (
 	controller *WorkCenterListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)
@@ -141,48 +139,24 @@ func (
 
 func (
 	controller *WorkCenterListController,
-) request(
-	input apiInputReader.WorkCenter,
-) {
-	defer services.Recover(controller.CustomLogger)
-
-	bRes := controller.createWorkCenterRequestHeaderByBusinessPartner(
-		controller.UserInfo,
-		input,
-	)
-
-	plRes := controller.createPlantRequestGenerals(
-		controller.UserInfo,
-		bRes,
-	)
-
-	controller.fin(
-		bRes,
-		plRes,
-	)
-}
-
-func (
-	controller *WorkCenterListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
 	workCenterRes *apiModuleRuntimesResponsesWorkCenter.WorkCenterRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make(apiModuleRuntimesRequests.PlantGenerals, len(*workCenterRes.Message.Header))
-	for i, v := range *workCenterRes.Message.Header {
-		generals[i].Plant = &v.Plant
-		generals[i].Language = requestPram.Language
+	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	for i, v := range *workCenterRes.Message.General {
+		input[i].Plant = v.Plant
 	}
 
 	aPIServiceName := "DPFM_API_PLANT_SRV"
 	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
 
-	request := apiModuleRuntimesRequests.
-		CreatePlantRequestGenerals(
-			requestPram,
-			generals,
-		)
+	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
@@ -215,28 +189,51 @@ func (
 
 func (
 	controller *WorkCenterListController,
+) request(
+	input apiInputReader.WorkCenter,
+) {
+	defer services.Recover(controller.CustomLogger)
+
+	generalRes := controller.createWorkCenterRequestHeaderByBusinessPartner(
+		controller.UserInfo,
+		input,
+	)
+
+	plantRes := controller.createPlantRequestGenerals(
+		controller.UserInfo,
+		generalRes,
+	)
+
+	controller.fin(
+		generalRes,
+		plantRes,
+	)
+}
+
+func (
+	controller *WorkCenterListController,
 ) fin(
-	bRes *apiModuleRuntimesResponsesWorkCenter.WorkCenterRes,
-	plRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	generalRes *apiModuleRuntimesResponsesWorkCenter.WorkCenterRes,
+	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 ) {
 
 	plantMapper := services.PlantMapper(
-		plRes.Message.Generals,
+		plantRes.Message.Generals,
 	)
 
 	data := apiOutputFormatter.WorkCenter{}
 
-	for _, v := range *bRes.Message.Header {
+	for _, v := range *generalRes.Message.General {
 
 		data.WorkCenterGeneral = append(data.WorkCenterGeneral,
 			apiOutputFormatter.WorkCenterGeneral{
-				WorkCenter:               			&v.WorkCenter,
-				WorkCenterName:						v.WorkCenterName,
-				PlantName:				  			plantMapper[v.Plant].PlantName,
-				ComponentIsMarkedForBackflush:		v.ComponentIsMarkedForBackflush,
-				CapacityInternalID:      			v.CapacityInternalID,
-				CapacityCategoryCode:      			v.CapacityCategoryCode,
-				IsMarkedForDeletion:      			v.IsMarkedForDeletion,
+				WorkCenter:                    v.WorkCenter,
+				WorkCenterName:                v.WorkCenterName,
+				PlantName:                     plantMapper[v.Plant].PlantName,
+				ComponentIsMarkedForBackflush: v.ComponentIsMarkedForBackflush,
+				CapacityID:                    v.CapacityID,
+				CapacityCategory:              v.CapacityCategory,
+				IsMarkedForDeletion:           v.IsMarkedForDeletion,
 			},
 		)
 	}

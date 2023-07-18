@@ -5,26 +5,26 @@ type WorkCenterRes struct {
 }
 
 type WorkCenter struct {
-	General *[]Header `json:"General,omitempty"`
+	General *[]General `json:"Generals,omitempty"`
 }
 
 type General struct {
-	WorkCenter                   	int     `json:"WorkCenter"`
-	WorkCenterType               	string  `json:"WorkCenterType"`
-	WorkCenterName               	string  `json:"WorkCenterName"`
-	BusinessPartner              	int     `json:"BusinessPartner"`
-	Plant                        	string  `json:"Plant"`
-	WorkCenterCategory           	*string `json:"WorkCenterCategory"`
-	WorkCenterResponsible        	*string `json:"WorkCenterResponsible"`
-	SupplyArea                   	*string `json:"SupplyArea"`
-	WorkCenterUsage              	*string `json:"WorkCenterUsage"`
-	ComponentIsMarkedForBackflush	*bool   `json:"ComponentIsMarkedForBackflush"`
-	WorkCenterLocation           	*string `json:"WorkCenterLocation"`
-	CapacityID           			*int 	`json:"CapacityID"`
-	CapacityCategory         		*string `json:"CapacityCategory"`
-	ValidityStartDate            	string  `json:"ValidityStartDate"`
-	ValidityEndDate              	string  `json:"ValidityEndDate"`
-	CreationDate            		string  `json:"CreationDate"`
-	LastChangeDate              	string  `json:"LastChangeDate"`
-	IsMarkedForDeletion          	*bool   `json:"IsMarkedForDeletion"`
+	WorkCenter                    int     `json:"WorkCenter"`
+	WorkCenterType                string  `json:"WorkCenterType"`
+	WorkCenterName                string  `json:"WorkCenterName"`
+	BusinessPartner               int     `json:"BusinessPartner"`
+	Plant                         string  `json:"Plant"`
+	WorkCenterCategory            *string `json:"WorkCenterCategory"`
+	WorkCenterResponsible         *string `json:"WorkCenterResponsible"`
+	SupplyArea                    *string `json:"SupplyArea"`
+	WorkCenterUsage               *string `json:"WorkCenterUsage"`
+	ComponentIsMarkedForBackflush *bool   `json:"ComponentIsMarkedForBackflush"`
+	WorkCenterLocation            *string `json:"WorkCenterLocation"`
+	CapacityID                    *int    `json:"CapacityID"`
+	CapacityCategory              *string `json:"CapacityCategory"`
+	ValidityStartDate             string  `json:"ValidityStartDate"`
+	ValidityEndDate               string  `json:"ValidityEndDate"`
+	CreationDate                  string  `json:"CreationDate"`
+	LastChangeDate                string  `json:"LastChangeDate"`
+	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
 }

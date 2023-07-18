@@ -1,8 +1,8 @@
 package apiOutputFormatter
 
 type BusinessPartner struct {
-	BusinessPartnerGeneral		 []BusinessPartnerGeneral 		`json:"General"`
-	BusinessPartnerDetailGeneral []BusinessPartnerDetailGeneral `json:"General"`
+	BusinessPartnerGeneral       []BusinessPartnerGeneral       `json:"Generals"`
+	BusinessPartnerDetailGeneral []BusinessPartnerDetailGeneral `json:"DetailGeneral"`
 }
 
 type BusinessPartnerGeneral struct {
@@ -12,15 +12,15 @@ type BusinessPartnerGeneral struct {
 }
 
 type BusinessPartnerDetailGeneral struct {
-	BusinessPartnerFullName		*string	`json:"BusinessPartnerFullName"`
-	Industry					*string	`json:"Industry"`
-	LegalEntityRegistration		*string	`json:"LegalEntityRegistration"`
-	Country						string	`json:"Country"`
-	Language					*string	`json:"Language"`
-	Currency					*string	`json:"Currency"`
-	AddressID					*int	`json:"AddressID"`
-	BusinessPartnerIsBlocked	*bool	`json:"BusinessPartnerIsBlocked"`
-	CreationDate				string	`json:"CreationDate"`
-	LastChangeDate				string	`json:"LastChangeDate"`
-	IsMarkedForDeletion			*bool	`json:"IsMarkedForDeletion"`
+	BusinessPartnerFullName  *string `json:"BusinessPartnerFullName"`
+	Industry                 *string `json:"Industry"`
+	LegalEntityRegistration  *string `json:"LegalEntityRegistration"`
+	Country                  string  `json:"Country"`
+	Language                 *string `json:"Language"`
+	Currency                 *string `json:"Currency"`
+	AddressID                *int    `json:"AddressID"`
+	BusinessPartnerIsBlocked *bool   `json:"BusinessPartnerIsBlocked"`
+	CreationDate             string  `json:"CreationDate"`
+	LastChangeDate           string  `json:"LastChangeDate"`
+	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 }

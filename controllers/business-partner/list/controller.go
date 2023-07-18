@@ -114,25 +114,25 @@ func (
 ) {
 	defer services.Recover(controller.CustomLogger)
 
-	gsRes := controller.createBusinessPartnerRequestGenerals(
+	generalRes := controller.createBusinessPartnerRequestGenerals(
 		controller.UserInfo,
 		input,
 	)
 
 	controller.fin(
-		gsRes,
+		generalRes,
 	)
 }
 
 func (
 	controller *BusinessPartnerListController,
 ) fin(
-	bpRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	generalRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
 
 	data := apiOutputFormatter.BusinessPartner{}
 
-	for _, v := range *bpRes.Message.General {
+	for _, v := range *generalRes.Message.General {
 
 		data.BusinessPartnerGeneral = append(data.BusinessPartnerGeneral,
 			apiOutputFormatter.BusinessPartnerGeneral{

@@ -2,13 +2,13 @@ package controllersOperationsList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsOperations "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/operations"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
+	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
+	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesOperations "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/operations"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponsesProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -40,7 +40,7 @@ func (controller *OperationsListController) Get() {
 	redisKeyCategory2 := "list"
 	//userType := OwnerProductionPlantBusinessPartner
 	operations, _ := controller.GetInt("operations")
-	userType := controller.GetString("userType")
+	userType := controller.GetString(":userType")
 
 	operationsHeader := apiInputReader.Operations{
 		OperationsHeader: &apiInputReader.OperationsHeader{
@@ -165,9 +165,9 @@ func (
 	controller *OperationsListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)
@@ -187,59 +187,24 @@ func (
 
 func (
 	controller *OperationsListController,
-) request(
-	input apiInputReader.Operations,
-) {
-	defer services.Recover(controller.CustomLogger)
-
-	bRes := controller.createOperationsRequestHeaderByOwnerProductionPlantBP(
-		controller.UserInfo,
-		input,
-	)
-
-	pRes := controller.createProductMasterRequestProductDescByBP(
-		controller.UserInfo,
-		bRes,
-	)
-
-	pdRes := controller.createProductMasterDocRequest(
-		controller.UserInfo,
-	)
-
-	plRes := controller.createPlantRequestGenerals(
-		controller.UserInfo,
-		bRes,
-	)
-
-	controller.fin(
-		bRes,
-		pRes,
-		pdRes,
-		plRes,
-	)
-}
-
-func (
-	controller *OperationsListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	operationsRes *apiModuleRuntimesResponsesOperations.OperationsRes,
+	plantRes *apiModuleRuntimesResponsesOperations.OperationsRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make(apiModuleRuntimesRequests.PlantGenerals, len(*operationsRes.Message.Header))
-	for i, v := range *operationsRes.Message.Header {
-		generals[i].Plant = &v.OwnerProductionPlant
-		generals[i].Language = requestPram.Language
+	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	for i, v := range *plantRes.Message.Header {
+		input[i].Plant = v.OwnerProductionPlant
 	}
 
 	aPIServiceName := "DPFM_API_PLANT_SRV"
 	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
 
-	request := apiModuleRuntimesRequests.
-		CreatePlantRequestGenerals(
-			requestPram,
-			generals,
-		)
+	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
@@ -272,37 +237,73 @@ func (
 
 func (
 	controller *OperationsListController,
-) fin(
-	bRes *apiModuleRuntimesResponsesOperations.OperationsRes,
-	pRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
-	pdRes *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes,
-	plRes *apiModuleRuntimesResponsesPlant.PlantRes,
+) request(
+	input apiInputReader.Operations,
 ) {
-	descriptionMapper := services.ProductDescByBPMapper(
-		pRes.Message.ProductDescByBP,
+	defer services.Recover(controller.CustomLogger)
+
+	headerRes := controller.createOperationsRequestHeaderByOwnerProductionPlantBP(
+		controller.UserInfo,
+		input,
 	)
 
+	plantRes := controller.createPlantRequestGenerals(
+		controller.UserInfo,
+		headerRes,
+	)
+
+	productDescByBPRes := controller.createProductMasterRequestProductDescByBP(
+		controller.UserInfo,
+		headerRes,
+	)
+
+	productDocRes := controller.createProductMasterDocRequest(
+		controller.UserInfo,
+	)
+
+	controller.fin(
+		headerRes,
+		plantRes,
+		productDescByBPRes,
+		productDocRes,
+	)
+}
+
+func (
+	controller *OperationsListController,
+) fin(
+	headerRes *apiModuleRuntimesResponsesOperations.OperationsRes,
+	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
+	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
+) {
+
 	plantMapper := services.PlantMapper(
-		plRes.Message.Generals,
+		plantRes.Message.Generals,
+	)
+
+	productDescByBPMapper := services.ProductDescByBPMapper(
+		productDescByBPRes.Message.ProductDescByBP,
 	)
 
 	data := apiOutputFormatter.Operations{}
 
-	for _, v := range *bRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 		img := services.CreateProductImage(
-			pdRes,
+			productDocRes,
 			v.OwnerProductionPlantBusinessPartner,
 			v.Product,
 		)
 
-		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
+		productDescription := fmt.Sprintf("%s", productDescByBPMapper[v.Product].ProductDescription)
+		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
 
 		data.OperationsHeader = append(data.OperationsHeader,
 			apiOutputFormatter.OperationsHeader{
 				Product:                  &v.Product,
 				Operations:               v.Operations,
 				ProductDescription:       &productDescription,
-				OwnerProductionPlantName: plantMapper[v.OwnerProductionPlant].PlantName,
+				OwnerProductionPlantName: &plantName,
 				ValidityStartDate:        v.ValidityStartDate,
 				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{

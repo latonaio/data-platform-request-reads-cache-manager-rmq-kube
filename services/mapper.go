@@ -1,23 +1,23 @@
 package services
 
 import (
+	apiModuleRuntimesResponsesAddress "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/address"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 )
 
-func ProductDescByBPMapper(
-	productDescByBP *[]apiModuleRuntimesResponsesProductMaster.ProductDescByBP,
-) map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP {
-	descriptionMapper := map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP{}
+func AddressMapper(
+	address *[]apiModuleRuntimesResponsesAddress.Address,
+) map[string]apiModuleRuntimesResponsesAddress.Address {
+	addressMapper := map[string]apiModuleRuntimesResponsesAddress.Address{}
 
-	for _, v := range *productDescByBP {
-		descriptionMapper[v.Product] = v
+	for _, v := range *address {
+		addressMapper[v.Address] = v
 	}
 
-	return descriptionMapper
+	return addressMapper
 }
 
 func ProductDescriptionMapper(
@@ -30,6 +30,18 @@ func ProductDescriptionMapper(
 	}
 
 	return descriptionMapper
+}
+
+func ProductDescByBPMapper(
+	productDescByBP *[]apiModuleRuntimesResponsesProductMaster.ProductDescByBP,
+) map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP {
+	productDescByBPMapper := map[string]apiModuleRuntimesResponsesProductMaster.ProductDescByBP{}
+
+	for _, v := range *productDescByBP {
+		productDescByBPMapper[v.Product] = v
+	}
+
+	return productDescByBPMapper
 }
 
 func BusinessPartnerNameMapper(
@@ -49,19 +61,22 @@ func BusinessPartnerNameMapper(
 }
 
 func PlantMapper(
-	plantGeneral *[]apiModuleRuntimesResponsesPlant.PlantGeneral,
-) map[string]apiModuleRuntimesResponsesPlant.PlantGeneral {
-	plantMapper := map[string]apiModuleRuntimesResponsesPlant.PlantGeneral{}
+	plantGeneral *[]apiModuleRuntimesResponsesPlant.General,
+) map[string]apiModuleRuntimesResponsesPlant.General {
+	plantMapper := map[string]apiModuleRuntimesResponsesPlant.General{}
 
 	for _, v := range *plantGeneral {
-		plantMapper[v.Plant] = v
+		plantMapper[v.Plant] = apiModuleRuntimesResponsesPlant.General{
+			Plant:     v.Plant,
+			PlantName: v.PlantName,
+		}
 	}
 
 	return plantMapper
 }
 
 func CreateProductImage(
-	pdRes *apiModuleRuntimesResponses.ProductMasterDocRes,
+	pdRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 	businessPartner int,
 	product string,
 ) *apiOutputFormatter.ProductImage {

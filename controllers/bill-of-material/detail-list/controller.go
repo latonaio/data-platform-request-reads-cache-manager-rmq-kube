@@ -2,13 +2,13 @@ package controllersBillOfMaterialDetailList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
-	"data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
+	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
+	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
+	apiModuleRuntimesResponsesBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponsesProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -36,7 +36,7 @@ func (controller *BillOfMaterialDetailListController) Get() {
 	redisKeyCategory1 := "bill-of-material"
 	redisKeyCategory2 := "detail-list"
 	redisKeyCategory3 := billOfMaterial
-	userType := controller.GetString("userType")
+	userType := controller.GetString(":userType")
 
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 
@@ -148,9 +148,9 @@ func (
 	controller *BillOfMaterialDetailListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)
@@ -170,65 +170,24 @@ func (
 
 func (
 	controller *BillOfMaterialDetailListController,
-) request(
-	input apiInputReader.BillOfMaterial,
-) {
-	defer services.Recover(controller.CustomLogger)
-
-	bHeaderRes := controller.createBillOfMaterialRequestHeader(
-		controller.UserInfo,
-		input,
-	)
-
-	bRes := controller.createBillOfMaterialRequestItems(
-		controller.UserInfo,
-		input,
-	)
-
-	plRes := controller.createPlantRequestGenerals(
-		controller.UserInfo,
-		bRes,
-	)
-
-	pRes := controller.createProductMasterRequestProductDescByBP(
-		controller.UserInfo,
-		bHeaderRes,
-	)
-
-	pdRes := controller.createProductMasterDocRequest(
-		controller.UserInfo,
-	)
-
-	controller.fin(
-		bHeaderRes,
-		bRes,
-		plRes,
-		pRes,
-		pdRes,
-	)
-}
-
-func (
-	controller *BillOfMaterialDetailListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	bRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	plantRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make(apiModuleRuntimesRequests.PlantGenerals, len(*bRes.Message.Item))
-	for i, v := range *bRes.Message.Item {
-		generals[i].Plant = &v.ProductionPlant
-		generals[i].Language = requestPram.Language
+	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	for i, v := range *plantRes.Message.Item {
+		input[i].Plant = v.ProductionPlant
 	}
 
 	aPIServiceName := "DPFM_API_PLANT_SRV"
 	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
 
-	request := apiModuleRuntimesRequests.
-		CreatePlantRequestGenerals(
-			requestPram,
-			generals,
-		)
+	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
@@ -308,31 +267,73 @@ func (
 
 func (
 	controller *BillOfMaterialDetailListController,
-) fin(
-	bHeaderRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
-	bRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
-	plRes *apiModuleRuntimesResponsesPlant.PlantRes,
-	pRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
-	pdRes *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes,
+) request(
+	input apiInputReader.BillOfMaterial,
 ) {
-	descriptionMapper := services.ProductDescByBPMapper(
-		pRes.Message.ProductDescByBP,
+	defer services.Recover(controller.CustomLogger)
+
+	headerRes := controller.createBillOfMaterialRequestHeader(
+		controller.UserInfo,
+		input,
 	)
 
+	itemRes := controller.createBillOfMaterialRequestItems(
+		controller.UserInfo,
+		input,
+	)
+
+	plantRes := controller.createPlantRequestGenerals(
+		controller.UserInfo,
+		itemRes,
+	)
+
+	productDescByBPRes := controller.createProductMasterRequestProductDescByBP(
+		controller.UserInfo,
+		headerRes,
+	)
+
+	productDocRes := controller.createProductMasterDocRequest(
+		controller.UserInfo,
+	)
+
+	controller.fin(
+		headerRes,
+		itemRes,
+		plantRes,
+		productDescByBPRes,
+		productDocRes,
+	)
+}
+
+func (
+	controller *BillOfMaterialDetailListController,
+) fin(
+	headerRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	itemRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
+	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
+) {
+
 	plantMapper := services.PlantMapper(
-		plRes.Message.Generals,
+		plantRes.Message.Generals,
+	)
+
+	descriptionMapper := services.ProductDescByBPMapper(
+		productDescByBPRes.Message.ProductDescByBP,
 	)
 
 	data := apiOutputFormatter.BillOfMaterial{}
 
-	for _, v := range *bHeaderRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 		img := services.CreateProductImage(
-			pdRes,
+			productDocRes,
 			v.OwnerProductionPlantBusinessPartner,
 			v.Product,
 		)
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
+		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
 
 		data.BillOfMaterialHeader = append(data.BillOfMaterialHeader,
 			apiOutputFormatter.BillOfMaterialHeader{
@@ -340,7 +341,7 @@ func (
 				BillOfMaterial:           v.BillOfMaterial,
 				ProductDescription:       &productDescription,
 				OwnerProductionPlant:     v.OwnerProductionPlant,
-				OwnerProductionPlantName: plantMapper[v.OwnerProductionPlant].PlantName,
+				OwnerProductionPlantName: &plantName,
 				ValidityStartDate:        v.ValidityStartDate,
 				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{
@@ -350,14 +351,16 @@ func (
 		)
 	}
 
-	for _, v := range *bRes.Message.Item {
+	for _, v := range *headerRes.Message.Item {
+		plantName := fmt.Sprintf("%s", plantMapper[v.StockConfirmationPlant].PlantName)
+
 		data.BillOfMaterialItem = append(data.BillOfMaterialItem,
 			apiOutputFormatter.BillOfMaterialItem{
 				ComponentProduct:                           v.ComponentProduct,
 				BillOfMaterialItem:                         v.BillOfMaterialItem,
 				BillOfMaterialItemText:                     *v.BillOfMaterialItemText,
 				StockConfirmationPlant:                     &v.StockConfirmationPlant,
-				StockConfirmationPlantName:                 plantMapper[v.StockConfirmationPlant].PlantName,
+				StockConfirmationPlantName:                 &plantName,
 				ComponentProductStandardQuantityInBaseUnit: &v.ComponentProductStandardQuantityInBaseUnit,
 				ComponentProductBaseUnit:                   &v.ComponentProductBaseUnit,
 				ValidityStartDate:                          v.ValidityStartDate,

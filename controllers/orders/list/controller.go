@@ -30,20 +30,29 @@ const (
 func (controller *OrdersListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+	isCancelled, _ := controller.GetBool("isCancelled")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "orders"
 	redisKeyCategory2 := "list"
-	userType := controller.GetString("userType") // buyer or seller
-	buyerValue, _ := controller.GetInt("buyer")
-	sellerValue, _ := controller.GetInt("seller")
+	userType := controller.GetString(":userType") // buyer or seller
 
 	ordersHeader := apiInputReader.Orders{}
+
+	headerCompleteDeliveryIsDefined := false
+	headerDeliveryBlockStatus := false
+	headerDeliveryStatus := "CL"
+	isCancelled = false
+	isMarkedForDeletion = false
 
 	if userType == buyer {
 		ordersHeader = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
-				Buyer:               &buyerValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				Buyer:                           controller.UserInfo.BusinessPartner,
+				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            &headerDeliveryStatus,
+				IsCancelled:                     &isCancelled,
+				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 		}
 	}
@@ -51,8 +60,12 @@ func (controller *OrdersListController) Get() {
 	if userType == seller {
 		ordersHeader = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
-				Seller:              &sellerValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				Seller:                          controller.UserInfo.BusinessPartner,
+				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            &headerDeliveryStatus,
+				IsCancelled:                     &isCancelled,
+				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 		}
 	}
@@ -152,59 +165,26 @@ func (
 
 func (
 	controller *OrdersListController,
-) createBusinessPartnerRequestByBuyer(
+) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
-	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
+	businessPartnerRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
 
-	for _, v := range *ordersRes.Message.Header {
-		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+	for _, v := range *businessPartnerRes.Message.Header {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.Buyer,
 		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
-		requestPram,
-		generals,
-		&controller.Controller,
-		"GeneralsByBusinessPartners",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("BusinessPartnerReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *OrdersListController,
-) createBusinessPartnerRequestBySeller(
-	requestPram *apiInputReader.Request,
-	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
-
-	for _, v := range *ordersRes.Message.Header {
-		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.Seller,
 		})
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
 		requestPram,
-		generals,
+		input,
 		&controller.Controller,
-		"GeneralsByBusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -214,7 +194,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("BusinessPartnerReads Unmarshal error")
+		controller.CustomLogger.Error("BusinessPartnerGeneralReads Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -227,59 +207,43 @@ func (
 ) {
 	defer services.Recover(controller.CustomLogger)
 
-	ordersRes := apiModuleRuntimesResponsesOrders.OrdersRes{}
-	//productMasterRes := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
+	headerRes := apiModuleRuntimesResponsesOrders.OrdersRes{}
+
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.OrdersHeader.Buyer != nil {
-		ordersRes = *controller.createOrdersRequestHeaderByBuyer(
+		headerRes = *controller.createOrdersRequestHeaderByBuyer(
 			controller.UserInfo,
 			input,
 		)
-		//productMasterRes = *controller.createProductMasterRequestProductDescByBPByBuyer(
-		//	controller.UserInfo,
-		//	&ordersRes,
-		//)
-		businessPartnerRes = *controller.createBusinessPartnerRequestByBuyer(
+		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
-			&ordersRes,
+			&headerRes,
 		)
 	}
 
 	if input.OrdersHeader.Seller != nil {
-		ordersRes = *controller.createOrdersRequestHeaderBySeller(
+		headerRes = *controller.createOrdersRequestHeaderBySeller(
 			controller.UserInfo,
 			input,
 		)
-		//productMasterRes = *controller.createProductMasterRequestProductDescByBPBySeller(
-		//	controller.UserInfo,
-		//	&ordersRes,
-		//)
-		businessPartnerRes = *controller.createBusinessPartnerRequestBySeller(
+		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
-			&ordersRes,
+			&headerRes,
 		)
 	}
 
-	//pMDocRes := controller.createProductMasterDocRequest(
-	//	controller.UserInfo,
-	//)
-
 	controller.fin(
-		&ordersRes,
-		//&productMasterRes,
+		&headerRes,
 		&businessPartnerRes,
-		//pMDocRes,
 	)
 }
 
 func (
 	controller *OrdersListController,
 ) fin(
-	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-	//productMasterRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
+	headerRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
-	// pMDocRes *apiModuleRuntimesResponses.ProductMasterDocRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
@@ -287,18 +251,19 @@ func (
 
 	data := apiOutputFormatter.Orders{}
 
-	for _, v := range *ordersRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 
 		data.OrdersHeader = append(data.OrdersHeader,
 			apiOutputFormatter.OrdersHeader{
-				OrderID:				   v.OrderID,
-				Buyer:                     v.Buyer,
-				BuyerName:                 businessPartnerMapper[v.Buyer].BusinessPartnerName,
-				Seller:                    v.Seller,
-				SellerName:                businessPartnerMapper[v.Seller].BusinessPartnerName,
-				HeaderDeliveryStatus	   v.HeaderDeliveryStatus,
-				IsCancelled				   v.IsCancelled,
-				IsMarkedForDeletion		   v.IsMarkedForDeletion,
+				OrderID:              v.OrderID,
+				Buyer:                v.Buyer,
+				BuyerName:            businessPartnerMapper[v.Buyer].BusinessPartnerName,
+				Seller:               v.Seller,
+				SellerName:           businessPartnerMapper[v.Seller].BusinessPartnerName,
+				HeaderDeliveryStatus: &v.HeaderDeliveryStatus,
+				OrderType:            v.OrderType,
+				IsCancelled:          v.IsCancelled,
+				IsMarkedForDeletion:  v.IsMarkedForDeletion,
 			},
 		)
 	}

@@ -1,8 +1,8 @@
 package apiOutputFormatter
 
 type PriceMaster struct {
-	PriceMasterHeader  		[]PriceMasterHeader			`json:"Header"`
-	PriceMasterDetailHeader []PriceMasterDetailHeader	`json:"Header"`
+	PriceMasterHeader       []PriceMasterHeader       `json:"Header"`
+	PriceMasterDetailHeader []PriceMasterDetailHeader `json:"DetailHeader"`
 }
 
 type PriceMasterHeader struct {

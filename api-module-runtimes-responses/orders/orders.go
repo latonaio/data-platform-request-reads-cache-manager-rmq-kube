@@ -43,9 +43,7 @@ type Header struct {
 	HeaderCompleteDeliveryIsDefined  *bool    `json:"HeaderCompleteDeliveryIsDefined"`
 	Incoterms                        *string  `json:"Incoterms"`
 	PaymentTerms                     string   `json:"PaymentTerms"`
-	PaymentTermsName                 *string  `json:"PaymentTermsName"`
 	PaymentMethod                    string   `json:"PaymentMethod"`
-	PaymentMethodName                *string  `json:"PaymentMethodName"`
 	ReferenceDocument                *int     `json:"ReferenceDocument"`
 	ReferenceDocumentItem            *int     `json:"ReferenceDocumentItem"`
 	AccountAssignmentGroup           string   `json:"AccountAssignmentGroup"`

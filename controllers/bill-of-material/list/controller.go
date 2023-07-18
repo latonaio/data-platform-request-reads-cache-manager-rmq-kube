@@ -2,13 +2,13 @@ package controllersBillOfMaterialList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
+	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
+	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponsesProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -41,7 +41,7 @@ func (controller *BillOfMaterialListController) Get() {
 	redisKeyCategory2 := "list"
 	//userType := OwnerProductionPlantBusinessPartner
 	billOfMaterial, _ := controller.GetInt("billOfMaterial")
-	userType := controller.GetString("userType")
+	userType := controller.GetString(":userType")
 
 	billOfMaterialHeader := apiInputReader.BillOfMaterial{
 		BillOfMaterialHeader: &apiInputReader.BillOfMaterialHeader{
@@ -166,9 +166,9 @@ func (
 	controller *BillOfMaterialListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)
@@ -188,59 +188,24 @@ func (
 
 func (
 	controller *BillOfMaterialListController,
-) request(
-	input apiInputReader.BillOfMaterial,
-) {
-	defer services.Recover(controller.CustomLogger)
-
-	bRes := controller.createBillOfMaterialRequestHeaderByOwnerProductionPlantBP(
-		controller.UserInfo,
-		input,
-	)
-
-	pRes := controller.createProductMasterRequestProductDescByBP(
-		controller.UserInfo,
-		bRes,
-	)
-
-	pdRes := controller.createProductMasterDocRequest(
-		controller.UserInfo,
-	)
-
-	plRes := controller.createPlantRequestGenerals(
-		controller.UserInfo,
-		bRes,
-	)
-
-	controller.fin(
-		bRes,
-		pRes,
-		pdRes,
-		plRes,
-	)
-}
-
-func (
-	controller *BillOfMaterialListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	bRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	plantRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make(apiModuleRuntimesRequests.PlantGenerals, len(*bRes.Message.Header))
-	for i, v := range *bRes.Message.Header {
-		generals[i].Plant = &v.OwnerProductionPlant
-		generals[i].Language = requestPram.Language
+	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	for i, v := range *plantRes.Message.Header {
+		input[i].Plant = v.OwnerProductionPlant
 	}
 
 	aPIServiceName := "DPFM_API_PLANT_SRV"
 	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
 
-	request := apiModuleRuntimesRequests.
-		CreatePlantRequestGenerals(
-			requestPram,
-			generals,
-		)
+	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
@@ -273,30 +238,66 @@ func (
 
 func (
 	controller *BillOfMaterialListController,
-) fin(
-	bRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
-	pRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
-	pdRes *apiModuleRuntimesResponsesProductMasterDoc.ProductMasterDocRes,
-	plRes *apiModuleRuntimesResponsesPlant.PlantRes,
+) request(
+	input apiInputReader.BillOfMaterial,
 ) {
-	descriptionMapper := services.ProductDescByBPMapper(
-		pRes.Message.ProductDescByBP,
+	defer services.Recover(controller.CustomLogger)
+
+	headerRes := controller.createBillOfMaterialRequestHeaderByOwnerProductionPlantBP(
+		controller.UserInfo,
+		input,
 	)
 
+	plantlRes := controller.createPlantRequestGenerals(
+		controller.UserInfo,
+		headerRes,
+	)
+
+	productDescByBPRes := controller.createProductMasterRequestProductDescByBP(
+		controller.UserInfo,
+		headerRes,
+	)
+
+	productDocRes := controller.createProductMasterDocRequest(
+		controller.UserInfo,
+	)
+
+	controller.fin(
+		headerRes,
+		plantlRes,
+		productDescByBPRes,
+		productDocRes,
+	)
+}
+
+func (
+	controller *BillOfMaterialListController,
+) fin(
+	headerRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	plantlRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
+	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
+) {
+
 	plantMapper := services.PlantMapper(
-		plRes.Message.Generals,
+		plantlRes.Message.Generals,
+	)
+
+	descriptionMapper := services.ProductDescByBPMapper(
+		productDescByBPRes.Message.ProductDescByBP,
 	)
 
 	data := apiOutputFormatter.BillOfMaterial{}
 
-	for _, v := range *bRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 		img := services.CreateProductImage(
-			pdRes,
+			productDocRes,
 			v.OwnerProductionPlantBusinessPartner,
 			v.Product,
 		)
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
+		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
 
 		data.BillOfMaterialHeader = append(data.BillOfMaterialHeader,
 			apiOutputFormatter.BillOfMaterialHeader{
@@ -304,7 +305,7 @@ func (
 				BillOfMaterial:           v.BillOfMaterial,
 				ProductDescription:       &productDescription,
 				OwnerProductionPlant:     v.OwnerProductionPlant,
-				OwnerProductionPlantName: plantMapper[v.OwnerProductionPlant].PlantName,
+				OwnerProductionPlantName: &plantName,
 				ValidityStartDate:        v.ValidityStartDate,
 				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{

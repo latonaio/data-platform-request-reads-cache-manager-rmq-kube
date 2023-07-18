@@ -1,38 +1,55 @@
 package apiOutputFormatter
 
 type DeliveryDocument struct {
-	DeliveryDocumentHeader  []DeliveryDocumentHeader  `json:"Header"`
-	DeliveryDocumentItem    []DeliveryDocumentItem    `json:"Item"`
+	DeliveryDocumentHeader         []DeliveryDocumentHeader         `json:"Header"`
+	DeliveryDocumentHeaderWithItem []DeliveryDocumentHeaderWithItem `json:"HeaderWithItem"`
+	DeliveryDocumentItem           []DeliveryDocumentItem           `json:"Item"`
 }
 
 type DeliveryDocumentHeader struct {
-	DeliveryDocument          int     `json:"DeliveryDocument"`
-	DeliverToParty            int     `json:"DeliverToParty"`
-	DeliverToPartyName        string  `json:"DeliverToPartyName"`
-	DeliverToPlant            string  `json:"DeliverToPlant"`
-	DeliverToPlantName        string  `json:"DeliverToPlantName"`
-    DeliverFromParty          int     `json:"DeliverFromParty"`
-	DeliverFromPartyName      string  `json:"DeliverFromPartyName"`
-	DeliverFromPlant          string  `json:"DeliverFromPlant"`
-	DeliverFromPlantName      string  `json:"DeliverFromPlantName"`
-    HeaderDeliveryStatus      *string `json:"HeaderDeliveryStatus"`
-    HeaderBillingStatus       *string `json:"HeaderBillingStatus"`
-    IsCancelled               *bool   `json:"IsCancelled"`
-	IsMarkedForDeletion       *bool   `json:"IsMarkedForDeletion"`
+	DeliveryDocument        int     `json:"DeliveryDocument"`
+	DeliverToParty          int     `json:"DeliverToParty"`
+	DeliverToPartyName      string  `json:"DeliverToPartyName"`
+	DeliverToPlant          string  `json:"DeliverToPlant"`
+	DeliverToPlantName      string  `json:"DeliverToPlantName"`
+	DeliverFromParty        int     `json:"DeliverFromParty"`
+	DeliverFromPartyName    string  `json:"DeliverFromPartyName"`
+	DeliverFromPlant        string  `json:"DeliverFromPlant"`
+	DeliverFromPlantName    string  `json:"DeliverFromPlantName"`
+	HeaderDeliveryStatus    *string `json:"HeaderDeliveryStatus"`
+	HeaderBillingStatus     *string `json:"HeaderBillingStatus"`
+	PlannedGoodsReceiptDate string  `json:"PlannedGoodsReceiptDate"`
+	PlannedGoodsReceiptTime string  `json:"PlannedGoodsReceiptTime"`
+	IsCancelled             *bool   `json:"IsCancelled"`
+	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
+}
+
+type DeliveryDocumentHeaderWithItem struct {
+	DeliveryDocument        int    `json:"DeliveryDocument"`
+	DeliverToParty          int    `json:"DeliverToParty"`
+	DeliverToPartyName      string `json:"DeliverToPartyName"`
+	DeliverToPlant          string `json:"DeliverToPlant"`
+	DeliverToPlantName      string `json:"DeliverToPlantName"`
+	DeliverFromParty        int    `json:"DeliverFromParty"`
+	DeliverFromPartyName    string `json:"DeliverFromPartyName"`
+	DeliverFromPlant        string `json:"DeliverFromPlant"`
+	DeliverFromPlantName    string `json:"DeliverFromPlantName"`
+	PlannedGoodsReceiptDate string `json:"PlannedGoodsReceiptDate"`
+	PlannedGoodsReceiptTime string `json:"PlannedGoodsReceiptTime"`
 }
 
 type DeliveryDocumentItem struct {
-	DeliveryDocumentItem                      int     `json:"DeliveryDocumentItem"`
-	Product                                   string  `json:"Product"`
-    DeliveryDocumentItemItemTextByBuyer       string  `json:"DeliveryDocumentItemItemTextByBuyer"`
-    DeliveryDocumentItemItemTextBySeller      string  `json:"DeliveryDocumentItemItemTextBySeller"`
-    ActualGoodsIssueQtyInBaseUnit             float32 `json:"ActualGoodsIssueQtyInBaseUnit"`
-    DeliveryUnit                              string  `json:"DeliveryUnit"`
-    ActualGoodsIssueDate                      *string `json:"ActualGoodsIssueDate"`
-    ActualGoodsIssueTime                      *string `json:"ActualGoodsIssueTime"`
-    ActualGoodsReceiptDate                    *string `json:"ActualGoodsReceiptDate"`
-    ActualGoodsReceiptTime                    *string `json:"ActualGoodsReceiptTime"`
-    IsCancelled                               *bool   `json:"IsCancelled"`
-	IsMarkedForDeletion                       *bool   `json:"IsMarkedForDeletion"`
-	Images                                    Images  `json:"Images"`
+	DeliveryDocumentItem                 int     `json:"DeliveryDocumentItem"`
+	Product                              string  `json:"Product"`
+	DeliveryDocumentItemItemTextByBuyer  string  `json:"DeliveryDocumentItemItemTextByBuyer"`
+	DeliveryDocumentItemItemTextBySeller string  `json:"DeliveryDocumentItemItemTextBySeller"`
+	PlannedGoodsIssueQuantity            float32 `json:"PlannedGoodsIssueQuantity"`
+	DeliveryUnit                         string  `json:"DeliveryUnit"`
+	PlannedGoodsIssueDate                string  `json:"PlannedGoodsIssueDate"`
+	PlannedGoodsIssueTime                string  `json:"PlannedGoodsIssueTime"`
+	PlannedGoodsReceiptDate              string  `json:"PlannedGoodsReceiptDate"`
+	PlannedGoodsReceiptTime              string  `json:"PlannedGoodsReceiptTime"`
+	IsCancelled                          *bool   `json:"IsCancelled"`
+	IsMarkedForDeletion                  *bool   `json:"IsMarkedForDeletion"`
+	Images                               Images  `json:"Images"`
 }

@@ -1,7 +1,7 @@
 package apiOutputFormatter
 
 type WorkCenter struct {
-	WorkCenterGeneral []WorkCenterGeneral `json:"General"`
+	WorkCenterGeneral []WorkCenterGeneral `json:"Generals"`
 }
 
 type WorkCenterGeneral struct {
@@ -9,8 +9,8 @@ type WorkCenterGeneral struct {
 	WorkCenterName                string  `json:"WorkCenterName"`
 	Plant                         string  `json:"Plant"`
 	PlantName                     string  `json:"PlantName"`
-	ComponentIsMarkedForBackflush *string `json:"ComponentIsMarkedForBackflush"`
-	CapacityInternalID            *int    `json:"CapacityInternalID"`
-    CapacityCategoryCode          *string `json:"CapacityCategoryCode"`
+	ComponentIsMarkedForBackflush *bool   `json:"ComponentIsMarkedForBackflush"`
+	CapacityID                    *int    `json:"CapacityID"`
+	CapacityCategory              *string `json:"CapacityCategory"`
 	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
 }

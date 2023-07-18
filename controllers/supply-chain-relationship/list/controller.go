@@ -2,13 +2,9 @@ package controllersSupplyChainRelationshipList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
 	apiModuleRuntimesRequestsSupplyChainRelationship "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/supply-chain-relationship"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
-	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiModuleRuntimesResponsesSupplyChainRelationship "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/supply-chain-relationship"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
@@ -154,120 +150,6 @@ func (
 
 func (
 	controller *SupplyChainRelationshipListController,
-) createProductMasterRequestProductDescByBPByBuyer(
-	requestPram *apiInputReader.Request,
-	pdByBuyerRes *apiModuleRuntimesResponsesSupplyChainRelationship.SupplyChainRelationshipRes,
-) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
-	isMarkedForDeletion := false
-
-	for _, v := range *pdByBuyerRes.Message.General {
-		productDescsByBP = append(productDescsByBP, apiModuleRuntimesRequestsProductMaster.General{
-			BusinessPartner: []apiModuleRuntimesRequestsProductMaster.BusinessPartner{
-				{
-					BusinessPartner: v.Buyer,
-					ProductDescByBP: []apiModuleRuntimesRequestsProductMaster.ProductDescByBP{
-						{
-							Language:            *requestPram.Language,
-							IsMarkedForDeletion: &isMarkedForDeletion,
-						},
-					},
-				},
-			},
-		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
-	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReadsProductDescsByBP(
-		requestPram,
-		productDescsByBP,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("ProductMasterReadsProductDescsByBP Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *SupplyChainRelationshipListController,
-) createProductMasterRequestProductDescByBPBySeller(
-	requestPram *apiInputReader.Request,
-	pdByBuyerRes *apiModuleRuntimesResponsesSupplyChainRelationship.SupplyChainRelationshipRes,
-) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
-	isMarkedForDeletion := false
-
-	for _, v := range *pdByBuyerRes.Message.General {
-		productDescsByBP = append(productDescsByBP, apiModuleRuntimesRequestsProductMaster.General{
-			BusinessPartner: []apiModuleRuntimesRequestsProductMaster.BusinessPartner{
-				{
-					BusinessPartner: v.Seller,
-					ProductDescByBP: []apiModuleRuntimesRequestsProductMaster.ProductDescByBP{
-						{
-							Language:            *requestPram.Language,
-							IsMarkedForDeletion: &isMarkedForDeletion,
-						},
-					},
-				},
-			},
-		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
-	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReadsProductDescsByBP(
-		requestPram,
-		productDescsByBP,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("ProductMasterReadsProductDescsByBP Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *SupplyChainRelationshipListController,
-) createProductMasterDocRequest(
-	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponses.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponses.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
-		requestPram,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *SupplyChainRelationshipListController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	supplyChainRelationshipRes *apiModuleRuntimesResponsesSupplyChainRelationship.SupplyChainRelationshipRes,
@@ -284,11 +166,10 @@ func (
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
 		requestPram,
 		generals,
 		&controller.Controller,
-		"GeneralsByBusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -298,7 +179,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
+		controller.CustomLogger.Error("BusinessPartnerGeneralReads Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -362,6 +243,7 @@ func (
 				BuyerName:                 businessPartnerMapper[v.Buyer].BusinessPartnerName,
 				Seller:                    v.Seller,
 				SellerName:                businessPartnerMapper[v.Seller].BusinessPartnerName,
+				IsMarkedForDeletion:       v.IsMarkedForDeletion,
 			},
 		)
 	}

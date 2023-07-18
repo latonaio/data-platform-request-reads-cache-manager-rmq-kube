@@ -20,6 +20,8 @@ type Header struct {
 	SupplyChainRelationshipID         *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipBillingID  *int     `json:"SupplyChainRelationshipBillingID"`
 	SupplyChainRelationshipPaymentID  *int     `json:"SupplyChainRelationshipPaymentID"`
+	Buyer							  *int	   `json:"Buyer"`
+	Seller							  *int	   `json:"Seller"`
 	BillToParty                       *int     `json:"BillToParty"`
 	BillFromParty                     *int     `json:"BillFromParty"`
 	BillToCountry                     *string  `json:"BillToCountry"`

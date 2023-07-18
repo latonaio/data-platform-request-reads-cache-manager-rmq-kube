@@ -5,10 +5,10 @@ type BusinessPartnerRes struct {
 }
 
 type BusinessPartner struct {
-	General            *[]General            `json:"General,omitempty"`
-	Accounting         *[]Accounting         `json:"Accounting,omitempty"`
-	FinInst            *[]FinInst            `json:"FinInst,omitempty"`
-	Role               *[]Role               `json:"Role,omitempty"`
+	General    *[]General    `json:"Generals,omitempty"`
+	Accounting *[]Accounting `json:"Accounting,omitempty"`
+	FinInst    *[]FinInst    `json:"FinInst,omitempty"`
+	Role       *[]Role       `json:"Role,omitempty"`
 }
 
 type General struct {

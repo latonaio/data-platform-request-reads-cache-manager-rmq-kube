@@ -2,14 +2,13 @@ package controllersPriceMasterList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
 	apiModuleRuntimesRequestsPriceMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/price-master"
-	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master"
+	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
+	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPriceMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/price-master"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
-	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -35,7 +34,7 @@ func (controller *PriceMasterListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "priceMaster"
+	redisKeyCategory1 := "price-master"
 	redisKeyCategory2 := "list"
 	userType := controller.GetString(":userType") // buyer or seller
 
@@ -248,9 +247,9 @@ func (
 	controller *PriceMasterListController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponses.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponses.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
 	)
@@ -286,11 +285,10 @@ func (
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
 		requestPram,
 		generals,
 		&controller.Controller,
-		"GeneralsByBusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -313,34 +311,34 @@ func (
 ) {
 	defer services.Recover(controller.CustomLogger)
 
-	priceMastersRes := apiModuleRuntimesResponsesPriceMaster.PriceMasterRes{}
+	headerRes := apiModuleRuntimesResponsesPriceMaster.PriceMasterRes{}
 	//productMasterRes := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.PriceMasterHeader.Buyer != nil {
-		priceMastersRes = *controller.createPriceMasterRequestHeaderByBuyer(
+		headerRes = *controller.createPriceMasterRequestHeaderByBuyer(
 			controller.UserInfo,
 			input,
 		)
 		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
-			&priceMastersRes,
+			&headerRes,
 		)
 	}
 
 	if input.PriceMasterHeader.Seller != nil {
-		priceMastersRes = *controller.createPriceMasterRequestHeaderBySeller(
+		headerRes = *controller.createPriceMasterRequestHeaderBySeller(
 			controller.UserInfo,
 			input,
 		)
 		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
-			&priceMastersRes,
+			&headerRes,
 		)
 	}
 
 	controller.fin(
-		&priceMastersRes,
+		&headerRes,
 		&businessPartnerRes,
 	)
 }
@@ -348,7 +346,7 @@ func (
 func (
 	controller *PriceMasterListController,
 ) fin(
-	priceMasterRes *apiModuleRuntimesResponsesPriceMaster.PriceMasterRes,
+	headerRes *apiModuleRuntimesResponsesPriceMaster.PriceMasterRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
@@ -357,7 +355,7 @@ func (
 
 	data := apiOutputFormatter.PriceMaster{}
 
-	for _, v := range *priceMasterRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 
 		data.PriceMasterHeader = append(data.PriceMasterHeader,
 			apiOutputFormatter.PriceMasterHeader{

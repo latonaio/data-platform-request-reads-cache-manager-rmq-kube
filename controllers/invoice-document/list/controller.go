@@ -2,12 +2,10 @@ package controllersInvoiceDocumentList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
 	apiModuleRuntimesRequestsInvoiceDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/invoice-document"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesInvoiceDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/invoice-document"
-	apiModuleRuntimesResponses "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master-doc"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/services"
@@ -25,7 +23,7 @@ type InvoiceDocumentListController struct {
 }
 
 const (
-	billToParty  = "billToParty"
+	billToParty   = "billToParty"
 	billFromParty = "billFromParty"
 )
 
@@ -35,16 +33,14 @@ func (controller *InvoiceDocumentListController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "invoiceDocument"
 	redisKeyCategory2 := "list"
-	userType := controller.GetString("userType") // billToParty or billFromParty
-	billToPartyValue, _ := controller.GetInt("billToParty")
-	billFromPartyValue, _ := controller.GetInt("billFromParty")
+	userType := controller.GetString(":userType") // billToParty or billFromParty
 
 	invoiceDocumentHeader := apiInputReader.InvoiceDocument{}
 
 	if userType == billToParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				BillToParty:      &billToPartyValue,
+				BillToParty:         controller.UserInfo.BusinessPartner,
 				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		}
@@ -52,8 +48,8 @@ func (controller *InvoiceDocumentListController) Get() {
 
 	if userType == billFromParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
-			InvoiceDocumentHeader:  &apiInputReader.InvoiceDocumentHeader{
-				BillFromParty:    &billFromPartyValue,
+			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
+				BillFromParty:       controller.UserInfo.BusinessPartner,
 				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		}
@@ -156,22 +152,21 @@ func (
 	controller *InvoiceDocumentListController,
 ) createBusinessPartnerRequestByBillToParty(
 	requestPram *apiInputReader.Request,
-	invoiceDocumentRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
+	businessPartnerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
 
-	for _, v := range *invoiceDocumentRes.Message.Header {
-		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+	for _, v := range *businessPartnerRes.Message.Header {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.BillToParty,
 		})
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
 		requestPram,
-		generals,
+		input,
 		&controller.Controller,
-		"GeneralsByBusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -191,22 +186,21 @@ func (
 	controller *InvoiceDocumentListController,
 ) createBusinessPartnerRequestByBillFromParty(
 	requestPram *apiInputReader.Request,
-	invoiceDocumentRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
+	businessPartnerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
 
-	for _, v := range *invoiceDocumentRes.Message.Header {
-		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+	for _, v := range *businessPartnerRes.Message.Header {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.BillFromParty,
 		})
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
 		requestPram,
-		generals,
+		input,
 		&controller.Controller,
-		"GeneralsByBusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -224,63 +218,38 @@ func (
 
 func (
 	controller *InvoiceDocumentListController,
-) createProductMasterDocRequest(
-	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponses.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponses.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequests.ProductMasterDocReads(
-		requestPram,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-
-func (
-	controller *InvoiceDocumentListController,
 ) request(
 	input apiInputReader.InvoiceDocument,
 ) {
 	defer services.Recover(controller.CustomLogger)
 
-	invoiceDocumentRes := apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes{}
+	headerRes := apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes{}
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.InvoiceDocumentHeader.BillToParty != nil {
-		invoiceDocumentRes = *controller.createInvoiceDocumentRequestHeaderByBillToParty(
+		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillToParty(
 			controller.UserInfo,
 			input,
 		)
 		businessPartnerRes = *controller.createBusinessPartnerRequestByBillToParty(
 			controller.UserInfo,
-			&invoiceDocumentRes,
+			&headerRes,
 		)
 	}
 
 	if input.InvoiceDocumentHeader.BillFromParty != nil {
-		invoiceDocumentRes = *controller.createInvoiceDocumentRequestHeaderByBillFromParty(
+		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillFromParty(
 			controller.UserInfo,
 			input,
 		)
 		businessPartnerRes = *controller.createBusinessPartnerRequestByBillFromParty(
 			controller.UserInfo,
-			&invoiceDocumentRes,
+			&headerRes,
 		)
 	}
 
 	controller.fin(
-		&invoiceDocumentRes,
+		&headerRes,
 		&businessPartnerRes,
 	)
 }
@@ -288,7 +257,7 @@ func (
 func (
 	controller *InvoiceDocumentListController,
 ) fin(
-	invoiceDocumentRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
+	headerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
@@ -297,19 +266,19 @@ func (
 
 	data := apiOutputFormatter.InvoiceDocument{}
 
-	for _, v := range *invoiceDocumentRes.Message.Header {
+	for _, v := range *headerRes.Message.Header {
 
 		data.InvoiceDocumentHeader = append(data.InvoiceDocumentHeader,
 			apiOutputFormatter.InvoiceDocumentHeader{
-				InvoiceDocument:	    	v.InvoiceDocument,
-				BillToParty:            	v.BillToParty,
-				BillToPartyName:        	businessPartnerMapper[v.BillToParty].BusinessPartnerName,
-				BillFromParty:          	v.BillFromParty,
-				BillFromPartyName:      	businessPartnerMapper[v.BillFromParty].BusinessPartnerName,
-				InvoiceDocumentDate			v.InvoiceDocumentDate,
-				PaymentDueDate				v.PaymentDueDate,
-				HeaderBillingIsConfirmed	v.HeaderBillingIsConfirmed,
-				IsCancelled			    	v.IsCancelled,
+				InvoiceDocument:          v.InvoiceDocument,
+				BillToParty:              v.BillToParty,
+				BillToPartyName:          businessPartnerMapper[v.BillToParty].BusinessPartnerName,
+				BillFromParty:            v.BillFromParty,
+				BillFromPartyName:        businessPartnerMapper[v.BillFromParty].BusinessPartnerName,
+				InvoiceDocumentDate:      v.InvoiceDocumentDate,
+				PaymentDueDate:           v.PaymentDueDate,
+				HeaderBillingIsConfirmed: v.HeaderBillingIsConfirmed,
+				IsCancelled:              v.IsCancelled,
 			},
 		)
 	}

@@ -18,14 +18,18 @@ type DeliveryDocumentHeader struct {
 }
 
 type DeliveryDocumentItems struct {
-	DeliveryDocument    int   `json:"DeliveryDocument"`
-	IsCancelled         *bool `json:"IsCancelled"`
-	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
+	DeliveryDocument    			int   	`json:"DeliveryDocument"`
+	ItemCompleteDeliveryIsDefined	*bool	`json:"ItemCompleteDeliveryIsDefined"`
+	ItemDeliveryBlockStatus			*bool	`json:"ItemDeliveryBlockStatus"`
+	IsCancelled         			*bool	`json:"IsCancelled"`
+	IsMarkedForDeletion 			*bool	`json:"IsMarkedForDeletion"`
 }
 
 type DeliveryDocumentItem struct {
-	DeliveryDocument     int   `json:"DeliveryDocument"`
-	DeliveryDocumentItem int   `json:"DeliveryDocumentItem"`
-	IsCancelled          *bool `json:"IsCancelled"`
-	IsMarkedForDeletion  *bool `json:"IsMarkedForDeletion"`
+	DeliveryDocument				int		`json:"DeliveryDocument"`
+	DeliveryDocumentItem			int		`json:"DeliveryDocumentItem"`
+	ItemCompleteDeliveryIsDefined	*bool	`json:"ItemCompleteDeliveryIsDefined"`
+	ItemDeliveryBlockStatus			*bool	`json:"ItemDeliveryBlockStatus"`
+	IsCancelled						*bool	`json:"IsCancelled"`
+	IsMarkedForDeletion				*bool	`json:"IsMarkedForDeletion"`
 }

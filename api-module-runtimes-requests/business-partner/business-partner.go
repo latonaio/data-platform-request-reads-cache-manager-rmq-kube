@@ -90,10 +90,10 @@ type Role struct {
 
 func CreateBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
-	generals []General,
+	input []General,
 ) BusinessPartnerReq {
 	req := BusinessPartnerReq{
-		Generals: generals,
+		Generals: input,
 		Accepter: []string{
 			"GeneralsByBusinessPartners",
 		},
@@ -110,7 +110,6 @@ func CreateBusinessPartnerRequestGenerals(
 	req := BusinessPartnerReq{
 		General: General{
 			IsMarkedForDeletion: &isMarkedForDeletion,
-			//IsMarkedForDeletion: requestPram.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"Generals",
@@ -119,23 +118,20 @@ func CreateBusinessPartnerRequestGenerals(
 	return req
 }
 
-func BusinessPartnerReads(
+func BusinessPartnerReadsGenerals(
 	requestPram *apiInputReader.Request,
-	generals []General,
+	input apiInputReader.BusinessPartner,
 	controller *beego.Controller,
-	accepter string,
 ) []byte {
 	aPIServiceName := "DPFM_API_BUSINESS_PARTNER_SRV"
 	aPIType := "reads"
 
 	var request BusinessPartnerReq
 
-	if accepter == "GeneralsByBusinessPartners" {
-		request = CreateBusinessPartnerRequestGeneralsByBusinessPartners(
-			requestPram,
-			generals,
-		)
-	}
+	request = CreateBusinessPartnerRequestGenerals(
+		requestPram,
+		input,
+	)
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
@@ -156,9 +152,9 @@ func BusinessPartnerReads(
 	return responseBody
 }
 
-func BusinessPartnerReadsGenerals(
+func BusinessPartnerReadsGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
-	input apiInputReader.BusinessPartner,
+	input []General,
 	controller *beego.Controller,
 ) []byte {
 	aPIServiceName := "DPFM_API_BUSINESS_PARTNER_SRV"
@@ -166,7 +162,7 @@ func BusinessPartnerReadsGenerals(
 
 	var request BusinessPartnerReq
 
-	request = CreateBusinessPartnerRequestGenerals(
+	request = CreateBusinessPartnerRequestGeneralsByBusinessPartners(
 		requestPram,
 		input,
 	)
