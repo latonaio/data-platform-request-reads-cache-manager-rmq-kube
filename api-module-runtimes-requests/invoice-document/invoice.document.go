@@ -20,8 +20,8 @@ type Header struct {
 	SupplyChainRelationshipID         *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipBillingID  *int     `json:"SupplyChainRelationshipBillingID"`
 	SupplyChainRelationshipPaymentID  *int     `json:"SupplyChainRelationshipPaymentID"`
-	Buyer							  *int	   `json:"Buyer"`
-	Seller							  *int	   `json:"Seller"`
+	Buyer                             *int     `json:"Buyer"`
+	Seller                            *int     `json:"Seller"`
 	BillToParty                       *int     `json:"BillToParty"`
 	BillFromParty                     *int     `json:"BillFromParty"`
 	BillToCountry                     *string  `json:"BillToCountry"`
@@ -56,7 +56,7 @@ type Header struct {
 	LastChangeDate                    *string  `json:"LastChangeDate"`
 	LastChangeTime                    *string  `json:"LastChangeTime"`
 	IsCancelled                       *bool    `json:"IsCancelled"`
-	Item                              []Item      `json:"Item"`
+	Item                              []Item   `json:"Item"`
 }
 
 type Item struct {
@@ -129,7 +129,7 @@ type Item struct {
 	TaxRate                                 *float32 `json:"TaxRate"`
 	CountryOfOrigin                         *string  `json:"CountryOfOrigin"`
 	CountryOfOriginLanguage                 *string  `json:"CountryOfOriginLanguage"`
-	Equipment                        		*int     `json:"Equipment"`
+	Equipment                               *int     `json:"Equipment"`
 	ItemPaymentRequisitionIsCreated         *bool    `json:"ItemPaymentRequisitionIsCreated"`
 	ItemIsCleared                           *bool    `json:"ItemIsCleared"`
 	ItemPaymentBlockStatus                  *bool    `json:"ItemPaymentBlockStatus"`
@@ -146,9 +146,8 @@ func CreateInvoiceDocumentRequestHeaderByBillToParty(
 ) InvoiceDocumentReq {
 	req := InvoiceDocumentReq{
 		Header: Header{
-			BillToParty:    	           		invoiceDocumentHeader.BillToParty,
-			IsCancelled:						invoiceDocumentHeader.IsCancelled,
-			IsMarkedForDeletion: 				invoiceDocumentHeader.IsMarkedForDeletion,
+			BillToParty: invoiceDocumentHeader.BillToParty,
+			IsCancelled: invoiceDocumentHeader.IsCancelled,
 		},
 		Accepter: []string{
 			"HeadersByBillToParty",
@@ -163,9 +162,8 @@ func CreateInvoiceDocumentRequestHeaderByBillFromParty(
 ) InvoiceDocumentReq {
 	req := InvoiceDocumentReq{
 		Header: Header{
-			BillFromParty:      				invoiceDocumentHeader.BillFromParty,
-			IsCancelled:						invoiceDocumentHeader.IsCancelled,
-			IsMarkedForDeletion: 				invoiceDocumentHeader.IsMarkedForDeletion,
+			BillFromParty: invoiceDocumentHeader.BillFromParty,
+			IsCancelled:   invoiceDocumentHeader.IsCancelled,
 		},
 		Accepter: []string{
 			"HeadersByBillFromParty",
@@ -180,11 +178,10 @@ func CreateInvoiceDocumentRequestItems(
 ) InvoiceDocumentReq {
 	req := InvoiceDocumentReq{
 		Header: Header{
-			InvoiceDocument: invoiceDocumentItems.OrderID,
+			InvoiceDocument: invoiceDocumentItems.InvoiceDocument,
 			Item: []Item{
 				{
-					IsCancelled: 		 invoiceDocumentItems.IsCancelled,
-					IsMarkedForDeletion: invoiceDocumentItems.IsMarkedForDeletion,
+					IsCancelled: invoiceDocumentItems.IsCancelled,
 				},
 			},
 		},
@@ -210,9 +207,8 @@ func InvoiceDocumentReads(
 		request = CreateInvoiceDocumentRequestHeaderByBillToParty(
 			requestPram,
 			&apiInputReader.InvoiceDocumentHeader{
-				BillToParty:		 		 		input.InvoiceDocumentHeader.BillToParty,
-				IsCancelled: 		 				input.InvoiceDocumentHeader.IsCancelled,
-				IsMarkedForDeletion: 				input.InvoiceDocumentHeader.IsMarkedForDeletion,
+				BillToParty: input.InvoiceDocumentHeader.BillToParty,
+				IsCancelled: input.InvoiceDocumentHeader.IsCancelled,
 			},
 		)
 	}
@@ -221,9 +217,8 @@ func InvoiceDocumentReads(
 		request = CreateInvoiceDocumentRequestHeaderByBillFromParty(
 			requestPram,
 			&apiInputReader.InvoiceDocumentHeader{
-				BillFromParty:						input.InvoiceDocumentHeader.BillFromParty,
-				IsCancelled:						input.InvoiceDocumentHeader.IsCancelled,
-				IsMarkedForDeletion:				input.InvoiceDocumentHeader.IsMarkedForDeletion,
+				BillFromParty: input.InvoiceDocumentHeader.BillFromParty,
+				IsCancelled:   input.InvoiceDocumentHeader.IsCancelled,
 			},
 		)
 	}
@@ -232,9 +227,9 @@ func InvoiceDocumentReads(
 		request = CreateInvoiceDocumentRequestItems(
 			requestPram,
 			&apiInputReader.InvoiceDocumentItems{
-				InvoiceDocument:      input.InvoiceDocumentItems.InvoiceDocument,
-				IsCancelled:		  input.InvoiceDocumentItems.IsCancelled,
-				IsMarkedForDeletion:  input.InvoiceDocumentItems.IsMarkedForDeletion,
+				InvoiceDocument:     input.InvoiceDocumentItems.InvoiceDocument,
+				IsCancelled:         input.InvoiceDocumentItems.IsCancelled,
+				IsMarkedForDeletion: input.InvoiceDocumentItems.IsMarkedForDeletion,
 			},
 		)
 	}

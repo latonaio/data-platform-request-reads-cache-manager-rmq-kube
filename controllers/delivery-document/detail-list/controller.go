@@ -33,21 +33,44 @@ const (
 
 func (controller *DeliveryDocumentDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+	deliveryDocument, _ := controller.GetInt("deliveryDocument")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "deliveryDocument"
-	redisKeyCategory2 := "list"
+	redisKeyCategory1 := "delivery-document"
+	redisKeyCategory2 := "detail-list"
 	userType := controller.GetString(":userType") // deliverToParty or deliverFromParty
 	deliverToPartyValue, _ := controller.GetInt("deliverToParty")
 	deliverFromPartyValue, _ := controller.GetInt("deliverFromParty")
 
 	deliveryDocumentHeader := apiInputReader.DeliveryDocument{}
 
+	headerCompleteDeliveryIsDefined := false
+	headerDeliveryBlockStatus := false
+	headerDeliveryStatus := "CL"
+	isCancelled := false
+	isMarkedForDeletion := false
+
+	itemCompleteDeliveryIsDefined := false
+	itemDeliveryBlockStatus := false
+	itemDeliveryStatus := "CL"
+
 	if userType == deliverToParty {
 		deliveryDocumentHeader = apiInputReader.DeliveryDocument{
 			DeliveryDocumentHeader: &apiInputReader.DeliveryDocumentHeader{
-				DeliverToParty:      &deliverToPartyValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				DeliveryDocument:    				deliveryDocument,
+				DeliverToParty:      				&deliverToPartyValue,
+				HeaderCompleteDeliveryIsDefined:	&headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       	&headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            	&headerDeliveryStatus,
+				IsCancelled:                     	&isCancelled,
+				IsMarkedForDeletion:             	&isMarkedForDeletion,
+			},
+			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
+				DeliveryDocument:              		deliveryDocument,
+				ItemCompleteDeliveryIsDefined: 		&itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       		&itemDeliveryBlockStatus,
+				ItemDeliveryStatus:            		&itemDeliveryStatus,
+				IsCancelled:                   		&isCancelled,
+				IsMarkedForDeletion:           		&isMarkedForDeletion,
 			},
 		}
 	}
@@ -55,8 +78,21 @@ func (controller *DeliveryDocumentDetailListController) Get() {
 	if userType == deliverFromParty {
 		deliveryDocumentHeader = apiInputReader.DeliveryDocument{
 			DeliveryDocumentHeader: &apiInputReader.DeliveryDocumentHeader{
-				DeliverFromParty:    &deliverFromPartyValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				DeliveryDocument:    				deliveryDocument,			
+				DeliverFromParty:    				&deliverFromPartyValue,
+				HeaderCompleteDeliveryIsDefined:	&headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       	&headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            	&headerDeliveryStatus,
+				IsCancelled:                     	&isCancelled,
+				IsMarkedForDeletion:             	&isMarkedForDeletion,
+			},
+			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
+				DeliveryDocument:              		deliveryDocument,
+				ItemCompleteDeliveryIsDefined: 		&itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       		&itemDeliveryBlockStatus,
+				ItemDeliveryStatus:            		&itemDeliveryStatus,
+				IsCancelled:                   		&isCancelled,
+				IsMarkedForDeletion:           		&isMarkedForDeletion,
 			},
 		}
 	}
@@ -102,7 +138,7 @@ func (controller *DeliveryDocumentDetailListController) Get() {
 
 func (
 	controller *DeliveryDocumentDetailListController,
-) createDeliveryDocumentRequestHeaderByDeliverToParty(
+) createDeliveryDocumentRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
 ) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
@@ -111,34 +147,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"HeadersByDeliverToParty",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("DeliveryDocumentReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentDetailListController,
-) createDeliveryDocumentRequestHeaderByDeliverFromParty(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.DeliveryDocument,
-) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
-	responseJsonData := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
-	responseBody := apiModuleRuntimesRequestsDeliveryDocument.DeliveryDocumentReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"HeadersByDeliverFromParty",
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -185,11 +194,11 @@ func (
 	controller *DeliveryDocumentDetailListController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
-	businessPartnerRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
+	deliveryDocumentRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*deliveryDocumentRes.Message.Header))
 
-	for _, v := range *businessPartnerRes.Message.Header {
+	for _, v := range *deliveryDocumentRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.DeliverToParty,
 		})
@@ -220,16 +229,20 @@ func (
 
 func (
 	controller *DeliveryDocumentDetailListController,
-) createPlantRequestGeneralsByDeliverToParty(
+) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	plantRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
+	deliveryDocumentRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*deliveryDocumentRes.Message.Item))
 
-	for _, v := range *plantRes.Message.Header {
+	for _, v := range *deliveryDocumentRes.Message.Item {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			BusinessPartner: v.DeliverToParty,
-			Plant:           v.DeliverToPlant,
+			BusinessPartner: *v.DeliverToParty,
+			Plant:           *v.DeliverToPlant,
+		})
+		input = append(input, apiModuleRuntimesRequestsPlant.General{
+			BusinessPartner: *v.DeliverFromParty,
+			Plant:           *v.DeliverFromPlant,
 		})
 	}
 
@@ -247,41 +260,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("PlantReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentDetailListController,
-) createPlantRequestGeneralsByDeliverFromParty(
-	requestPram *apiInputReader.Request,
-	plantRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
-) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
-
-	for _, v := range *plantRes.Message.Header {
-		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			Plant: v.DeliverFromPlant,
-		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
-		requestPram,
-		input,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("PlantReads Unmarshal error")
+		controller.CustomLogger.Error("PlantReadsGeneralsByPlants Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -313,74 +292,6 @@ func (
 
 func (
 	controller *DeliveryDocumentDetailListController,
-) createBusinessPartnerRequestByDeliverToParty(
-	requestPram *apiInputReader.Request,
-	deliveryDocumentRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
-) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
-
-	for _, v := range *deliveryDocumentRes.Message.Header {
-		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
-			BusinessPartner: v.DeliverToParty,
-		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
-		requestPram,
-		input,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("BusinessPartnerReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentDetailListController,
-) createBusinessPartnerRequestByDeliverFromParty(
-	requestPram *apiInputReader.Request,
-	deliveryDocumentRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
-) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
-
-	for _, v := range *deliveryDocumentRes.Message.Header {
-		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
-			BusinessPartner: v.DeliverFromParty,
-		})
-	}
-
-	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
-		requestPram,
-		input,
-		&controller.Controller,
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("BusinessPartnerReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentDetailListController,
 ) request(
 	input apiInputReader.DeliveryDocument,
 ) {
@@ -388,33 +299,26 @@ func (
 
 	headerRes := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
-	plantRes := apiModuleRuntimesResponsesPlant.PlantRes{}
 
 	if input.DeliveryDocumentHeader.DeliverToParty != nil {
-		headerRes = *controller.createDeliveryDocumentRequestHeaderByDeliverToParty(
+		headerRes = *controller.createDeliveryDocumentRequestHeader(
 			controller.UserInfo,
 			input,
 		)
-		businessPartnerRes = *controller.createBusinessPartnerRequestByDeliverToParty(
-			controller.UserInfo,
-			&headerRes,
-		)
-		plantRes = *controller.createPlantRequestGeneralsByDeliverToParty(
+
+		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
 			&headerRes,
 		)
 	}
 
 	if input.DeliveryDocumentHeader.DeliverFromParty != nil {
-		headerRes = *controller.createDeliveryDocumentRequestHeaderByDeliverFromParty(
+		headerRes = *controller.createDeliveryDocumentRequestHeader(
 			controller.UserInfo,
 			input,
 		)
-		businessPartnerRes = *controller.createBusinessPartnerRequestByDeliverFromParty(
-			controller.UserInfo,
-			&headerRes,
-		)
-		plantRes = *controller.createPlantRequestGeneralsByDeliverFromParty(
+
+		businessPartnerRes = *controller.createBusinessPartnerRequest(
 			controller.UserInfo,
 			&headerRes,
 		)
@@ -423,6 +327,11 @@ func (
 	itemRes := controller.createDeliveryDocumentRequestItems(
 		controller.UserInfo,
 		input,
+	)
+	
+	plantRes := controller.createPlantRequestGenerals(
+		controller.UserInfo,
+		itemRes,
 	)
 
 	productDocRes := controller.createProductMasterDocRequest(
@@ -433,7 +342,7 @@ func (
 		&headerRes,
 		itemRes,
 		&businessPartnerRes,
-		&plantRes,
+		plantRes,
 		productDocRes,
 	)
 }
@@ -447,9 +356,9 @@ func (
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 ) {
-	//businessPartnerMapper := services.BusinessPartnerNameMapper(
-	//	businessPartnerRes,
-	//)
+	businessPartnerMapper := services.BusinessPartnerNameMapper(
+		businessPartnerRes,
+	)
 	plantMapper := services.PlantMapper(
 		plantRes.Message.Generals,
 	)
@@ -466,6 +375,7 @@ func (
 		data.DeliveryDocumentHeaderWithItem = append(data.DeliveryDocumentHeaderWithItem,
 			apiOutputFormatter.DeliveryDocumentHeaderWithItem{
 				DeliveryDocument:        v.DeliveryDocument,
+				DeliveryDocumentDate:    v.DeliveryDocumentDate,
 				DeliverToPlant:          v.DeliverToPlant,
 				DeliverToPlantName:      plantMapper[v.DeliverToPlant].PlantName,
 				DeliverFromPlant:        v.DeliverFromPlant,
@@ -481,8 +391,8 @@ func (
 			apiOutputFormatter.DeliveryDocumentItem{
 				DeliveryDocumentItem:                 v.DeliveryDocumentItem,
 				Product:                              v.Product,
-				DeliveryDocumentItemItemTextByBuyer:  *v.DeliveryDocumentItemTextByBuyer,
-				DeliveryDocumentItemItemTextBySeller: *v.DeliveryDocumentItemTextBySeller,
+				DeliveryDocumentItemItemTextByBuyer:  v.DeliveryDocumentItemTextByBuyer,
+				DeliveryDocumentItemItemTextBySeller: v.DeliveryDocumentItemTextBySeller,
 				PlannedGoodsIssueQuantity:            v.PlannedGoodsIssueQuantity,
 				DeliveryUnit:                         v.DeliveryUnit,
 				PlannedGoodsIssueDate:                v.PlannedGoodsIssueDate,

@@ -14,8 +14,6 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type StorageBinListController struct {
@@ -99,7 +97,7 @@ func (
 	requestPram *apiInputReader.Request,
 	storageBinRes *apiModuleRuntimesResponsesStorageBin.StorageBinRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*storageBinRes.Message.General))
 
 	for _, v := range *storageBinRes.Message.General {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -159,46 +157,26 @@ func (
 	requestPram *apiInputReader.Request,
 	storageBinRes *apiModuleRuntimesResponsesStorageBin.StorageBinRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*storageBinRes.Message.General))
 	for i, v := range *storageBinRes.Message.General {
-		generals[i].Plant = v.Plant
+		input[i].Plant = v.Plant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
-		generals,
+		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -244,7 +222,7 @@ func (
 		businessPartnerRes,
 	)
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 	//	storageLocationMapper := services.StorageLocationMapper(
 	//		storageLocationRes.Message.StorageLocations,

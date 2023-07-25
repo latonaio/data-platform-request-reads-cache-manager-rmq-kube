@@ -16,8 +16,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type ProductMasterDetailBPPlantController struct {
@@ -177,7 +175,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bpPlantRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bpPlantRes.Message.BPPlant))
 	isMarkedForDeletion := false
 
 	for _, v := range *bpPlantRes.Message.BPPlant {
@@ -223,7 +221,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bpPlantsRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*bpPlantsRes.Message.BPPlant))
 
 	for _, v := range *bpPlantsRes.Message.BPPlant {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -257,46 +255,26 @@ func (
 	requestPram *apiInputReader.Request,
 	bpPlantRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*bpPlantRes.Message.BPPlant))
 	for i, v := range *bpPlantRes.Message.BPPlant {
 		input[i].Plant = v.Plant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -359,7 +337,7 @@ func (
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 ) {
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	businessPartnerMapper := services.BusinessPartnerNameMapper(

@@ -5,7 +5,7 @@ type BusinessPartnerRes struct {
 }
 
 type BusinessPartner struct {
-	General    *[]General    `json:"Generals,omitempty"`
+	General    *[]General    `json:"General,omitempty"`
 	Accounting *[]Accounting `json:"Accounting,omitempty"`
 	FinInst    *[]FinInst    `json:"FinInst,omitempty"`
 	Role       *[]Role       `json:"Role,omitempty"`

@@ -16,8 +16,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type OperationsListController struct {
@@ -121,7 +119,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesOperations.OperationsRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *bRes.Message.Header {
@@ -191,38 +189,19 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesOperations.OperationsRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Header))
 	for i, v := range *plantRes.Message.Header {
 		input[i].Plant = v.OwnerProductionPlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
@@ -279,7 +258,7 @@ func (
 ) {
 
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	productDescByBPMapper := services.ProductDescByBPMapper(

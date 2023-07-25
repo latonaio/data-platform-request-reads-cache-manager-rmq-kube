@@ -78,6 +78,12 @@ type Item struct {
 	SupplyChainRelationshipDeliveryPlantID        *int     `json:"SupplyChainRelationshipDeliveryPlantID"`
 	SupplyChainRelationshipStockConfPlantID       *int     `json:"SupplyChainRelationshipStockConfPlantID"`
 	SupplyChainRelationshipProductionPlantID      *int     `json:"SupplyChainRelationshipProductionPlantID"`
+	Buyer                                         *int     `json:"Buyer"`
+	Seller                                        *int     `json:"Seller"`
+	DeliverToParty                                *int     `json:"DeliverToParty"`
+	DeliverFromParty                              *int     `json:"DeliverFromParty"`
+	DeliverToPlant                                *string  `json:"DeliverToPlant"`
+	DeliverFromPlant                              *string  `json:"DeliverFromPlant"`
 	OrderItemText                                 *string  `json:"OrderItemText"`
 	OrderItemTextByBuyer                          *string  `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller                         *string  `json:"OrderItemTextBySeller"`
@@ -91,9 +97,6 @@ type Item struct {
 	PriceDetnExchangeRate                         *float32 `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate                         *string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                         *string  `json:"RequestedDeliveryTime"`
-	DeliverToParty                                *int     `json:"DeliverToParty"`
-	DeliverFromParty                              *int     `json:"DeliverFromParty"`
-	DeliverToPlant                                *string  `json:"DeliverToPlant"`
 	DeliverToPlantTimeZone                        *string  `json:"DeliverToPlantTimeZone"`
 	DeliverToPlantStorageLocation                 *string  `json:"DeliverToPlantStorageLocation"`
 	ProductIsBatchManagedInDeliverToPlant         *bool    `json:"ProductIsBatchManagedInDeliverToPlant"`
@@ -103,7 +106,6 @@ type Item struct {
 	DeliverToPlantBatchValidityStartTime          *string  `json:"DeliverToPlantBatchValidityStartTime"`
 	DeliverToPlantBatchValidityEndDate            *string  `json:"DeliverToPlantBatchValidityEndDate"`
 	DeliverToPlantBatchValidityEndTime            *string  `json:"DeliverToPlantBatchValidityEndTime"`
-	DeliverFromPlant                              *string  `json:"DeliverFromPlant"`
 	DeliverFromPlantTimeZone                      *string  `json:"DeliverFromPlantTimeZone"`
 	DeliverFromPlantStorageLocation               *string  `json:"DeliverFromPlantStorageLocation"`
 	ProductIsBatchManagedInDeliverFromPlant       *bool    `json:"ProductIsBatchManagedInDeliverFromPlant"`
@@ -131,11 +133,11 @@ type Item struct {
 	StockConfirmationPolicy                       *string  `json:"StockConfirmationPolicy"`
 	StockConfirmationStatus                       *string  `json:"StockConfirmationStatus"`
 	ConfirmedOrderQuantityInBaseUnit              *float32 `json:"ConfirmedOrderQuantityInBaseUnit"`
-	ItemWeightUnit                                *string  `json:"ItemWeightUnit"`
-	ProductGrossWeight                            *float32 `json:"ProductGrossWeight"`
-	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
+	ProductWeightUnit                             *string  `json:"ProductWeightUnit"`
 	ProductNetWeight                              *float32 `json:"ProductNetWeight"`
 	ItemNetWeight                                 *float32 `json:"ItemNetWeight"`
+	ProductGrossWeight                            *float32 `json:"ProductGrossWeight"`
+	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
 	InternalCapacityQuantity                      *float32 `json:"InternalCapacityQuantity"`
 	InternalCapacityQuantityUnit                  *string  `json:"InternalCapacityQuantityUnit"`
 	NetAmount                                     *float32 `json:"NetAmount"`
@@ -194,6 +196,23 @@ type Item struct {
 	LastChangeTime                                *string  `json:"LastChangeTime"`
 	IsCancelled                                   *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion                           *bool    `json:"IsMarkedForDeletion"`
+}
+
+func CreateOrdersRequestHeader(
+	requestPram *apiInputReader.Request,
+	ordersHeader *apiInputReader.OrdersHeader,
+) OrdersReq {
+	req := OrdersReq{
+		Header: Header{
+			OrderID:             ordersHeader.OrderID,
+			IsCancelled:         ordersHeader.IsCancelled,
+			IsMarkedForDeletion: ordersHeader.IsMarkedForDeletion,
+		},
+		Accepter: []string{
+			"Header",
+		},
+	}
+	return req
 }
 
 func CreateOrdersRequestHeaderByBuyer(
@@ -270,6 +289,17 @@ func OrdersReads(
 	aPIType := "reads"
 
 	var request OrdersReq
+
+	if accepter == "Header" {
+		request = CreateOrdersRequestHeader(
+			requestPram,
+			&apiInputReader.OrdersHeader{
+				OrderID:             input.OrdersHeader.OrderID,
+				IsCancelled:         input.OrdersHeader.IsCancelled,
+				IsMarkedForDeletion: input.OrdersHeader.IsMarkedForDeletion,
+			},
+		)
+	}
 
 	if accepter == "HeadersByBuyer" {
 		request = CreateOrdersRequestHeaderByBuyer(

@@ -37,8 +37,9 @@ type General struct {
 	WorkCenterUsage              	*string  `json:"WorkCenterUsage"`
 	ComponentIsMarkedForBackflush	*bool    `json:"ComponentIsMarkedForBackflush"`
 	WorkCenterLocation           	*string  `json:"WorkCenterLocation"`
-	CapacityID           			*int 	 `json:"CapacityID"`
 	CapacityCategory         		*string  `json:"CapacityCategory"`
+	CapacityQuantityUnit         	*string  `json:"CapacityQuantityUnit"`
+	CapacityQuantity         		*float32 `json:"CapacityQuantity"`
 	ValidityStartDate            	*string  `json:"ValidityStartDate"`
 	ValidityEndDate              	*string  `json:"ValidityEndDate"`
 	CreationDate            		*string  `json:"CreationDate"`

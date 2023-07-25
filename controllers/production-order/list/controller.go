@@ -19,8 +19,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type ProductionOrderListController struct {
@@ -124,7 +122,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *bRes.Message.Header {
@@ -194,7 +192,7 @@ func (
 	requestPram *apiInputReader.Request,
 	equipmentMasterRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*equipmentMasterRes.Message.General))
 
 	for _, v := range *equipmentMasterRes.Message.General {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -228,38 +226,19 @@ func (
 	requestPram *apiInputReader.Request,
 	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*productionOrderRes.Message.Header))
 	for i, v := range *productionOrderRes.Message.Header {
 		input[i].Plant = v.OwnerProductionPlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,

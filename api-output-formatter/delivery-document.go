@@ -26,6 +26,7 @@ type DeliveryDocumentHeader struct {
 
 type DeliveryDocumentHeaderWithItem struct {
 	DeliveryDocument        int    `json:"DeliveryDocument"`
+	DeliveryDocumentDate    string `json:"DeliveryDocumentDate"`
 	DeliverToParty          int    `json:"DeliverToParty"`
 	DeliverToPartyName      string `json:"DeliverToPartyName"`
 	DeliverToPlant          string `json:"DeliverToPlant"`

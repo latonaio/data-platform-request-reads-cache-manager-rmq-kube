@@ -12,8 +12,6 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type EquipmentMasterListController struct {
@@ -163,46 +161,26 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	generals := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*bRes.Message.General))
 	for i, v := range *bRes.Message.General {
-		generals[i].Plant = v.MaintenancePlant
+		input[i].Plant = v.MaintenancePlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
-		generals,
+		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -216,7 +194,7 @@ func (
 	// eMDocRes *apiModuleRuntimesResponsesEquipmentMasterDoc.EquipmentMasterDocRes,
 ) {
 	plantMapper := services.PlantMapper(
-		plRes.Message.Generals,
+		plRes.Message.General,
 	)
 
 	data := apiOutputFormatter.EquipmentMaster{}

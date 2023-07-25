@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"strconv"
 )
 
 type ProductMasterDetailBusinessPartnerController struct {
@@ -28,8 +27,7 @@ type ProductMasterDetailBusinessPartnerController struct {
 func (controller *ProductMasterDetailBusinessPartnerController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	product, _ := controller.GetString("product")
-	businessPartner, _ := controller.GetInt("businessPartner")
+	product := controller.GetString("product")
 	redisKeyCategory1 := "product-master"
 	redisKeyCategory2 := "detail-business-partner"
 	redisKeyCategory3 := product
@@ -52,7 +50,7 @@ func (controller *ProductMasterDetailBusinessPartnerController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
-			strconv.Itoa(redisKeyCategory3),
+			redisKeyCategory3,
 			userType,
 		},
 	)
@@ -80,10 +78,10 @@ func (controller *ProductMasterDetailBusinessPartnerController) Get() {
 
 	if cacheData != nil {
 		go func() {
-			controller.request(productMasterBusinessPartners)
+			controller.request(productMasterBusinessPartner)
 		}()
 	} else {
-		controller.request(productMasterBusinessPartners)
+		controller.request(productMasterBusinessPartner)
 	}
 }
 
@@ -94,11 +92,10 @@ func (
 	input apiInputReader.ProductMaster,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
 	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
-	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReads(
+	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReadsGenerals(
 		requestPram,
 		input,
 		&controller.Controller,
-		"Generals",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -120,12 +117,14 @@ func (
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductMaster,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
+
 	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterRes{}
-	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReads(
+	responseBody := apiModuleRuntimesRequestsProductMaster.ProductMasterReadsBusinessPartners(
 		requestPram,
-		input,
+		apiModuleRuntimesRequestsProductMaster.General{
+			Product: input.ProductMasterBusinessPartner.Product,
+		},
 		&controller.Controller,
-		"BusinessPartners",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -171,15 +170,15 @@ func (
 	requestPram *apiInputReader.Request,
 	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*productDescByBPRes.Message.ProductDescByBP))
 	isMarkedForDeletion := false
 
-	for _, v := range *productDescByBPRes.Message.Header {
+	for _, v := range *productDescByBPRes.Message.ProductDescByBP {
 		productDescsByBP = append(productDescsByBP, apiModuleRuntimesRequestsProductMaster.General{
 			Product: v.Product,
 			BusinessPartner: []apiModuleRuntimesRequestsProductMaster.BusinessPartner{
 				{
-					BusinessPartner: businessPartner,
+					BusinessPartner: *requestPram.BusinessPartner,
 					ProductDescByBP: []apiModuleRuntimesRequestsProductMaster.ProductDescByBP{
 						{
 							Language:            *requestPram.Language,
@@ -217,11 +216,11 @@ func (
 	requestPram *apiInputReader.Request,
 	businessPartnerRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*businessPartnerRes.Message.BusinessPartner))
 
-	for _, v := range *businessPartnerRes.Message.Header {
+	for _, v := range *businessPartnerRes.Message.BusinessPartner {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
-			BusinessPartner: businessPartner,
+			BusinessPartner: v.BusinessPartner,
 		})
 	}
 
@@ -264,12 +263,12 @@ func (
 
 	productDescByBPRes := controller.createProductMasterRequestProductDescByBP(
 		controller.UserInfo,
-		productMasterbusinessPartnerRes,
+		productMasterBusinessPartnerRes,
 	)
 
 	businessPartnerRes := controller.createBusinessPartnerRequest(
 		controller.UserInfo,
-		productMasterbusinessPartnerRes,
+		productMasterBusinessPartnerRes,
 	)
 
 	productDocRes := controller.createProductMasterDocRequest(
@@ -294,10 +293,9 @@ func (
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 ) {
-
-	businessPartnerMapper := services.BusinessPartnerNameMapper(
-		businessPartnerRes,
-	)
+	//businessPartnerMapper := services.BusinessPartnerNameMapper(
+	//	businessPartnerRes,
+	//)
 
 	descriptionMapper := services.ProductDescByBPMapper(
 		productDescByBPRes.Message.ProductDescByBP,
@@ -306,11 +304,11 @@ func (
 	data := apiOutputFormatter.ProductMaster{}
 
 	for _, v := range *generalRes.Message.General {
-		img := services.CreateProductImage(
-			productDocRes,
-			v.BusinessPartner,
-			v.Product,
-		)
+		//img := services.CreateProductImage(
+		//	productDocRes,
+		//	v.BusinessPartner,
+		//	v.Product,
+		//)
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
 
@@ -321,16 +319,16 @@ func (
 				ProductGroup:      v.ProductGroup,
 				BaseUnit:          v.BaseUnit,
 				ValidityStartDate: v.ValidityStartDate,
-				Images: apiOutputFormatter.Images{
-					Product: img,
-				},
+				//Images: apiOutputFormatter.Images{
+				//	Product: img,
+				//},
 			},
 		)
 	}
 
 	for _, v := range *generalRes.Message.BusinessPartner {
-		data.ProductMasterBusinessPartner = append(data.ProductMasterBusinessPartner,
-			apiOutputFormatter.ProductMasterBusinessPartner{
+		data.ProductMasterDetailBusinessPartner = append(data.ProductMasterDetailBusinessPartner,
+			apiOutputFormatter.ProductMasterDetailBusinessPartner{
 				BusinessPartner:        v.BusinessPartner,
 				ValidityStartDate:      v.ValidityStartDate,
 				ValidityEndDate:        v.ValidityEndDate,
@@ -338,9 +336,9 @@ func (
 				CreationDate:           v.CreationDate,
 				LastChangeDate:         v.LastChangeDate,
 				IsMarkedForDeletion:    v.IsMarkedForDeletion,
-				Images: apiOutputFormatter.Images{
-					Product: img,
-				},
+				//Images: apiOutputFormatter.Images{
+				//	Product: img,
+				//},
 			},
 		)
 	}

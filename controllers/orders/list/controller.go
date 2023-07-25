@@ -167,11 +167,11 @@ func (
 	controller *OrdersListController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
-	businessPartnerRes *apiModuleRuntimesResponsesOrders.OrdersRes,
+	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*ordersRes.Message.Header))
 
-	for _, v := range *businessPartnerRes.Message.Header {
+	for _, v := range *ordersRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.Buyer,
 		})

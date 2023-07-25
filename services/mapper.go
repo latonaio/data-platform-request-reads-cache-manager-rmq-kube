@@ -1,24 +1,23 @@
 package services
 
 import (
-	apiModuleRuntimesResponsesAddress "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/address"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 )
 
-func AddressMapper(
-	address *[]apiModuleRuntimesResponsesAddress.Address,
-) map[string]apiModuleRuntimesResponsesAddress.Address {
-	addressMapper := map[string]apiModuleRuntimesResponsesAddress.Address{}
-
-	for _, v := range *address {
-		addressMapper[v.Address] = v
-	}
-
-	return addressMapper
-}
+//func AddressMapper(
+//	address *[]apiModuleRuntimesResponsesAddress.Address,
+//) map[string]apiModuleRuntimesResponsesAddress.Address {
+//	addressMapper := map[string]apiModuleRuntimesResponsesAddress.Address{}
+//
+//	for _, v := range *address {
+//		addressMapper[v.Address] = v
+//	}
+//
+//	return addressMapper
+//}
 
 func ProductDescriptionMapper(
 	productDescription *[]apiModuleRuntimesResponsesProductMaster.ProductDescription,

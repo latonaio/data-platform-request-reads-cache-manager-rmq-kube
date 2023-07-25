@@ -16,24 +16,24 @@ type ProductStockReq struct {
 }
 
 type Header struct {
-	Product                   				string   `json:"Product"`
-	BusinessPartner           				int      `json:"BusinessPartner"`
-	Plant                     				string   `json:"Plant"`
-	SupplyChainRelationshipID           	int      `json:"SupplyChainRelationshipID"`
-	SupplyChainRelationshipDeliveryID		int      `json:"SupplyChainRelationshipDeliveryID"`
-	SupplyChainRelationshipDeliveryPlantID	int      `json:"SupplyChainRelationshipDeliveryPlantID"`
-	Buyer           						int      `json:"Buyer"`
-	Seller           						int      `json:"Seller"`
-	DeliverToParty           				int      `json:"DeliverToParty"`
-	DeliverFromParty           				int      `json:"DeliverFromParty"`
-	DeliverToPlant                     		string   `json:"DeliverToPlant"`
-	DeliverFromPlant                     	string   `json:"DeliverFromPlant"`
-	InventoryStockType        				string   `json:"InventoryStockType"`
-	ProductStock              				*float32 `json:"ProductStock"`
-	CreationDate							*string  `json:"CreationDate"`
-	CreationTime							*string  `json:"CreationTime"`
-	LastChangeDate							*string  `json:"LastChangeDate"`
-	LastChangeTime							*string  `json:"LastChangeTime"`
+	Product                                string   `json:"Product"`
+	BusinessPartner                        int      `json:"BusinessPartner"`
+	Plant                                  string   `json:"Plant"`
+	SupplyChainRelationshipID              int      `json:"SupplyChainRelationshipID"`
+	SupplyChainRelationshipDeliveryID      int      `json:"SupplyChainRelationshipDeliveryID"`
+	SupplyChainRelationshipDeliveryPlantID int      `json:"SupplyChainRelationshipDeliveryPlantID"`
+	Buyer                                  int      `json:"Buyer"`
+	Seller                                 int      `json:"Seller"`
+	DeliverToParty                         int      `json:"DeliverToParty"`
+	DeliverFromParty                       int      `json:"DeliverFromParty"`
+	DeliverToPlant                         string   `json:"DeliverToPlant"`
+	DeliverFromPlant                       string   `json:"DeliverFromPlant"`
+	InventoryStockType                     string   `json:"InventoryStockType"`
+	ProductStock                           *float32 `json:"ProductStock"`
+	CreationDate                           *string  `json:"CreationDate"`
+	CreationTime                           *string  `json:"CreationTime"`
+	LastChangeDate                         *string  `json:"LastChangeDate"`
+	LastChangeTime                         *string  `json:"LastChangeTime"`
 }
 
 func CreateProductStockRequestHeaderByBuyer(
@@ -42,7 +42,7 @@ func CreateProductStockRequestHeaderByBuyer(
 ) ProductStockReq {
 	req := ProductStockReq{
 		Header: Header{
-			Buyer:               *productStockHeader.Buyer,
+			Buyer: *productStockHeader.Buyer,
 		},
 		Accepter: []string{
 			"ProductStocksByBuyer",
@@ -57,8 +57,7 @@ func CreateProductStockRequestHeaderBySeller(
 ) ProductStockReq {
 	req := ProductStockReq{
 		Header: Header{
-			Seller:              *productStockHeader.Seller,
-			IsMarkedForDeletion: productStockHeader.IsMarkedForDeletion,
+			Seller: *productStockHeader.Seller,
 		},
 		Accepter: []string{
 			"ProductStocksBySeller",
@@ -82,7 +81,7 @@ func ProductStockReads(
 		request = CreateProductStockRequestHeaderByBuyer(
 			requestPram,
 			&apiInputReader.ProductStockHeader{
-				Buyer:               input.ProductStockHeader.Buyer,
+				Buyer: input.ProductStockHeader.Buyer,
 			},
 		)
 	}
@@ -91,7 +90,7 @@ func ProductStockReads(
 		request = CreateProductStockRequestHeaderBySeller(
 			requestPram,
 			&apiInputReader.ProductStockHeader{
-				Seller:              input.ProductStockHeader.Seller,
+				Seller: input.ProductStockHeader.Seller,
 			},
 		)
 	}

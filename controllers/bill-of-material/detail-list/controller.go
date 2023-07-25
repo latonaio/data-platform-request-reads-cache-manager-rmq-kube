@@ -16,9 +16,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
 	"strconv"
-	"strings"
 )
 
 type BillOfMaterialDetailListController struct {
@@ -174,46 +172,26 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Item))
 	for i, v := range *plantRes.Message.Item {
 		input[i].Plant = v.ProductionPlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -225,7 +203,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *bRes.Message.Header {
@@ -316,7 +294,7 @@ func (
 ) {
 
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	descriptionMapper := services.ProductDescByBPMapper(
@@ -335,15 +313,14 @@ func (
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
 		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
 
-		data.BillOfMaterialHeader = append(data.BillOfMaterialHeader,
-			apiOutputFormatter.BillOfMaterialHeader{
+		data.BillOfMaterialHeaderWithItem = append(data.BillOfMaterialHeaderWithItem,
+			apiOutputFormatter.BillOfMaterialHeaderWithItem{
 				Product:                  v.Product,
 				BillOfMaterial:           v.BillOfMaterial,
 				ProductDescription:       &productDescription,
 				OwnerProductionPlant:     v.OwnerProductionPlant,
 				OwnerProductionPlantName: &plantName,
 				ValidityStartDate:        v.ValidityStartDate,
-				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},
@@ -351,7 +328,7 @@ func (
 		)
 	}
 
-	for _, v := range *headerRes.Message.Item {
+	for _, v := range *itemRes.Message.Item {
 		plantName := fmt.Sprintf("%s", plantMapper[v.StockConfirmationPlant].PlantName)
 
 		data.BillOfMaterialItem = append(data.BillOfMaterialItem,

@@ -127,7 +127,7 @@ func (
 	requestPram *apiInputReader.Request,
 	businessPartnerRes *apiModuleRuntimesResponsesPurchaseRequisition.PurchaseRequisitionRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*businessPartnerRes.Message.Header))
 
 	for _, v := range *businessPartnerRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{

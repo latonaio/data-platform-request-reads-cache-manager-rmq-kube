@@ -4,7 +4,6 @@ import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
 	apiModuleRuntimesRequestsEquipmentMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/equipment-master"
-	apiModuleRuntimesRequests "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesEquipmentMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/equipment-master"
@@ -15,9 +14,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
 	"strconv"
-	"strings"
 )
 
 type EquipmentMasterDetailGeneralController struct {
@@ -128,46 +125,26 @@ func (
 	requestPram *apiInputReader.Request,
 	equipmentMasterResRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*equipmentMasterResRes.Message.General))
 	for i, v := range *equipmentMasterResRes.Message.General {
 		input[i].Plant = v.MaintenancePlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequests.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createPlantRequestGenerals error")
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -179,7 +156,7 @@ func (
 	requestPram *apiInputReader.Request,
 	equipmentMasterRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*equipmentMasterRes.Message.General))
 
 	for _, v := range *equipmentMasterRes.Message.General {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -250,7 +227,7 @@ func (
 	)
 
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	data := apiOutputFormatter.EquipmentMaster{}

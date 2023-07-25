@@ -349,10 +349,10 @@ func CreateProductMasterProductDescriptions(
 
 func CreateProductMasterBusinessPartners(
 	requestPram *apiInputReader.Request,
-	generals []General,
+	general General,
 ) ProductMasterReq {
 	req := ProductMasterReq{
-		Generals: generals,
+		General: general,
 		Accepter: []string{
 			"BusinessPartners",
 		},
@@ -484,7 +484,7 @@ func ProductMasterReadsProductDescriptions(
 
 func ProductMasterReadsBusinessPartners(
 	requestPram *apiInputReader.Request,
-	generals []General,
+	general General,
 	controller *beego.Controller,
 ) []byte {
 	aPIServiceName := "DPFM_API_PRODUCT_MASTER_SRV"
@@ -492,7 +492,7 @@ func ProductMasterReadsBusinessPartners(
 
 	request := CreateProductMasterBusinessPartners(
 		requestPram,
-		generals,
+		general,
 	)
 
 	marshaledRequest, err := json.Marshal(request)

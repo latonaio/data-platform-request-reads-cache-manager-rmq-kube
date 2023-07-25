@@ -18,9 +18,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strconv"
-	"strings"
 )
 
 type ProductStockDetailListController struct {
@@ -36,7 +33,8 @@ func (controller *ProductStockDetailListController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "product-stock"
 	redisKeyCategory2 := "detail-list"
-	redisKeyCategory3 := productStock
+	redisKeyCategory3 := controller.GetString("productStock")
+	supplyChainRelationshipID, _ := controller.GetInt("supplyChainRelationshipID")
 	userType := controller.GetString(":userType")
 	buyer, _ := controller.GetInt("buyer")
 	seller, _ := controller.GetInt("seller")
@@ -45,7 +43,7 @@ func (controller *ProductStockDetailListController) Get() {
 
 	productStockHeaderDetails := apiInputReader.ProductStock{
 		ProductStockHeader: &apiInputReader.ProductStockHeader{
-			SupplyChainRelationshipID: v.SupplyChainRelationshipID,
+			SupplyChainRelationshipID: supplyChainRelationshipID,
 			Buyer:                     &buyer,
 			Seller:                    &seller,
 		},
@@ -56,7 +54,7 @@ func (controller *ProductStockDetailListController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
-			strconv.Itoa(redisKeyCategory3),
+			redisKeyCategory3,
 			userType,
 		},
 	)
@@ -202,7 +200,7 @@ func (
 	requestPram *apiInputReader.Request,
 	headerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*headerRes.Message.Header))
 
 	for _, v := range *headerRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -242,7 +240,7 @@ func (
 	requestPram *apiInputReader.Request,
 	headerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*headerRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *headerRes.Message.Header {
@@ -288,37 +286,19 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make(apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Header))
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Header))
 	for i, v := range *plantRes.Message.Header {
-		input[i].Plant = &v.Plant
+		input[i].Plant = v.Plant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.CreatePlantRequestGenerals(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
-	)
-
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		&controller.Controller,
 	)
 
-	err = json.Unmarshal(responseBody, &responseJsonData)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
@@ -347,7 +327,6 @@ func (
 
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
-
 	if input.ProductStockHeader.Buyer != nil {
 		headerRes = *controller.createProductStockRequestHeaderByBuyer(
 			controller.UserInfo,
@@ -370,7 +349,7 @@ func (
 		)
 	}
 
-	plantlRes := controller.createPlantRequestGenerals(
+	plantRes := controller.createPlantRequestGenerals(
 		controller.UserInfo,
 		&headerRes,
 	)
@@ -407,7 +386,7 @@ func (
 	)
 
 	plantMapper := services.PlantMapper(
-		plantlRes.Message.Generals,
+		plantlRes.Message.General,
 	)
 
 	descriptionMapper := services.ProductDescByBPMapper(
@@ -437,18 +416,18 @@ func (
 
 		data.ProductStockDetailHeader = append(data.ProductStockDetailHeader,
 			apiOutputFormatter.ProductStockDetailHeader{
-				BusinessPartner:           v.BusinessPartner,
-				BusinessPartnerName:       businessPartnerMapper[v.BusinessPartner].BusinessPartnerName,
-				Plant					   v.Plant,
-				PlantName				   plantMapper[v.Plant].PlantName,
-				Product:                   v.Product,
-				ProductDescription:        productDescription,
-				ProductStock:        	   v.ProductStock,
-				DeliverToPlant			   v.DeliverToPlant,
-				DeliverToPlantName		   plantMapper[v.DeliverToPlant].PlantName,
-				DeliverFromPlant		   v.DeliverFromPlant,
-				DeliverFromPlantName	   plantMapper[v.DeliverFromPlant].PlantName,
-				InventoryStockType:        v.InventoryStockType,
+				BusinessPartner:      v.BusinessPartner,
+				BusinessPartnerName:  businessPartnerMapper[v.BusinessPartner].BusinessPartnerName,
+				Plant:                v.Plant,
+				PlantName:            plantMapper[v.Plant].PlantName,
+				Product:              v.Product,
+				ProductDescription:   productDescription,
+				ProductStock:         v.ProductStock,
+				DeliverToPlant:       v.DeliverToPlant,
+				DeliverToPlantName:   plantMapper[v.DeliverToPlant].PlantName,
+				DeliverFromPlant:     v.DeliverFromPlant,
+				DeliverFromPlantName: plantMapper[v.DeliverFromPlant].PlantName,
+				InventoryStockType:   v.InventoryStockType,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},

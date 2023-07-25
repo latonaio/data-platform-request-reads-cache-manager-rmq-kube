@@ -1,11 +1,11 @@
 package apiOutputFormatter
 
 type ProductMaster struct {
-	ProductMasterGeneral               []ProductMasterGeneral                               `json:"Generals"`
-	ProductMasterGeneralWithOthers     []ProductMasterGeneralWithOthers                     `json:"GeneralWithOthers"`
-	ProductMasterDetailGeneral         []ProductMasterDetailGeneral                         `json:"DetailGeneral"`
-	ProductMasterDetailBusinessPartner []ProductMasterDetailBusinessPartner                 `json:"DetailBusinessPartner"`
-	ProductMasterDetailBPPlant         []ProductMasterDetailBusinProductMasterDetailBPPlant `json:"DetailBPPlant"`
+	ProductMasterGeneral               []ProductMasterGeneral               `json:"Generals"`
+	ProductMasterGeneralWithOthers     []ProductMasterGeneralWithOthers     `json:"GeneralWithOthers"`
+	ProductMasterDetailGeneral         []ProductMasterDetailGeneral         `json:"DetailGeneral"`
+	ProductMasterDetailBusinessPartner []ProductMasterDetailBusinessPartner `json:"DetailBusinessPartner"`
+	ProductMasterDetailBPPlant         []ProductMasterDetailBPPlant         `json:"DetailBPPlant"`
 }
 
 type ProductMasterGeneral struct {

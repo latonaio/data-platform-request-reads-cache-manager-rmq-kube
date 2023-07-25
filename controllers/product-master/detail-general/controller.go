@@ -163,7 +163,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bRes.Message.General))
 	isMarkedForDeletion := false
 
 	for _, v := range *bRes.Message.General {

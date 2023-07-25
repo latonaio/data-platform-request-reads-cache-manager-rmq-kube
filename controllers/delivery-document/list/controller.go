@@ -166,7 +166,7 @@ func (
 	requestPram *apiInputReader.Request,
 	deliveryDocumentRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*deliveryDocumentRes.Message.Header))
 
 	for _, v := range *deliveryDocumentRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -203,7 +203,7 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Header))
 
 	for _, v := range *plantRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
@@ -293,7 +293,7 @@ func (
 		businessPartnerRes,
 	)
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	data := apiOutputFormatter.DeliveryDocument{}

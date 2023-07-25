@@ -9,8 +9,8 @@ type WorkCenterGeneral struct {
 	WorkCenterName                string  `json:"WorkCenterName"`
 	Plant                         string  `json:"Plant"`
 	PlantName                     string  `json:"PlantName"`
-	ComponentIsMarkedForBackflush *bool   `json:"ComponentIsMarkedForBackflush"`
-	CapacityID                    *int    `json:"CapacityID"`
-	CapacityCategory              *string `json:"CapacityCategory"`
+	WorkCenterLocation			  *string `json:"WorkCenterLocation"`
+	CapacityCategory			  string  `json:"CapacityCategory"`
+	ValidityStartDate             string  `json:"ValidityStartDate"`
 	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
 }

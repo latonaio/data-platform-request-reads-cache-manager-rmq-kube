@@ -31,10 +31,10 @@ const (
 
 func (controller *InvoiceDocumentDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+	invoiceDocument, _ := controller.GetInt("invoiceDocument")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "invoiceDocument"
-	redisKeyCategory2 := "list"
+	redisKeyCategory1 := "invoice-document"
+	redisKeyCategory2 := "detail-list"
 	userType := controller.GetString(":userType") // billToParty or billFromParty
 	billToPartyValue, _ := controller.GetInt("billToParty")
 	billFromPartyValue, _ := controller.GetInt("billFromParty")
@@ -44,8 +44,13 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 	if userType == billToParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				BillToParty:         &billToPartyValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				InvoiceDocument:		invoiceDocument,
+				BillToParty:			&billToPartyValue,
+				IsCancelled:			&isCancelled,
+			},
+			InvoiceDocumentItems: &apiInputReader.InvoiceDocumentItems{
+				InvoiceDocument:		invoiceDocument,
+				IsCancelled:			&isCancelled,
 			},
 		}
 	}
@@ -53,8 +58,13 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 	if userType == billFromParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				BillFromParty:       &billFromPartyValue,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				InvoiceDocument:		invoiceDocument,
+				BillFromParty:			&billFromPartyValue,
+				IsCancelled:			&isCancelled,
+			},
+			InvoiceDocumentItems: &apiInputReader.InvoiceDocumentItems{
+				InvoiceDocument:		invoiceDocument,
+				IsCancelled:			&isCancelled,
 			},
 		}
 	}
@@ -100,7 +110,7 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 
 func (
 	controller *InvoiceDocumentDetailListController,
-) createInvoiceDocumentRequestHeaderByBillToParty(
+) createInvoiceDocumentRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.InvoiceDocument,
 ) *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes {
@@ -109,34 +119,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"HeadersByBillToParty",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("InvoiceDocumentReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *InvoiceDocumentDetailListController,
-) createInvoiceDocumentRequestHeaderByBillFromParty(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.InvoiceDocument,
-) *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes {
-	responseJsonData := apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes{}
-	responseBody := apiModuleRuntimesRequestsInvoiceDocument.InvoiceDocumentReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"HeadersByBillFromParty",
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -183,11 +166,11 @@ func (
 	controller *InvoiceDocumentDetailListController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
-	businessPartnerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
+	invoiceDocumentRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*invoiceDocumentRes.Message.Header))
 
-	for _, v := range *businessPartnerRes.Message.Header {
+	for _, v := range *invoiceDocumentRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.BillToParty,
 		})
@@ -242,6 +225,30 @@ func (
 
 func (
 	controller *InvoiceDocumentDetailListController,
+) createProductMasterDocRequest(
+	requestPram *apiInputReader.Request,
+) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
+		requestPram,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *InvoiceDocumentDetailListController,
 ) request(
 	input apiInputReader.InvoiceDocument,
 ) {
@@ -251,7 +258,7 @@ func (
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.InvoiceDocumentHeader.BillToParty != nil {
-		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillToParty(
+		headerRes = *controller.createDeliveryDocumentRequestHeader(
 			controller.UserInfo,
 			input,
 		)
@@ -262,7 +269,7 @@ func (
 	}
 
 	if input.InvoiceDocumentHeader.BillFromParty != nil {
-		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillFromParty(
+		headerRes = *controller.createDeliveryDocumentRequestHeader(
 			controller.UserInfo,
 			input,
 		)

@@ -18,13 +18,21 @@ type Header struct {
 	SupplyChainRelationshipProductionPlantID int     `json:"SupplyChainRelationshipProductionPlantID"`
 	Product                                  string  `json:"Product"`
 	Buyer                                    int     `json:"Buyer"`
+	BuyerName                                string  `json:"BuyerName"`
 	Seller                                   int     `json:"Seller"`
+	SellerName                               string  `json:"SellerName"`
 	DepartureDeliverFromParty                int     `json:"DepartureDeliverFromParty"`
+	DepartureDeliverFromPartyName            string  `json:"DepartureDeliverFromPartyName"`
 	DepartureDeliverFromPlant                string  `json:"DepartureDeliverFromPlant"`
+	DepartureDeliverFromPlantName            string  `json:"DepartureDeliverFromPlantName"`
 	DestinationDeliverToParty                int     `json:"DestinationDeliverToParty"`
+	DestinationDeliverToPartyName            string  `json:"DestinationDeliverToPartyName"`
 	DestinationDeliverToPlant                string  `json:"DestinationDeliverToPlant"`
+	DestinationDeliverToPlantName            string  `json:"DestinationDeliverToPlantName"`
 	OwnerProductionPlantBusinessPartner      int     `json:"OwnerProductionPlantBusinessPartner"`
+	OwnerProductionPlantBusinessPartnerName  string  `json:"OwnerProductionPlantBusinessPartnerName"`
 	OwnerProductionPlant                     string  `json:"OwnerProductionPlant"`
+	OwnerProductionPlantName                 string  `json:"OwnerProductionPlantName"`
 	ProductBaseUnit                          string  `json:"ProductBaseUnit"`
 	ProductDeliveryUnit                      string  `json:"ProductDeliveryUnit"`
 	ProductProductionUnit                    string  `json:"ProductProductionUnit"`

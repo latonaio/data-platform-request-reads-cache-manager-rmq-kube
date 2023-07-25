@@ -16,8 +16,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type BillOfMaterialListController struct {
@@ -190,40 +188,21 @@ func (
 	controller *BillOfMaterialListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	plantRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	billOfMaterialRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
-	for i, v := range *plantRes.Message.Header {
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*billOfMaterialRes.Message.Header))
+	for i, v := range *billOfMaterialRes.Message.Header {
 		input[i].Plant = v.OwnerProductionPlant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
@@ -280,7 +259,7 @@ func (
 ) {
 
 	plantMapper := services.PlantMapper(
-		plantlRes.Message.Generals,
+		plantlRes.Message.General,
 	)
 
 	descriptionMapper := services.ProductDescByBPMapper(

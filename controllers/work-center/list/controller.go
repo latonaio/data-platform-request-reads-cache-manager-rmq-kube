@@ -14,8 +14,6 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
-	"io/ioutil"
-	"strings"
 )
 
 type WorkCenterListController struct {
@@ -143,38 +141,19 @@ func (
 	requestPram *apiInputReader.Request,
 	workCenterRes *apiModuleRuntimesResponsesWorkCenter.WorkCenterRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*workCenterRes.Message.General))
 	for i, v := range *workCenterRes.Message.General {
 		input[i].Plant = v.Plant
 	}
 
-	aPIServiceName := "DPFM_API_PLANT_SRV"
-	aPIType := "reads"
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
-
-	request := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
 		requestPram,
 		input,
 		&controller.Controller,
 	)
 
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-	}
-
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		&controller.Controller,
-	)
-
-	err = json.Unmarshal(responseBody, &responseJsonData)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
@@ -229,10 +208,11 @@ func (
 			apiOutputFormatter.WorkCenterGeneral{
 				WorkCenter:                    v.WorkCenter,
 				WorkCenterName:                v.WorkCenterName,
+				Plant:		                   v.Plant,
 				PlantName:                     plantMapper[v.Plant].PlantName,
-				ComponentIsMarkedForBackflush: v.ComponentIsMarkedForBackflush,
-				CapacityID:                    v.CapacityID,
+				WorkCenterLocation: 		   v.WorkCenterLocation,
 				CapacityCategory:              v.CapacityCategory,
+				ValidityStartDate:             v.ValidityStartDate,
 				IsMarkedForDeletion:           v.IsMarkedForDeletion,
 			},
 		)

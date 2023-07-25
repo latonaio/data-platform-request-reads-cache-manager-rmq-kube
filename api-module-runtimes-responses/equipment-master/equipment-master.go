@@ -5,7 +5,7 @@ type EquipmentMasterRes struct {
 }
 
 type EquipmentMaster struct {
-	General              *[]General              `json:"Generals,omitempty"`
+	General              *[]General              `json:"General,omitempty"`
 	OwnerBusinessPartner *[]OwnerBusinessPartner `json:"OwnerBusinessPartner,omitempty"`
 	BusinessPartner      *[]BusinessPartner      `json:"BusinessPartner,omitempty"`
 }

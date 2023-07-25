@@ -33,7 +33,7 @@ const (
 
 func (controller *OrdersDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	//orderID, _ := controller.GetInt("orderID")
+	orderID, _ := controller.GetInt("orderId")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "orders"
 	redisKeyCategory2 := "detail-list"
@@ -49,13 +49,14 @@ func (controller *OrdersDetailListController) Get() {
 	isCancelled := false
 	isMarkedForDeletion := false
 
-	//itemCompleteDeliveryIsDefined := false
-	//itemDeliveryBlockStatus := false
-	//itemDeliveryStatus := "CL"
+	itemCompleteDeliveryIsDefined := false
+	itemDeliveryBlockStatus := false
+	itemDeliveryStatus := "CL"
 
 	if userType == buyer {
 		ordersHeader = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
+				OrderID:                         orderID,
 				Buyer:                           &buyerValue,
 				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
 				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
@@ -63,18 +64,35 @@ func (controller *OrdersDetailListController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
+			OrdersItems: &apiInputReader.OrdersItems{
+				OrderID:                       orderID,
+				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
+				ItemDeliveryStatus:            &itemDeliveryStatus,
+				IsCancelled:                   &isCancelled,
+				IsMarkedForDeletion:           &isMarkedForDeletion,
+			},
 		}
 	}
 
 	if userType == seller {
 		ordersHeader = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
+				OrderID:                         orderID,
 				Seller:                          &sellerValue,
 				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
 				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
 				HeaderDeliveryStatus:            &headerDeliveryStatus,
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
+			},
+			OrdersItems: &apiInputReader.OrdersItems{
+				OrderID:                       orderID,
+				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
+				ItemDeliveryStatus:            &itemDeliveryStatus,
+				IsCancelled:                   &isCancelled,
+				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
 		}
 	}
@@ -131,7 +149,7 @@ func (controller *OrdersDetailListController) Get() {
 
 func (
 	controller *OrdersDetailListController,
-) createOrdersRequestHeaderByBuyer(
+) createOrdersRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
 ) *apiModuleRuntimesResponsesOrders.OrdersRes {
@@ -140,34 +158,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"HeadersByBuyer",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("OrdersReads Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *OrdersDetailListController,
-) createOrdersRequestHeaderBySeller(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.Orders,
-) *apiModuleRuntimesResponsesOrders.OrdersRes {
-	responseJsonData := apiModuleRuntimesResponsesOrders.OrdersRes{}
-	responseBody := apiModuleRuntimesRequestsOrders.OrdersReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"HeadersBySeller",
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -216,7 +207,7 @@ func (
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*ordersRes.Message.Header))
 
 	for _, v := range *ordersRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -277,7 +268,7 @@ func (
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, 0)
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*ordersRes.Message.Item))
 
 	for _, v := range *ordersRes.Message.Item {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
@@ -321,7 +312,7 @@ func (
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.OrdersHeader.Buyer != nil {
-		headerRes = *controller.createOrdersRequestHeaderByBuyer(
+		headerRes = *controller.createOrdersRequestHeader(
 			controller.UserInfo,
 			input,
 		)
@@ -333,7 +324,7 @@ func (
 	}
 
 	if input.OrdersHeader.Seller != nil {
-		headerRes = *controller.createOrdersRequestHeaderBySeller(
+		headerRes = *controller.createOrdersRequestHeader(
 			controller.UserInfo,
 			input,
 		)
@@ -394,17 +385,17 @@ func (
 
 		data.OrdersHeaderWithItem = append(data.OrdersHeaderWithItem,
 			apiOutputFormatter.OrdersHeaderWithItem{
-				OrderID:      v.OrderID,
-				OrderDate:    v.OrderDate,
-				PaymentTerms: v.PaymentTerms,
-				//PaymentTermsName:     v.PaymentTermsName, //CallerとMapperが必要
-				PaymentMethod:       v.PaymentMethod,
-				TransactionCurrency: v.TransactionCurrency,
-				OrderType:           v.OrderType,
-				Buyer:               v.Buyer,
-				BuyerName:           businessPartnerMapper[v.Buyer].BusinessPartnerName,
-				Seller:              v.Seller,
-				SellerName:          businessPartnerMapper[v.Seller].BusinessPartnerName,
+				OrderID:      			v.OrderID,
+				OrderDate:    			v.OrderDate,
+				PaymentTerms: 			v.PaymentTerms,
+				//PaymentTermsName:		v.PaymentTermsName, //CallerとMapperが必要
+				PaymentMethod:			v.PaymentMethod,
+				TransactionCurrency:	v.TransactionCurrency,
+				OrderType:				v.OrderType,
+				Buyer:					v.Buyer,
+				BuyerName:				businessPartnerMapper[v.Buyer].BusinessPartnerName,
+				Seller:					v.Seller,
+				SellerName:				businessPartnerMapper[v.Seller].BusinessPartnerName,
 			},
 		)
 	}
@@ -419,7 +410,7 @@ func (
 				OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
 				DeliveryUnit:                v.DeliveryUnit,
 				RequestedDeliveryDate:       v.RequestedDeliveryDate,
-				NetAmount:                   *v.NetAmount,
+				NetAmount:                   v.NetAmount,
 				IsCancelled:                 v.IsCancelled,
 				IsMarkedForDeletion:         v.IsMarkedForDeletion,
 				//Images: apiOutputFormatter.Images{

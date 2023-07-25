@@ -155,7 +155,7 @@ func (
 	requestPram *apiInputReader.Request,
 	pdByBuyerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*pdByBuyerRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *pdByBuyerRes.Message.Header {
@@ -201,7 +201,7 @@ func (
 	requestPram *apiInputReader.Request,
 	pdByBuyerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*pdByBuyerRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *pdByBuyerRes.Message.Header {
@@ -271,7 +271,7 @@ func (
 	requestPram *apiInputReader.Request,
 	productStockRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*productStockRes.Message.Header))
 
 	for _, v := range *productStockRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{

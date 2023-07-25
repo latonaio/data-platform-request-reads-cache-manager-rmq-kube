@@ -144,9 +144,9 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*plantRes.Message.General))
 
-	for _, v := range *plantRes.Message.Generals {
+	for _, v := range *plantRes.Message.General {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.BusinessPartner,
 		})
@@ -214,7 +214,7 @@ func (
 
 	data := apiOutputFormatter.Plant{}
 
-	for _, v := range *generalRes.Message.Generals {
+	for _, v := range *generalRes.Message.General {
 
 		data.PlantGeneral = append(data.PlantGeneral,
 			apiOutputFormatter.PlantGeneral{

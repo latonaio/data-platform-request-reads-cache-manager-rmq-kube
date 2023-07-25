@@ -29,7 +29,6 @@ const (
 
 func (controller *InvoiceDocumentListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "invoiceDocument"
 	redisKeyCategory2 := "list"
@@ -40,8 +39,7 @@ func (controller *InvoiceDocumentListController) Get() {
 	if userType == billToParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				BillToParty:         controller.UserInfo.BusinessPartner,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				BillToParty: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -49,8 +47,7 @@ func (controller *InvoiceDocumentListController) Get() {
 	if userType == billFromParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				BillFromParty:       controller.UserInfo.BusinessPartner,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				BillFromParty: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -154,7 +151,7 @@ func (
 	requestPram *apiInputReader.Request,
 	businessPartnerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*businessPartnerRes.Message.Header))
 
 	for _, v := range *businessPartnerRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -188,7 +185,7 @@ func (
 	requestPram *apiInputReader.Request,
 	businessPartnerRes *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*businessPartnerRes.Message.Header))
 
 	for _, v := range *businessPartnerRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{

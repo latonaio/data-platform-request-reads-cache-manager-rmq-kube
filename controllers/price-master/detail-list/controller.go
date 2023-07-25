@@ -198,7 +198,7 @@ func (
 	requestPram *apiInputReader.Request,
 	priceMasterRes *apiModuleRuntimesResponsesPriceMaster.PriceMasterRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*priceMasterRes.Message.Header))
 
 	for _, v := range *priceMasterRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -235,7 +235,7 @@ func (
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesPriceMaster.PriceMasterRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, 0)
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*bRes.Message.Header))
 	isMarkedForDeletion := false
 
 	for _, v := range *bRes.Message.Header {

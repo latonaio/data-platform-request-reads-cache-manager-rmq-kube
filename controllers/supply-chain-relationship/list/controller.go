@@ -154,7 +154,7 @@ func (
 	requestPram *apiInputReader.Request,
 	supplyChainRelationshipRes *apiModuleRuntimesResponsesSupplyChainRelationship.SupplyChainRelationshipRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, 0)
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*supplyChainRelationshipRes.Message.General))
 
 	for _, v := range *supplyChainRelationshipRes.Message.General {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
