@@ -1,9 +1,9 @@
 package apiOutputFormatter
 
 type BillOfMaterial struct {
-	BillOfMaterialHeader			[]BillOfMaterialHeader			`json:"Header"`
-	BillOfMaterialHeaderWithItem	[]BillOfMaterialHeaderWithItem	`json:"HeaderWithItem"`
-	BillOfMaterialItem				[]BillOfMaterialItem			`json:"Item"`
+	BillOfMaterialHeader         []BillOfMaterialHeader         `json:"Header"`
+	BillOfMaterialHeaderWithItem []BillOfMaterialHeaderWithItem `json:"HeaderWithItem"`
+	BillOfMaterialItem           []BillOfMaterialItem           `json:"Item"`
 }
 
 type BillOfMaterialHeader struct {
@@ -32,18 +32,21 @@ type BillOfMaterialHeaderWithItem struct {
 	DestinationDeliverToPlant                string  `json:"DestinationDeliverToPlant"`
 	OwnerProductionPlantBusinessPartner      int     `json:"OwnerProductionPlantBusinessPartner"`
 	OwnerProductionPlant                     string  `json:"OwnerProductionPlant"`
+	OwnerProductionPlantName                 string  `json:"OwnerProductionPlantName"`
+	Product                                  string  `json:"Product"`
 	ProductBaseUnit                          string  `json:"ProductBaseUnit"`
 	ProductDeliveryUnit                      string  `json:"ProductDeliveryUnit"`
 	ProductProductionUnit                    string  `json:"ProductProductionUnit"`
 	ProductStandardQuantityInBaseUnit        float32 `json:"ProductStandardQuantityInBaseUnit"`
 	ProductStandardQuantityInDeliveryUnit    float32 `json:"ProductStandardQuantityInDeliveryUnit"`
 	ProductStandardQuantityInProductionUnit  float32 `json:"ProductStandardQuantityInProductionUnit"`
+	ProductDescription                       string  `json:"ProductDescription"`
 	BillOfMaterialHeaderText                 *string `json:"BillOfMaterialHeaderText"`
 	ValidityStartDate                        *string `json:"ValidityStartDate"`
 	ValidityEndDate                          *string `json:"ValidityEndDate"`
 	CreationDate                             string  `json:"CreationDate"`
 	LastChangeDate                           string  `json:"LastChangeDate"`
-	Images                   				 Images  `json:"Images"`
+	Images                                   Images  `json:"Images"`
 }
 
 type BillOfMaterialHeaderWithItemOtherInfo struct {

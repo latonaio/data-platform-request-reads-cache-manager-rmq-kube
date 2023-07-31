@@ -51,26 +51,27 @@ func (controller *DeliveryDocumentDetailListController) Get() {
 
 	itemCompleteDeliveryIsDefined := false
 	itemDeliveryBlockStatus := false
-	itemDeliveryStatus := "CL"
+	// todo 確認
+	//itemDeliveryStatus := "CL"
 
 	if userType == deliverToParty {
 		deliveryDocumentHeader = apiInputReader.DeliveryDocument{
 			DeliveryDocumentHeader: &apiInputReader.DeliveryDocumentHeader{
-				DeliveryDocument:    				deliveryDocument,
-				DeliverToParty:      				&deliverToPartyValue,
-				HeaderCompleteDeliveryIsDefined:	&headerCompleteDeliveryIsDefined,
-				HeaderDeliveryBlockStatus:       	&headerDeliveryBlockStatus,
-				HeaderDeliveryStatus:            	&headerDeliveryStatus,
-				IsCancelled:                     	&isCancelled,
-				IsMarkedForDeletion:             	&isMarkedForDeletion,
+				DeliveryDocument:                deliveryDocument,
+				DeliverToParty:                  &deliverToPartyValue,
+				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            &headerDeliveryStatus,
+				IsCancelled:                     &isCancelled,
+				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument:              		deliveryDocument,
-				ItemCompleteDeliveryIsDefined: 		&itemCompleteDeliveryIsDefined,
-				ItemDeliveryBlockStatus:       		&itemDeliveryBlockStatus,
-				ItemDeliveryStatus:            		&itemDeliveryStatus,
-				IsCancelled:                   		&isCancelled,
-				IsMarkedForDeletion:           		&isMarkedForDeletion,
+				DeliveryDocument:              deliveryDocument,
+				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
+				//ItemDeliveryStatus:            &itemDeliveryStatus,
+				IsCancelled:         &isCancelled,
+				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		}
 	}
@@ -78,21 +79,21 @@ func (controller *DeliveryDocumentDetailListController) Get() {
 	if userType == deliverFromParty {
 		deliveryDocumentHeader = apiInputReader.DeliveryDocument{
 			DeliveryDocumentHeader: &apiInputReader.DeliveryDocumentHeader{
-				DeliveryDocument:    				deliveryDocument,			
-				DeliverFromParty:    				&deliverFromPartyValue,
-				HeaderCompleteDeliveryIsDefined:	&headerCompleteDeliveryIsDefined,
-				HeaderDeliveryBlockStatus:       	&headerDeliveryBlockStatus,
-				HeaderDeliveryStatus:            	&headerDeliveryStatus,
-				IsCancelled:                     	&isCancelled,
-				IsMarkedForDeletion:             	&isMarkedForDeletion,
+				DeliveryDocument:                deliveryDocument,
+				DeliverFromParty:                &deliverFromPartyValue,
+				HeaderCompleteDeliveryIsDefined: &headerCompleteDeliveryIsDefined,
+				HeaderDeliveryBlockStatus:       &headerDeliveryBlockStatus,
+				HeaderDeliveryStatus:            &headerDeliveryStatus,
+				IsCancelled:                     &isCancelled,
+				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument:              		deliveryDocument,
-				ItemCompleteDeliveryIsDefined: 		&itemCompleteDeliveryIsDefined,
-				ItemDeliveryBlockStatus:       		&itemDeliveryBlockStatus,
-				ItemDeliveryStatus:            		&itemDeliveryStatus,
-				IsCancelled:                   		&isCancelled,
-				IsMarkedForDeletion:           		&isMarkedForDeletion,
+				DeliveryDocument:              deliveryDocument,
+				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
+				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
+				//ItemDeliveryStatus:            &itemDeliveryStatus,
+				IsCancelled:         &isCancelled,
+				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		}
 	}
@@ -237,12 +238,12 @@ func (
 
 	for _, v := range *deliveryDocumentRes.Message.Item {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			BusinessPartner: *v.DeliverToParty,
-			Plant:           *v.DeliverToPlant,
+			BusinessPartner: v.DeliverToParty,
+			Plant:           v.DeliverToPlant,
 		})
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			BusinessPartner: *v.DeliverFromParty,
-			Plant:           *v.DeliverFromPlant,
+			BusinessPartner: v.DeliverFromParty,
+			Plant:           v.DeliverFromPlant,
 		})
 	}
 
@@ -328,7 +329,7 @@ func (
 		controller.UserInfo,
 		input,
 	)
-	
+
 	plantRes := controller.createPlantRequestGenerals(
 		controller.UserInfo,
 		itemRes,
@@ -356,11 +357,12 @@ func (
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 ) {
-	businessPartnerMapper := services.BusinessPartnerNameMapper(
-		businessPartnerRes,
-	)
+	//businessPartnerMapper := services.BusinessPartnerNameMapper(
+	//	businessPartnerRes,
+	//)
+
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	data := apiOutputFormatter.DeliveryDocument{}
@@ -391,8 +393,8 @@ func (
 			apiOutputFormatter.DeliveryDocumentItem{
 				DeliveryDocumentItem:                 v.DeliveryDocumentItem,
 				Product:                              v.Product,
-				DeliveryDocumentItemItemTextByBuyer:  v.DeliveryDocumentItemTextByBuyer,
-				DeliveryDocumentItemItemTextBySeller: v.DeliveryDocumentItemTextBySeller,
+				DeliveryDocumentItemItemTextByBuyer:  *v.DeliveryDocumentItemTextByBuyer,
+				DeliveryDocumentItemItemTextBySeller: *v.DeliveryDocumentItemTextBySeller,
 				PlannedGoodsIssueQuantity:            v.PlannedGoodsIssueQuantity,
 				DeliveryUnit:                         v.DeliveryUnit,
 				PlannedGoodsIssueDate:                v.PlannedGoodsIssueDate,

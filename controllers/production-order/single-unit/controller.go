@@ -1,4 +1,4 @@
-package controllersProductionOrderList
+package controllersProductionOrderSingleUnit
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
@@ -21,7 +21,7 @@ import (
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 )
 
-type ProductionOrderListController struct {
+type ProductionOrderSingleUnitController struct {
 	beego.Controller
 	RedisCache   *cache.Cache
 	RedisKey     string
@@ -29,23 +29,23 @@ type ProductionOrderListController struct {
 	CustomLogger *logger.Logger
 }
 
-const (
-	OwnerProductionPlantBusinessPartner = "ownerProductionPlantBusinessPartner"
-)
+const ()
 
-func (controller *ProductionOrderListController) Get() {
-	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+func (controller *ProductionOrderSingleUnitController) Get() {
+	//isReleased, _ := controller.GetBool("isReleased")
+	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "productionOrder"
-	redisKeyCategory2 := "list"
-	//userType := OwnerProductionPlantBusinessPartner
+	redisKeyCategory2 := "single-unit"
 	productionOrder, _ := controller.GetInt("productionOrder")
-	userType := controller.GetString(":userType")
+
+	isReleased := false
+	isMarkedForDeletion := false
 
 	productionOrderHeader := apiInputReader.ProductionOrder{
 		ProductionOrderHeader: &apiInputReader.ProductionOrderHeader{
 			ProductionOrder:     productionOrder,
+			IsReleased:          &isReleased,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 	}
@@ -55,7 +55,6 @@ func (controller *ProductionOrderListController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
-			userType,
 		},
 	)
 
@@ -90,8 +89,8 @@ func (controller *ProductionOrderListController) Get() {
 }
 
 func (
-	controller *ProductionOrderListController,
-) createProductionOrderRequestHeaderByOwnerProductionPlantBP(
+	controller *ProductionOrderSingleUnitController,
+) createProductionOrderRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
 ) *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes {
@@ -100,7 +99,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"HeadersByOwnerProductionPlantBP",
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -117,7 +116,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) createProductMasterRequestProductDescByBP(
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -163,7 +162,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -187,7 +186,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) createBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
 	equipmentMasterRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
@@ -221,7 +220,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
 	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -252,13 +251,13 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) request(
 	input apiInputReader.ProductionOrder,
 ) {
 	defer services.Recover(controller.CustomLogger)
 
-	headerRes := controller.createProductionOrderRequestHeaderByOwnerProductionPlantBP(
+	headerRes := controller.createProductionOrderRequestHeader(
 		controller.UserInfo,
 		input,
 	)
@@ -292,7 +291,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderListController,
+	controller *ProductionOrderSingleUnitController,
 ) fin(
 	headerRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
@@ -324,8 +323,8 @@ func (
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
 
-		data.ProductionOrderHeader = append(data.ProductionOrderHeader,
-			apiOutputFormatter.ProductionOrderHeader{
+		data.ProductionOrderHeaderSingleUnit = append(data.ProductionOrderHeaderSingleUnit,
+			apiOutputFormatter.ProductionOrderHeaderSingleUnit{
 				ProductionOrder:    v.ProductionOrder,
 				MRPArea:            v.MRPArea,
 				Product:            v.Product,

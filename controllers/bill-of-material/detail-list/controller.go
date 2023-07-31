@@ -317,9 +317,9 @@ func (
 			apiOutputFormatter.BillOfMaterialHeaderWithItem{
 				Product:                  v.Product,
 				BillOfMaterial:           v.BillOfMaterial,
-				ProductDescription:       &productDescription,
+				ProductDescription:       productDescription,
 				OwnerProductionPlant:     v.OwnerProductionPlant,
-				OwnerProductionPlantName: &plantName,
+				OwnerProductionPlantName: plantName,
 				ValidityStartDate:        v.ValidityStartDate,
 				Images: apiOutputFormatter.Images{
 					Product: img,

@@ -227,9 +227,9 @@ func InvoiceDocumentReads(
 		request = CreateInvoiceDocumentRequestItems(
 			requestPram,
 			&apiInputReader.InvoiceDocumentItems{
-				InvoiceDocument:     input.InvoiceDocumentItems.InvoiceDocument,
-				IsCancelled:         input.InvoiceDocumentItems.IsCancelled,
-				IsMarkedForDeletion: input.InvoiceDocumentItems.IsMarkedForDeletion,
+				InvoiceDocument: input.InvoiceDocumentItems.InvoiceDocument,
+				IsCancelled:     input.InvoiceDocumentItems.IsCancelled,
+				//IsMarkedForDeletion: input.InvoiceDocumentItems.IsMarkedForDeletion,
 			},
 		)
 	}

@@ -27,6 +27,8 @@ import (
 	controllersProductMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/list"
 	controllersProductStockDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/detail-list"
 	controllersProductStockList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/list"
+	controllersProductionOrderList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/list"
+	controllersProductionOrderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/single-unit"
 	controllersPurchaseRequisitionList "data-platform-request-reads-cache-manager-rmq-kube/controllers/purchase-requisition/list"
 	controllersQuotationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/quotations/list"
 	controllersStorageBinList "data-platform-request-reads-cache-manager-rmq-kube/controllers/storage-bin/list"
@@ -195,6 +197,16 @@ func init() {
 		CustomLogger: l,
 	}
 
+	productionOrderListController := &controllersProductionOrderList.ProductionOrderListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productionOrderSingleUnitController := &controllersProductionOrderSingleUnit.ProductionOrderSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	quotations := beego.NewNamespace(
 		"/quotations",
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
@@ -299,6 +311,13 @@ func init() {
 		beego.NSRouter("/list/:userType", storageBinListController),
 	)
 
+	productionOrder := beego.NewNamespace(
+		"/production-order",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/list/:userType", productionOrderListController),
+		beego.NSRouter("/single-unit/:userType", productionOrderSingleUnitController),
+	)
+
 	beego.AddNamespace(
 		businessPartner,
 		productMaster,
@@ -315,6 +334,7 @@ func init() {
 		equipmentMaster,
 		plant,
 		storageBin,
+		productionOrder,
 	)
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{

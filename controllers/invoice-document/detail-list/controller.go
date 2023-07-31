@@ -3,9 +3,11 @@ package controllersInvoiceDocumentDetailList
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/delivery-document"
 	apiModuleRuntimesRequestsInvoiceDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/invoice-document"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
+	apiModuleRuntimesResponsesDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/delivery-document"
 	apiModuleRuntimesResponsesInvoiceDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/invoice-document"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -44,13 +46,14 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 	if userType == billToParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				InvoiceDocument:		invoiceDocument,
-				BillToParty:			&billToPartyValue,
-				IsCancelled:			&isCancelled,
+				InvoiceDocument: invoiceDocument,
+				BillToParty:     &billToPartyValue,
+				// todo 確認
+				//IsCancelled:			&isCancelled,
 			},
 			InvoiceDocumentItems: &apiInputReader.InvoiceDocumentItems{
-				InvoiceDocument:		invoiceDocument,
-				IsCancelled:			&isCancelled,
+				InvoiceDocument: invoiceDocument,
+				//IsCancelled:			&isCancelled,
 			},
 		}
 	}
@@ -58,13 +61,13 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 	if userType == billFromParty {
 		invoiceDocumentHeader = apiInputReader.InvoiceDocument{
 			InvoiceDocumentHeader: &apiInputReader.InvoiceDocumentHeader{
-				InvoiceDocument:		invoiceDocument,
-				BillFromParty:			&billFromPartyValue,
-				IsCancelled:			&isCancelled,
+				InvoiceDocument: invoiceDocument,
+				BillFromParty:   &billFromPartyValue,
+				//IsCancelled:     &isCancelled,
 			},
 			InvoiceDocumentItems: &apiInputReader.InvoiceDocumentItems{
-				InvoiceDocument:		invoiceDocument,
-				IsCancelled:			&isCancelled,
+				InvoiceDocument: invoiceDocument,
+				//IsCancelled:     &isCancelled,
 			},
 		}
 	}
@@ -110,7 +113,7 @@ func (controller *InvoiceDocumentDetailListController) Get() {
 
 func (
 	controller *InvoiceDocumentDetailListController,
-) createInvoiceDocumentRequestHeader(
+) createInvoiceDocumentRequestHeaderByBillToParty(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.InvoiceDocument,
 ) *apiModuleRuntimesResponsesInvoiceDocument.InvoiceDocumentRes {
@@ -119,7 +122,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"Header",
+		"HeadersByBillToParty",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -225,13 +228,16 @@ func (
 
 func (
 	controller *InvoiceDocumentDetailListController,
-) createProductMasterDocRequest(
+) createDeliveryDocumentRequestHeader(
 	requestPram *apiInputReader.Request,
-) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
-	responseJsonData := apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes{}
-	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
+	input apiInputReader.DeliveryDocument,
+) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
+	responseJsonData := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
+	responseBody := apiModuleRuntimesRequestsDeliveryDocument.DeliveryDocumentReads(
 		requestPram,
+		input,
 		&controller.Controller,
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -241,7 +247,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
+		controller.CustomLogger.Error("DeliveryDocumentReads Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -258,7 +264,7 @@ func (
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.InvoiceDocumentHeader.BillToParty != nil {
-		headerRes = *controller.createDeliveryDocumentRequestHeader(
+		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillToParty(
 			controller.UserInfo,
 			input,
 		)
@@ -269,7 +275,7 @@ func (
 	}
 
 	if input.InvoiceDocumentHeader.BillFromParty != nil {
-		headerRes = *controller.createDeliveryDocumentRequestHeader(
+		headerRes = *controller.createInvoiceDocumentRequestHeaderByBillToParty(
 			controller.UserInfo,
 			input,
 		)

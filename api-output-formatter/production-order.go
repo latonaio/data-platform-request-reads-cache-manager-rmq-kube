@@ -1,11 +1,30 @@
 package apiOutputFormatter
 
 type ProductionOrder struct {
-	ProductionOrderHeader []ProductionOrderHeader `json:"Header"`
-	ProductionOrderItem   []ProductionOrderItem   `json:"Item"`
+	ProductionOrderHeader           []ProductionOrderHeader           `json:"Header"`
+	ProductionOrderHeaderSingleUnit []ProductionOrderHeaderSingleUnit `json:"Header"`
+	ProductionOrderItem             []ProductionOrderItem             `json:"Item"`
 }
 
 type ProductionOrderHeader struct {
+	ProductionOrder                         int     `json:"ProductionOrder"`
+	MRPArea                                 *string `json:"MRPArea"`
+	Product                                 string  `json:"Product"`
+	ProductDescription                      string  `json:"ProductDescription"`
+	OwnerProductionPlantBusinessPartner     int     `json:"OwnerProductionPlantBusinessPartner"`
+	OwnerProductionPlantBusinessPartnerName string  `json:"OwnerProductionPlantBusinessPartnerName"`
+	OwnerProductionPlant                    string  `json:"OwnerProductionPlant"`
+	OwnerProductionPlantName                string  `json:"OwnerProductionPlantName"`
+	ProductionOrderQuantityInBaseUnit       float32 `json:"ProductionOrderQuantityInBaseUnit"`
+	IsReleased                              *bool   `json:"IsReleased"`
+	IsPartiallyConfirmed                    *bool   `json:"IsPartiallyConfirmed"`
+	IsConfirmed                             *bool   `json:"IsConfirmed"`
+	IsCancelled                             *bool   `json:"IsCancelled"`
+	IsMarkedForDeletion                     *bool   `json:"IsMarkedForDeletion"`
+	Images                                  Images  `json:"Images"`
+}
+
+type ProductionOrderHeaderSingleUnit struct {
 	ProductionOrder                         int     `json:"ProductionOrder"`
 	MRPArea                                 *string `json:"MRPArea"`
 	Product                                 string  `json:"Product"`

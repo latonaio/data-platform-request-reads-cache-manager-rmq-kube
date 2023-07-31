@@ -7,17 +7,18 @@ type ProductionOrder struct {
 }
 
 type ProductionOrderHeader struct {
-	ProductionOrder          int   `json:"ProductionOrder"`
-	IsMarkedForDeletion      *bool `json:"IsMarkedForDeletion"`
+	ProductionOrder     int   `json:"ProductionOrder"`
+	IsReleased          *bool `json:"IsReleased"`
+	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
 }
 
 type ProductionOrderItems struct {
-	ProductionOrder          int   `json:"ProductionOrder"`
-	IsMarkedForDeletion      *bool `json:"IsMarkedForDeletion"`
+	ProductionOrder     int   `json:"ProductionOrder"`
+	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
 }
 
 type ProductionOrderItem struct {
-	ProductionOrder          int   `json:"ProductionOrder"`
-	ProductionOrderItem      int   `json:"ProductionOrderItem"`
-	IsMarkedForDeletion      *bool `json:"IsMarkedForDeletion"`
+	ProductionOrder     int   `json:"ProductionOrder"`
+	ProductionOrderItem int   `json:"ProductionOrderItem"`
+	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
 }
