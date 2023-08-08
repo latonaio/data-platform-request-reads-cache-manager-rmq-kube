@@ -27,6 +27,8 @@ import (
 	controllersProductMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/list"
 	controllersProductStockDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/detail-list"
 	controllersProductStockList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/list"
+	controllersProductionOrderDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/detail-list"
+	controllersProductionOrderItemOperationList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-operation-list"
 	controllersProductionOrderList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/list"
 	controllersProductionOrderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/single-unit"
 	controllersPurchaseRequisitionList "data-platform-request-reads-cache-manager-rmq-kube/controllers/purchase-requisition/list"
@@ -197,6 +199,16 @@ func init() {
 		CustomLogger: l,
 	}
 
+	productionOrderDetailListController := &controllersProductionOrderDetailList.ProductionOrderDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productionOrderItemOperationListController := &controllersProductionOrderItemOperationList.ProductionOrderItemOperationListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	productionOrderListController := &controllersProductionOrderList.ProductionOrderListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
@@ -316,6 +328,8 @@ func init() {
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", productionOrderListController),
 		beego.NSRouter("/single-unit/:userType", productionOrderSingleUnitController),
+		beego.NSRouter("/detail/list/:userType", productionOrderDetailListController),
+		beego.NSRouter("/item-operation/list", productionOrderItemOperationListController),
 	)
 
 	beego.AddNamespace(

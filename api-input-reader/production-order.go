@@ -1,9 +1,10 @@
 package apiInputReader
 
 type ProductionOrder struct {
-	ProductionOrderHeader *ProductionOrderHeader
-	ProductionOrderItems  *ProductionOrderItems
-	ProductionOrderItem   *ProductionOrderItem
+	ProductionOrderHeader                 *ProductionOrderHeader
+	ProductionOrderItem                   *ProductionOrderItem
+	ProductionOrderItemOperation          *ProductionOrderItemOperation
+	ProductionOrderItemOperationComponent *ProductionOrderItemOperationComponent
 }
 
 type ProductionOrderHeader struct {
@@ -12,12 +13,22 @@ type ProductionOrderHeader struct {
 	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
 }
 
-type ProductionOrderItems struct {
+type ProductionOrderItem struct {
 	ProductionOrder     int   `json:"ProductionOrder"`
+	ProductionOrderItem int   `json:"ProductionOrderItem"`
 	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
 }
 
-type ProductionOrderItem struct {
+type ProductionOrderItemOperation struct {
+	ProductionOrder     int   `json:"ProductionOrder"`
+	ProductionOrderItem int   `json:"ProductionOrderItem"`
+	Operations          int   `json:"Operations"`
+	OperationsItem      int   `json:"OperationsItem"`
+	OperationID         int   `json:"OperationID"`
+	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
+}
+
+type ProductionOrderItemOperationComponent struct {
 	ProductionOrder     int   `json:"ProductionOrder"`
 	ProductionOrderItem int   `json:"ProductionOrderItem"`
 	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`

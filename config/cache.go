@@ -9,7 +9,7 @@ type REDIS struct {
 
 func newREDIS() *REDIS {
 	return &REDIS{
-		Address: os.Getenv("REDIS_ADDR"),
+		Address: os.Getenv("REDIS_HOST"),
 		Port:    os.Getenv("REDIS_PORT"),
 	}
 }

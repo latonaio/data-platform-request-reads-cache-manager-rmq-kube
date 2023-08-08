@@ -8,7 +8,6 @@ import (
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesRequestsProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/production-order"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
-	apiModuleRuntimesResponsesEquipmentMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/equipment-master"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/production-order"
@@ -37,16 +36,20 @@ func (controller *ProductionOrderListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "productionOrder"
+	redisKeyCategory1 := "production-order"
 	redisKeyCategory2 := "list"
 	//userType := OwnerProductionPlantBusinessPartner
 	productionOrder, _ := controller.GetInt("productionOrder")
 	userType := controller.GetString(":userType")
 
+	isReleased := false
+	isMarkedForDeletion = false
+
 	productionOrderHeader := apiInputReader.ProductionOrder{
 		ProductionOrderHeader: &apiInputReader.ProductionOrderHeader{
 			ProductionOrder:     productionOrder,
 			IsMarkedForDeletion: &isMarkedForDeletion,
+			IsReleased:          &isReleased,
 		},
 	}
 
@@ -190,13 +193,13 @@ func (
 	controller *ProductionOrderListController,
 ) createBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
-	equipmentMasterRes *apiModuleRuntimesResponsesEquipmentMaster.EquipmentMasterRes,
+	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*equipmentMasterRes.Message.General))
+	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*productionOrderRes.Message.Header))
 
-	for _, v := range *equipmentMasterRes.Message.General {
+	for _, v := range *productionOrderRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
-			BusinessPartner: v.MaintenancePlantBusinessPartner,
+			BusinessPartner: v.OwnerProductionPlantBusinessPartner,
 		})
 	}
 
@@ -277,17 +280,17 @@ func (
 		controller.UserInfo,
 	)
 
-	//bpRes := controller.createBusinessPartnerRequestGeneralsByBusinessPartners(
-	//	controller.UserInfo,
-	//	bRes,
-	//)
+	bpRes := controller.createBusinessPartnerRequestGeneralsByBusinessPartners(
+		controller.UserInfo,
+		headerRes,
+	)
 
 	controller.fin(
 		headerRes,
 		plantRes,
 		productDescByBPRes,
 		productDocRes,
-		//bpRes,
+		bpRes,
 	)
 }
 
@@ -298,7 +301,7 @@ func (
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
-	// bpRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
 
 	plantMapper := services.PlantMapper(
@@ -309,9 +312,9 @@ func (
 		productDescByBPRes.Message.ProductDescByBP,
 	)
 
-	//businessPartnerMapper := services.BusinessPartnerMapper(
-	//	bpRes.Message.Generals,
-	//)
+	businessPartnerMapper := services.BusinessPartnerNameMapper(
+		businessPartnerRes,
+	)
 
 	data := apiOutputFormatter.ProductionOrder{}
 
@@ -326,18 +329,18 @@ func (
 
 		data.ProductionOrderHeader = append(data.ProductionOrderHeader,
 			apiOutputFormatter.ProductionOrderHeader{
-				ProductionOrder:    v.ProductionOrder,
-				MRPArea:            v.MRPArea,
-				Product:            v.Product,
-				ProductDescription: productDescription,
-				//OwnerProductionPlantBusinessPartnerName: busineePartnerMapper[v.wnerProductionPlantBusinessPartner].BusinessPartnerName,
-				OwnerProductionPlantName:          plantMapper[v.OwnerProductionPlant].PlantName,
-				ProductionOrderQuantityInBaseUnit: v.ProductionOrderQuantityInBaseUnit,
-				IsReleased:                        v.IsReleased,
-				IsPartiallyConfirmed:              v.IsPartiallyConfirmed,
-				IsConfirmed:                       v.IsConfirmed,
-				IsCancelled:                       v.IsCancelled,
-				IsMarkedForDeletion:               v.IsMarkedForDeletion,
+				ProductionOrder:                         v.ProductionOrder,
+				MRPArea:                                 v.MRPArea,
+				Product:                                 v.Product,
+				ProductDescription:                      productDescription,
+				OwnerProductionPlantBusinessPartnerName: businessPartnerMapper[v.OwnerProductionPlantBusinessPartner].BusinessPartnerName,
+				OwnerProductionPlantName:                plantMapper[v.OwnerProductionPlant].PlantName,
+				ProductionOrderQuantityInBaseUnit:       v.ProductionOrderQuantityInBaseUnit,
+				IsReleased:                              v.IsReleased,
+				IsPartiallyConfirmed:                    v.IsPartiallyConfirmed,
+				IsConfirmed:                             v.IsConfirmed,
+				IsCancelled:                             v.IsCancelled,
+				IsMarkedForDeletion:                     v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},
