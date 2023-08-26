@@ -11,34 +11,28 @@ import (
 
 type ProductMasterDocReq struct {
 	BusinessPartnerID *int       `json:"business_partner"`
-	Product           PMDProduct `json:"Product"`
+	GeneralDoc        GeneralDoc `json:"ProductMaster"`
 	Accepter          []string   `json:"accepter"`
 }
 
-type PMDProduct struct {
-	Product   *string                   `json:"Product"`
-	HeaderDoc ProductMasterDocHeaderDoc `json:"HeaderDoc"`
+type GeneralDoc struct {
+	Product                  *string `json:"Product"`
+	DocType                  string  `json:"DocType"`
+	FileExtension            string  `json:"FileExtension"`
+	DocVersionID             int     `json:"DocVersionID"`
+	DocID                    string  `json:"DocID"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
+	FilePath                 string  `json:"FilePath"`
+	FileName                 string  `json:"FileName"`
 }
 
-type ProductMasterDocHeaderDoc struct {
-	DocType                  string `json:"DocType"`
-	FileExtension            string `json:"FileExtension"`
-	DocVersionID             int    `json:"DocVersionID"`
-	DocID                    string `json:"DocID"`
-	DocIssuerBusinessPartner *int   `json:"DocIssuerBusinessPartner"`
-	FilePath                 string `json:"FilePath"`
-	FileName                 string `json:"FileName"`
-}
-
-func CreateProductMasterDocRequest(
+func CreateProductMasterDocRequestGeneralDoc(
 	requestPram *apiInputReader.Request,
 ) ProductMasterDocReq {
 	req := ProductMasterDocReq{
-		Product: PMDProduct{
-			HeaderDoc: ProductMasterDocHeaderDoc{
-				DocType:                  "IMAGE",
-				DocIssuerBusinessPartner: requestPram.BusinessPartner,
-			},
+		GeneralDoc: GeneralDoc{
+			DocType:                  "IMAGE",
+			DocIssuerBusinessPartner: requestPram.BusinessPartner,
 		},
 		Accepter: []string{},
 	}
@@ -48,13 +42,18 @@ func CreateProductMasterDocRequest(
 func ProductMasterDocReads(
 	requestPram *apiInputReader.Request,
 	controller *beego.Controller,
+	accepter string,
 ) []byte {
 	aPIServiceName := "DPFM_API_PRODUCT_MASTER_DOC_SRV"
 	aPIType := "reads"
 
-	request := CreateProductMasterDocRequest(
-		requestPram,
-	)
+	var request ProductMasterDocReq
+
+	if accepter == "GeneralDoc" {
+		request = CreateProductMasterDocRequestGeneralDoc(
+			requestPram,
+		)
+	}
 
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {

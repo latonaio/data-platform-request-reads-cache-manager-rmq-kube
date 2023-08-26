@@ -1,4 +1,4 @@
-package controllersProductionOrderList
+package controllersProductionOrderInput
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
@@ -21,7 +21,7 @@ import (
 	"strconv"
 )
 
-type ProductionOrderItemOperationListController struct {
+type ProductionOrderItemOperationInputController struct {
 	beego.Controller
 	RedisCache   *cache.Cache
 	RedisKey     string
@@ -29,12 +29,15 @@ type ProductionOrderItemOperationListController struct {
 	CustomLogger *logger.Logger
 }
 
-func (controller *ProductionOrderItemOperationListController) Get() {
+func (controller *ProductionOrderItemOperationInputController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	productionOrder, _ := controller.GetInt("productionOrder")
 	productionOrderItem, _ := controller.GetInt("productionOrderItem")
+	operations, _ := controller.GetInt("operations")
+	operationsItem, _ := controller.GetInt("operationsItem")
+	operationID, _ := controller.GetInt("operationID")
 	redisKeyCategory1 := "production-order"
-	redisKeyCategory2 := "item-operation-list"
+	redisKeyCategory2 := "item-operation-input"
 	redisKeyCategory3 := productionOrder
 
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
@@ -48,8 +51,17 @@ func (controller *ProductionOrderItemOperationListController) Get() {
 			IsMarkedForDeletion: &isMarkedForDeletion,
 			IsReleased:          &isReleased,
 		},
+		ProductionOrderItem: &apiInputReader.ProductionOrderItem{
+			ProductionOrder:     productionOrder,
+			ProductionOrderItem: productionOrderItem,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
 		ProductionOrderItemOperation: &apiInputReader.ProductionOrderItemOperation{
 			ProductionOrder:     productionOrder,
+			ProductionOrderItem: productionOrderItem,
+			Operations:          operations,
+			OperationsItem:      operationsItem,
+			OperationID:         operationID,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 		ProductionOrderItemOperationComponent: &apiInputReader.ProductionOrderItemOperationComponent{
@@ -99,7 +111,7 @@ func (controller *ProductionOrderItemOperationListController) Get() {
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) createProductionOrderRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -126,8 +138,8 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
-) createProductionOrderRequestItemOperations(
+	controller *ProductionOrderItemOperationInputController,
+) createProductionOrderRequestItemOperation(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
 ) *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes {
@@ -136,7 +148,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"ItemOperations",
+		"ItemOperation",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -146,14 +158,41 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductionOrderReads Unmarshal error")
+		controller.CustomLogger.Error("createProductionOrderRequestItemOperation Unmarshal error")
 	}
 
 	return &responseJsonData
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
+) createProductionOrderRequestItem(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.ProductionOrder,
+) *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes {
+	responseJsonData := apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes{}
+	responseBody := apiModuleRuntimesRequestsProductionOrder.ProductionOrderReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Item",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createProductionOrderRequestItem Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *ProductionOrderItemOperationInputController,
 ) createProductionOrderRequestItemOperationComponents(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -173,14 +212,14 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductionOrderReads Unmarshal error")
+		controller.CustomLogger.Error("createProductionOrderRequestItemOperationComponents Unmarshal error")
 	}
 
 	return &responseJsonData
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -205,7 +244,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
 	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -236,7 +275,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) createProductMasterRequestProductDescByBP(
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -282,14 +321,24 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) createBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
-	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	productionOrderHeaderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	productionOrderItemOperationRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*productionOrderRes.Message.ItemOperation))
+	generals := make(
+		[]apiModuleRuntimesRequestsBusinessPartner.General,
+		len(*productionOrderHeaderRes.Message.Header)+len(*productionOrderItemOperationRes.Message.ItemOperation),
+	)
 
-	for _, v := range *productionOrderRes.Message.ItemOperation {
+	for _, v := range *productionOrderHeaderRes.Message.Header {
+		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Seller,
+		})
+	}
+
+	for _, v := range *productionOrderItemOperationRes.Message.ItemOperation {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.Seller,
 		})
@@ -316,7 +365,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) request(
 	input apiInputReader.ProductionOrder,
 ) {
@@ -341,25 +390,32 @@ func (
 		controller.UserInfo,
 	)
 
-	itemOperationsRes := controller.createProductionOrderRequestItemOperations(
+	itemRes := controller.createProductionOrderRequestItem(
 		controller.UserInfo,
 		input,
 	)
 
-	itemOperationComponentsRes := controller.createProductionOrderRequestItemOperationComponents(
+	itemOperationRes := controller.createProductionOrderRequestItemOperation(
 		controller.UserInfo,
 		input,
 	)
+
+	//itemOperationComponentsRes := controller.createProductionOrderRequestItemOperationComponents(
+	//	controller.UserInfo,
+	//	input,
+	//)
 
 	businessPartnerRes := controller.createBusinessPartnerRequestGeneralsByBusinessPartners(
 		controller.UserInfo,
-		itemOperationsRes,
+		headerRes,
+		itemOperationRes,
 	)
 
 	controller.fin(
 		headerRes,
-		itemOperationsRes,
-		itemOperationComponentsRes,
+		itemRes,
+		itemOperationRes,
+		//itemOperationComponentsRes,
 		businessPartnerRes,
 		plantRes,
 		productDescByBPRes,
@@ -368,11 +424,12 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationListController,
+	controller *ProductionOrderItemOperationInputController,
 ) fin(
 	headerRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
-	itemOperationsRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
-	itemOperationComponentsRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	itemRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	itemOperationRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	//itemOperationComponentsRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
@@ -423,27 +480,45 @@ func (
 		)
 	}
 
-	for _, v := range *itemOperationsRes.Message.ItemOperation {
-		sellerName := fmt.Sprintf("%s", businessPartnerMapper[v.Seller].BusinessPartnerName)
+	itemOperation := (*itemOperationRes.Message.ItemOperation)[0]
 
-		data.ProductionOrderItemOperation = append(data.ProductionOrderItemOperation,
-			apiOutputFormatter.ProductionOrderItemOperation{
-				ProductionOrder:      v.ProductionOrder,
-				ProductionOrderItem:  v.ProductionOrderItem,
-				Operations:           v.Operations,
-				OperationsItem:       v.OperationsItem,
-				OperationID:          v.OperationID,
-				OperationText:        v.OperationText,
-				Product:              v.Product,
-				Seller:               v.Seller,
-				SellerName:           sellerName,
-				IsReleased:           v.IsReleased,
-				IsMarkedForDeletion:  v.IsMarkedForDeletion,
-				IsPartiallyConfirmed: v.IsPartiallyConfirmed,
-				IsConfirmed:          v.IsConfirmed,
-			},
-		)
-	}
+	sellerName := fmt.Sprintf("%s", businessPartnerMapper[itemOperation.Seller].BusinessPartnerName)
+
+	data.ProductionOrderItemOperation = append(data.ProductionOrderItemOperation,
+		apiOutputFormatter.ProductionOrderItemOperation{
+			ProductionOrder:      itemOperation.ProductionOrder,
+			ProductionOrderItem:  itemOperation.ProductionOrderItem,
+			Operations:           itemOperation.Operations,
+			OperationsItem:       itemOperation.OperationsItem,
+			OperationID:          itemOperation.OperationID,
+			OperationText:        itemOperation.OperationText,
+			Product:              itemOperation.Product,
+			Seller:               itemOperation.Seller,
+			SellerName:           sellerName,
+			IsReleased:           itemOperation.IsReleased,
+			IsMarkedForDeletion:  itemOperation.IsMarkedForDeletion,
+			IsPartiallyConfirmed: itemOperation.IsPartiallyConfirmed,
+			IsConfirmed:          itemOperation.IsConfirmed,
+		},
+	)
+
+	//for _, v := range *itemRes.Message.Item {
+	//	data.ProductionOrderItem = append(data.ProductionOrderItem,
+	//		apiOutputFormatter.ProductionOrderItem{
+	//			Product:                                 *v.Product,
+	//			ProductionOrderItem:                     v.ProductionOrderItem,
+	//			ProductDescription:                      productDescription,
+	//			OwnerProductionPlantBusinessPartnerName: businessPartnerMapper[v.OwnerProductionPlantBusinessPartner].BusinessPartnerName,
+	//			OwnerProductionPlant:                    v.OwnerProductionPlant,
+	//			OwnerProductionPlantName:                plantName,
+	//			ProductionOrderQuantityInDestinationProductionUnit: v.ProductionOrderQuantityInDestinationProductionUnit,
+	//			ProductionOrderPlannedStartDate:                    v.ProductionOrderPlannedStartDate,
+	//			ProductionOrderPlannedStartTime:                    v.ProductionOrderPlannedStartTime,
+	//			ProductionOrderPlannedEndDate:                      v.ProductionOrderPlannedEndDate,
+	//			ProductionOrderPlannedEndTime:                      v.ProductionOrderPlannedEndTime,
+	//		},
+	//	)
+	//}
 
 	err := controller.RedisCache.SetCache(
 		controller.RedisKey,

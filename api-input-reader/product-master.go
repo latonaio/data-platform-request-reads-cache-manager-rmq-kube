@@ -23,3 +23,7 @@ type ProductMasterBPPlant struct {
 	Plant               string `json:"Plant"`
 	IsMarkedForDeletion *bool  `json:"IsMarkedForDeletion"`
 }
+
+type ProductMasterGeneralDoc struct {
+	Product string `json:"Product"`
+}

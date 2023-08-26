@@ -211,6 +211,7 @@ func (
 	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
+		"GeneralDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)

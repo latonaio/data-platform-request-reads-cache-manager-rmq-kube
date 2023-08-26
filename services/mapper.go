@@ -74,6 +74,22 @@ func PlantMapper(
 	return plantMapper
 }
 
+func GeneralsMapper(
+	productMasterGeneral *[]apiModuleRuntimesResponsesProductMaster.General,
+) map[string]apiModuleRuntimesResponsesProductMaster.General {
+	productMasterGeneralMapper := map[string]apiModuleRuntimesResponsesProductMaster.General{}
+
+	for _, v := range *productMasterGeneral {
+		productMasterGeneralMapper[v.Product] = apiModuleRuntimesResponsesProductMaster.General{
+			Product:                  v.Product,
+			InternalCapacityQuantity: v.InternalCapacityQuantity,
+			SizeOrDimensionText:      v.SizeOrDimensionText,
+		}
+	}
+
+	return productMasterGeneralMapper
+}
+
 func CreateProductImage(
 	pdRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 	businessPartner int,
@@ -81,7 +97,7 @@ func CreateProductImage(
 ) *apiOutputFormatter.ProductImage {
 	img := &apiOutputFormatter.ProductImage{}
 
-	for _, pmdResHeaderV := range *pdRes.Message.HeaderDoc {
+	for _, pmdResHeaderV := range *pdRes.Message.GeneralDoc {
 		if &pmdResHeaderV.DocIssuerBusinessPartner != nil &&
 			pmdResHeaderV.DocIssuerBusinessPartner == businessPartner &&
 			&product != nil &&

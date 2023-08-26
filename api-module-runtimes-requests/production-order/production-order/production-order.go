@@ -158,6 +158,7 @@ type ItemOperation struct {
 	Operations                                      int      `json:"Operations"`
 	OperationsItem                                  int      `json:"OperationsItem"`
 	OperationID                                     int      `json:"OperationID"`
+	OperationType                                   *string  `json:"OperationType"`
 	SupplyChainRelationshipID                       *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID               *int     `json:"SupplyChainRelationshipDeliveryID"`
 	SupplyChainRelationshipDeliveryPlantID          *int     `json:"SupplyChainRelationshipDeliveryPlantID"`
@@ -269,6 +270,27 @@ func CreateProductionOrderRequestHeaderByOwnerProductionPlantBP(
 	return req
 }
 
+func CreateProductionOrderRequestItem(
+	requestPram *apiInputReader.Request,
+	productionOrderItems *apiInputReader.ProductionOrderItem,
+) ProductionOrderReq {
+	req := ProductionOrderReq{
+		Header: Header{
+			ProductionOrder: productionOrderItems.ProductionOrder,
+			Item: []Item{
+				{
+					ProductionOrderItem: productionOrderItems.ProductionOrderItem,
+					IsMarkedForDeletion: productionOrderItems.IsMarkedForDeletion,
+				},
+			},
+		},
+		Accepter: []string{
+			"Item",
+		},
+	}
+	return req
+}
+
 func CreateProductionOrderRequestItems(
 	requestPram *apiInputReader.Request,
 	productionOrderItems *apiInputReader.ProductionOrderItem,
@@ -284,6 +306,34 @@ func CreateProductionOrderRequestItems(
 		},
 		Accepter: []string{
 			"Items",
+		},
+	}
+	return req
+}
+
+func CreateProductionOrderRequestItemOperation(
+	requestPram *apiInputReader.Request,
+	productionOrderItemOperation *apiInputReader.ProductionOrderItemOperation,
+) ProductionOrderReq {
+	req := ProductionOrderReq{
+		Header: Header{
+			ProductionOrder: productionOrderItemOperation.ProductionOrder,
+			Item: []Item{
+				{
+					ProductionOrderItem: productionOrderItemOperation.ProductionOrderItem,
+					IsMarkedForDeletion: productionOrderItemOperation.IsMarkedForDeletion,
+					ItemOperation: []ItemOperation{
+						{
+							Operations:     productionOrderItemOperation.Operations,
+							OperationsItem: productionOrderItemOperation.OperationsItem,
+							OperationID:    productionOrderItemOperation.OperationID,
+						},
+					},
+				},
+			},
+		},
+		Accepter: []string{
+			"ItemOperation",
 		},
 	}
 	return req
@@ -363,12 +413,37 @@ func ProductionOrderReads(
 		)
 	}
 
+	if accepter == "Item" {
+		request = CreateProductionOrderRequestItem(
+			requestPram,
+			&apiInputReader.ProductionOrderItem{
+				ProductionOrder:     input.ProductionOrderItem.ProductionOrder,
+				ProductionOrderItem: input.ProductionOrderItem.ProductionOrderItem,
+				//IsMarkedForDeletion: input.ProductionOrderItems.IsMarkedForDeletion,
+			},
+		)
+	}
+
 	if accepter == "Items" {
 		request = CreateProductionOrderRequestItems(
 			requestPram,
 			&apiInputReader.ProductionOrderItem{
 				ProductionOrder: input.ProductionOrderItem.ProductionOrder,
 				//IsMarkedForDeletion: input.ProductionOrderItems.IsMarkedForDeletion,
+			},
+		)
+	}
+
+	if accepter == "ItemOperation" {
+		request = CreateProductionOrderRequestItemOperation(
+			requestPram,
+			&apiInputReader.ProductionOrderItemOperation{
+				ProductionOrder:     input.ProductionOrderItemOperation.ProductionOrder,
+				ProductionOrderItem: input.ProductionOrderItemOperation.ProductionOrderItem,
+				Operations:          input.ProductionOrderItemOperation.Operations,
+				OperationsItem:      input.ProductionOrderItemOperation.OperationsItem,
+				OperationID:         input.ProductionOrderItemOperation.OperationID,
+				IsMarkedForDeletion: input.ProductionOrderItemOperation.IsMarkedForDeletion,
 			},
 		)
 	}

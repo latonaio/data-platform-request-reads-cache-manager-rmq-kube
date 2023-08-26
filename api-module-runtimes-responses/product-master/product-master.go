@@ -5,7 +5,7 @@ type ProductMasterRes struct {
 }
 
 type ProductMaster struct {
-	General            *[]General            `json:"Generals,omitempty"`
+	General            *[]General            `json:"General,omitempty"`
 	ProductDescription *[]ProductDescription `json:"ProductDescription,omitempty"`
 	BusinessPartner    *[]BusinessPartner    `json:"BusinessPartner,omitempty"`
 	ProductDescByBP    *[]ProductDescByBP    `json:"ProductDescByBP,omitempty"`
@@ -40,6 +40,7 @@ type General struct {
 	SizeOrDimensionText           *string  `json:"SizeOrDimensionText"`
 	ProductStandardID             *string  `json:"ProductStandardID"`
 	IndustryStandardName          *string  `json:"IndustryStandardName"`
+	MarkingOfMaterial             *string  `json:"MarkingOfMaterial"`
 	CountryOfOrigin               *string  `json:"CountryOfOrigin"`
 	CountryOfOriginLanguage       *string  `json:"CountryOfOriginLanguage"`
 	LocalRegionOfOrigin           *string  `json:"LocalRegionOfOrigin"`
@@ -196,20 +197,16 @@ type Production struct {
 }
 
 type Quality struct {
-	Product                        string  `json:"Product"`
-	BusinessPartner                int     `json:"BusinessPartner"`
-	Plant                          string  `json:"Plant"`
-	MaximumStoragePeriod           *string `json:"MaximumStoragePeriod"`
-	QualityMgmtCtrlKey             *string `json:"QualityMgmtCtrlKey"`
-	MatlQualityAuthorizationGroup  *string `json:"MatlQualityAuthorizationGroup"`
-	HasPostToInspectionStock       *bool   `json:"HasPostToInspectionStock"`
-	InspLotDocumentationIsRequired *bool   `json:"InspLotDocumentationIsRequired"`
-	SuplrQualityManagementSystem   *string `json:"SuplrQualityManagementSystem"`
-	RecrrgInspIntervalTimeInDays   *int    `json:"RecrrgInspIntervalTimeInDays"`
-	ProductQualityCertificateType  *string `json:"ProductQualityCertificateType"`
-	CreationDate                   *string `json:"CreationDate"`
-	LastChangeDate                 *string `json:"LastChangeDate"`
-	IsMarkedForDeletion            *bool   `json:"IsMarkedForDeletion"`
+	BusinessPartner               int     `json:"BusinessPartner"`
+	Plant                         string  `json:"Plant"`
+	QualityMgmtCtrlKey            *string `json:"QualityMgmtCtrlKey"`
+	ProductSpecification          *string `json:"ProductSpecification"`
+	MaximumStoragePeriodInDays    *int    `json:"MaximumStoragePeriodInDays"`
+	RecrrgInspIntervalTimeInDays  *int    `json:"RecrrgInspIntervalTimeInDays"`
+	ProductQualityCertificateType *string `json:"ProductQualityCertificateType"`
+	CreationDate                  string  `json:"CreationDate"`
+	LastChangeDate                string  `json:"LastChangeDate"`
+	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
 }
 
 type Tax struct {
@@ -217,8 +214,8 @@ type Tax struct {
 	Country                  string  `json:"Country"`
 	ProductTaxCategory       string  `json:"ProductTaxCategory"`
 	ProductTaxClassification *string `json:"ProductTaxClassification"`
-	CreationDate             *string `json:"CreationDate"`
-	LastChangeDate           *string `json:"LastChangeDate"`
+	CreationDate             string  `json:"CreationDate"`
+	LastChangeDate           string  `json:"LastChangeDate"`
 	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 }
 
@@ -237,13 +234,13 @@ type Accounting struct {
 }
 
 type Allergen struct {
-	Product             string  `json:"Product"`
-	BusinessPartner     int     `json:"BusinessPartner"`
-	Allergen            string  `json:"Allergen"`
-	AllergenIsContained *bool   `json:"AllergenIsContained"`
-	CreationDate        *string `json:"CreationDate"`
-	LastChangeDate      *string `json:"LastChangeDate"`
-	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+	Product             string `json:"Product"`
+	BusinessPartner     int    `json:"BusinessPartner"`
+	Allergen            string `json:"Allergen"`
+	AllergenIsContained *bool  `json:"AllergenIsContained"`
+	CreationDate        string `json:"CreationDate"`
+	LastChangeDate      string `json:"LastChangeDate"`
+	IsMarkedForDeletion *bool  `json:"IsMarkedForDeletion"`
 }
 
 type Calories struct {
@@ -252,8 +249,8 @@ type Calories struct {
 	Calories            *float32 `json:"Calories"`
 	CaloryUnit          *string  `json:"CaloryUnit"`
 	CaloryUnitQuantity  *int     `json:"CaloryUnitQuantity"`
-	CreationDate        *string  `json:"CreationDate"`
-	LastChangeDate      *string  `json:"LastChangeDate"`
+	CreationDate        string   `json:"CreationDate"`
+	LastChangeDate      string   `json:"LastChangeDate"`
 	IsMarkedForDeletion *bool    `json:"IsMarkedForDeletion"`
 }
 
@@ -263,20 +260,9 @@ type NutritionalInfo struct {
 	Nutrient            string   `json:"Nutrient"`
 	NutrientContent     *float32 `json:"NutrientContent"`
 	NutrientContentUnit *string  `json:"NutrientContentUnit"`
-	CreationDate        *string  `json:"CreationDate"`
-	LastChangeDate      *string  `json:"LastChangeDate"`
+	CreationDate        string   `json:"CreationDate"`
+	LastChangeDate      string   `json:"LastChangeDate"`
 	IsMarkedForDeletion *bool    `json:"IsMarkedForDeletion"`
-}
-
-type GeneralDoc struct {
-	Product                  string  `json:"Product"`
-	DocType                  string  `json:"DocType"`
-	DocVersionID             int     `json:"DocVersionID"`
-	DocID                    string  `json:"DocID"`
-	FileExtension            *string `json:"FileExtension"`
-	FileName                 *string `json:"FileName"`
-	FilePath                 *string `json:"FilePath"`
-	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
 }
 
 type BPPlantDoc struct {

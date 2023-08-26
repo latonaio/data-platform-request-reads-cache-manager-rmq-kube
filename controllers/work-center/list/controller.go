@@ -120,6 +120,7 @@ func (
 	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
+		"GeneralDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -206,14 +207,14 @@ func (
 
 		data.WorkCenterGeneral = append(data.WorkCenterGeneral,
 			apiOutputFormatter.WorkCenterGeneral{
-				WorkCenter:                    v.WorkCenter,
-				WorkCenterName:                v.WorkCenterName,
-				Plant:		                   v.Plant,
-				PlantName:                     plantMapper[v.Plant].PlantName,
-				WorkCenterLocation: 		   v.WorkCenterLocation,
-				CapacityCategory:              v.CapacityCategory,
-				ValidityStartDate:             v.ValidityStartDate,
-				IsMarkedForDeletion:           v.IsMarkedForDeletion,
+				WorkCenter:          v.WorkCenter,
+				WorkCenterName:      v.WorkCenterName,
+				Plant:               v.Plant,
+				PlantName:           plantMapper[v.Plant].PlantName,
+				WorkCenterLocation:  v.WorkCenterLocation,
+				CapacityCategory:    v.CapacityCategory,
+				ValidityStartDate:   v.ValidityStartDate,
+				IsMarkedForDeletion: v.IsMarkedForDeletion,
 			},
 		)
 	}

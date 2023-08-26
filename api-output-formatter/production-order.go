@@ -5,6 +5,7 @@ type ProductionOrder struct {
 	ProductionOrderHeaderWithItem []ProductionOrderHeaderWithItem `json:"HeaderWithItem"`
 	// todo Header という名前は競合するため使用不可
 	ProductionOrderHeaderSingleUnit []ProductionOrderHeaderSingleUnit `json:"HeaderSingleUnit"`
+	ProductionOrderItemSingleUnit   []ProductionOrderItemSingleUnit   `json:"ItemSingleUnit"`
 	ProductionOrderItem             []ProductionOrderItem             `json:"Item"`
 	ProductionOrderItemOperation    []ProductionOrderItemOperation    `json:"ItemOperation"`
 }
@@ -170,4 +171,13 @@ type ProductionOrderItemOperation struct {
 	IsLocked                                        *bool    `json:"IsLocked"`
 	IsCancelled                                     *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion                             *bool    `json:"IsMarkedForDeletion"`
+}
+
+type ProductionOrderItemSingleUnit struct {
+	SizeOrDimensionText                         *string  `json:"SizeOrDimensionText"`
+	SafetyStockQuantityInBaseUnit               *float32 `json:"SafetyStockQuantityInBaseUnit"`
+	InternalCapacityQuantity                    *float32 `json:"InternalCapacityQuantity"`
+	ReorderThresholdQuantityInBaseUnit          *float32 `json:"ReorderThresholdQuantityInBaseUnit"`
+	StandardProductionLotSizeQuantityInBaseUnit *float32 `json:"StandardProductionLotSizeQuantityInBaseUnit"`
+	Images                                      Images   `json:"Images"`
 }

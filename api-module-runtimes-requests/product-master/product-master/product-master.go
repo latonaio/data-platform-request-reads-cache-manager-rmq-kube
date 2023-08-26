@@ -32,6 +32,7 @@ type General struct {
 	SizeOrDimensionText           *string              `json:"SizeOrDimensionText"`
 	ProductStandardID             *string              `json:"ProductStandardID"`
 	IndustryStandardName          *string              `json:"IndustryStandardName"`
+	MarkingOfMaterial             *string              `json:"MarkingOfMaterial"`
 	CountryOfOrigin               *string              `json:"CountryOfOrigin"`
 	CountryOfOriginLanguage       *string              `json:"CountryOfOriginLanguage"`
 	LocalRegionOfOrigin           *string              `json:"LocalRegionOfOrigin"`
@@ -184,12 +185,9 @@ type Quality struct {
 	Product                        string  `json:"Product"`
 	BusinessPartner                int     `json:"BusinessPartner"`
 	Plant                          string  `json:"Plant"`
-	MaximumStoragePeriod           *string `json:"MaximumStoragePeriod"`
 	QualityMgmtCtrlKey             *string `json:"QualityMgmtCtrlKey"`
-	MatlQualityAuthorizationGroup  *string `json:"MatlQualityAuthorizationGroup"`
-	HasPostToInspectionStock       *bool   `json:"HasPostToInspectionStock"`
-	InspLotDocumentationIsRequired *bool   `json:"InspLotDocumentationIsRequired"`
-	SuplrQualityManagementSystem   *string `json:"SuplrQualityManagementSystem"`
+	ProductSpecification		   *string `json:"ProductSpecification"`
+	MaximumStoragePeriodInDays     *int	   `json:"MaximumStoragePeriodInDays"`
 	RecrrgInspIntervalTimeInDays   *int    `json:"RecrrgInspIntervalTimeInDays"`
 	ProductQualityCertificateType  *string `json:"ProductQualityCertificateType"`
 	CreationDate                   *string `json:"CreationDate"`
@@ -320,12 +318,13 @@ func CreateProductMasterRequestGenerals(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductMaster,
 ) ProductMasterReq {
-	//isMarkedForDeletion := false
+	isMarkedForDeletion := false
 
 	req := ProductMasterReq{
 		General: General{
 			//IsMarkedForDeletion: requestPram.IsMarkedForDeletion,
 			//IsMarkedForDeletion: &isMarkedForDeletion,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 		Accepter: []string{
 			"Generals",
@@ -373,6 +372,19 @@ func CreateProductMasterRequestProductDescsByBP(
 	return req
 }
 
+func CreateProductMasterByBPPlant(
+	requestPram *apiInputReader.Request,
+	general General,
+) ProductMasterReq {
+	req := ProductMasterReq{
+		General: general,
+		Accepter: []string{
+			"BPPlant",
+		},
+	}
+	return req
+}
+
 func CreateProductMasterByBPPlants(
 	requestPram *apiInputReader.Request,
 	general General,
@@ -381,6 +393,19 @@ func CreateProductMasterByBPPlants(
 		General: general,
 		Accepter: []string{
 			"BPPlants",
+		},
+	}
+	return req
+}
+
+func CreateProductMasterProduction(
+	requestPram *apiInputReader.Request,
+	general General,
+) ProductMasterReq {
+	req := ProductMasterReq{
+		General: general,
+		Accepter: []string{
+			"Production",
 		},
 	}
 	return req
@@ -546,6 +571,38 @@ func ProductMasterReadsProductDescsByBP(
 	return responseBody
 }
 
+func ProductMasterReadsByBPPlant(
+	requestPram *apiInputReader.Request,
+	input General,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_PRODUCT_MASTER_SRV"
+	aPIType := "reads"
+
+	request := CreateProductMasterByBPPlant(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+	)
+
+	return responseBody
+}
+
 func ProductMasterReadsByBPPlants(
 	requestPram *apiInputReader.Request,
 	input General,
@@ -555,6 +612,38 @@ func ProductMasterReadsByBPPlants(
 	aPIType := "reads"
 
 	request := CreateProductMasterByBPPlants(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+	)
+
+	return responseBody
+}
+
+func ProductMasterReadsProduction(
+	requestPram *apiInputReader.Request,
+	input General,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_PRODUCT_MASTER_SRV"
+	aPIType := "reads"
+
+	request := CreateProductMasterProduction(
 		requestPram,
 		input,
 	)

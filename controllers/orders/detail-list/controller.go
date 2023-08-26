@@ -247,6 +247,7 @@ func (
 	responseBody := apiModuleRuntimesRequestsProductMasterDoc.ProductMasterDocReads(
 		requestPram,
 		&controller.Controller,
+		"GeneralDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -385,17 +386,17 @@ func (
 
 		data.OrdersHeaderWithItem = append(data.OrdersHeaderWithItem,
 			apiOutputFormatter.OrdersHeaderWithItem{
-				OrderID:      			v.OrderID,
-				OrderDate:    			v.OrderDate,
-				PaymentTerms: 			v.PaymentTerms,
+				OrderID:      v.OrderID,
+				OrderDate:    v.OrderDate,
+				PaymentTerms: v.PaymentTerms,
 				//PaymentTermsName:		v.PaymentTermsName, //CallerとMapperが必要
-				PaymentMethod:			v.PaymentMethod,
-				TransactionCurrency:	v.TransactionCurrency,
-				OrderType:				v.OrderType,
-				Buyer:					v.Buyer,
-				BuyerName:				businessPartnerMapper[v.Buyer].BusinessPartnerName,
-				Seller:					v.Seller,
-				SellerName:				businessPartnerMapper[v.Seller].BusinessPartnerName,
+				PaymentMethod:       v.PaymentMethod,
+				TransactionCurrency: v.TransactionCurrency,
+				OrderType:           v.OrderType,
+				Buyer:               v.Buyer,
+				BuyerName:           businessPartnerMapper[v.Buyer].BusinessPartnerName,
+				Seller:              v.Seller,
+				SellerName:          businessPartnerMapper[v.Seller].BusinessPartnerName,
 			},
 		)
 	}

@@ -1,15 +1,15 @@
 package apiModuleRuntimesResponsesProductMaster
 
 type ProductMasterDocRes struct {
-	Message  *ResponseHeaderDoc `json:"message,omitempty"`
-	Accepter []string           `json:"accepter,omitempty"`
+	Message  *ResponseGeneralDoc `json:"message,omitempty"`
+	Accepter []string            `json:"accepter,omitempty"`
 }
 
-type ResponseHeaderDoc struct {
-	HeaderDoc *[]PMDHeaderDoc `json:"HeaderDoc"`
+type ResponseGeneralDoc struct {
+	GeneralDoc *[]GeneralDoc `json:"GeneralDoc"`
 }
 
-type PMDHeaderDoc struct {
+type GeneralDoc struct {
 	Product                  string `json:"Product"`
 	DocType                  string `json:"DocType"`
 	FileExtension            string `json:"FileExtension"`

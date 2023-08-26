@@ -152,6 +152,7 @@ type ItemOperation struct {
 	Operations                                      int      `json:"Operations"`
 	OperationsItem                                  int      `json:"OperationsItem"`
 	OperationID                                     int      `json:"OperationID"`
+	OperationType                            		string   `json:"OperationType"`
 	SupplyChainRelationshipID                       int      `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID               int      `json:"SupplyChainRelationshipDeliveryID"`
 	SupplyChainRelationshipDeliveryPlantID          int      `json:"SupplyChainRelationshipDeliveryPlantID"`
