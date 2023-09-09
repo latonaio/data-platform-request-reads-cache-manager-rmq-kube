@@ -3,6 +3,7 @@ package routers
 import (
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/config"
+	controllersBatchMasterRecordList "data-platform-request-reads-cache-manager-rmq-kube/controllers/batch-master-record/list"
 	controllersBillOfMaterialDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/detail-list"
 	controllersBillOfMaterialList "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/list"
 	controllersBusinessPartnerDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/detail-general"
@@ -25,10 +26,14 @@ import (
 	controllersProductMasterDetailBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/detail-business-partner"
 	controllersProductMasterDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/detail-general"
 	controllersProductMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/list"
-	controllersProductStockDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/detail-list"
-	controllersProductStockList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/list"
+	controllersProductStockAvailabilityDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-availability-detail-list"
+	controllersProductStockAvailabilityList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-availability-list"
+	controllersProductStockByStorageBinByBatchList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-by-storage-bin-by-batch-list"
+	controllersProductStockDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-detail-list"
+	controllersProductStockList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-list"
+	controllersProductStockSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-single-unit"
+	controllersProductionOrderConfHeaderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order-conf/header-single-unit"
 	controllersProductionOrderDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/detail-list"
-	controllersProductionOrderInput "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-operation-input"
 	controllersProductionOrderItemOperationList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-operation-list"
 	controllersProductionOrderItemSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-single-unit"
 	controllersProductionOrderList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/list"
@@ -145,12 +150,37 @@ func init() {
 		CustomLogger: l,
 	}
 
+	batchMasterRecordListController := &controllersBatchMasterRecordList.BatchMasterRecordListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	productStockListController := &controllersProductStockList.ProductStockListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
 
 	productStockDetailListController := &controllersProductStockDetailList.ProductStockDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productStockByStorageBinByBatchListController := &controllersProductStockByStorageBinByBatchList.ProductStockByStorageBinByBatchListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productStockSingleUnitController := &controllersProductStockSingleUnit.ProductStockSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productStockAvailabilityListController := &controllersProductStockAvailabilityList.ProductStockAvailabilityListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productStockAvailabilityDetailListController := &controllersProductStockAvailabilityDetailList.ProductStockAvailabilityDetailListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -210,7 +240,7 @@ func init() {
 		CustomLogger: l,
 	}
 
-	productionOrderItemOperationInputController := &controllersProductionOrderInput.ProductionOrderItemOperationInputController{
+	productionOrderConfHeaderSingleUnitController := &controllersProductionOrderConfHeaderSingleUnit.ProductionOrderConfHeaderSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -288,11 +318,21 @@ func init() {
 		beego.NSRouter("/detail/list/:userType", priceMasterDetailListController),
 	)
 
+	batchMasterRecord := beego.NewNamespace(
+		"/batch-master-record",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/list/:userType", batchMasterRecordListController),
+	)
+
 	productStock := beego.NewNamespace(
 		"/product-stock",
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
-		beego.NSRouter("/list/:userType", productStockListController),
-		beego.NSRouter("/detail/list/:userType", productStockDetailListController),
+		beego.NSRouter("/product-stock-list/:userType", productStockListController),
+		beego.NSRouter("/product-stock-detail/list/:userType", productStockDetailListController),
+		beego.NSRouter("/product-stock-by-storage-bin-by-batch-list/:userType", productStockByStorageBinByBatchListController),
+		beego.NSRouter("/product-stock-single-unit/:userType", productStockSingleUnitController),
+		beego.NSRouter("/product-stock-availability-list/:userType", productStockAvailabilityListController),
+		beego.NSRouter("/product-stock-availability-detail/list/:userType", productStockAvailabilityDetailListController),
 	)
 
 	supplyChainRelationship := beego.NewNamespace(
@@ -336,7 +376,12 @@ func init() {
 		beego.NSRouter("/item-single-unit/:userType", productionOrderItemSingleUnitController),
 		beego.NSRouter("/detail/list/:userType", productionOrderDetailListController),
 		beego.NSRouter("/item-operation/list", productionOrderItemOperationListController),
-		beego.NSRouter("/item-operation/input", productionOrderItemOperationInputController),
+	)
+
+	productionOrderConf := beego.NewNamespace(
+		"/production-order-conf",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/header-single-unit/:userType", productionOrderConfHeaderSingleUnitController),
 	)
 
 	beego.AddNamespace(
@@ -351,11 +396,13 @@ func init() {
 		operations,
 		supplyChainRelationship,
 		priceMaster,
+		batchMasterRecord,
 		productStock,
 		equipmentMaster,
 		plant,
 		storageBin,
 		productionOrder,
+		productionOrderConf,
 	)
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{

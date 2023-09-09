@@ -428,19 +428,15 @@ func (
 
 		data.ProductionOrderItemOperation = append(data.ProductionOrderItemOperation,
 			apiOutputFormatter.ProductionOrderItemOperation{
-				ProductionOrder:      v.ProductionOrder,
-				ProductionOrderItem:  v.ProductionOrderItem,
-				Operations:           v.Operations,
-				OperationsItem:       v.OperationsItem,
-				OperationID:          v.OperationID,
-				OperationText:        v.OperationText,
-				Product:              v.Product,
-				Seller:               v.Seller,
-				SellerName:           sellerName,
-				IsReleased:           v.IsReleased,
-				IsMarkedForDeletion:  v.IsMarkedForDeletion,
-				IsPartiallyConfirmed: v.IsPartiallyConfirmed,
-				IsConfirmed:          v.IsConfirmed,
+				ProductionOrder:     v.ProductionOrder,
+				ProductionOrderItem: v.ProductionOrderItem,
+				Operations:          v.Operations,
+				OperationsItem:      v.OperationsItem,
+				OperationID:         v.OperationID,
+				OperationText:       v.OperationText,
+				Product:             v.Product,
+				Seller:              v.Seller,
+				SellerName:          sellerName,
 			},
 		)
 	}

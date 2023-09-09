@@ -1,6 +1,7 @@
 package services
 
 import (
+	apiModuleRuntimesResponsesBatchMasterRecord "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/batch-master-record"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
@@ -88,6 +89,24 @@ func GeneralsMapper(
 	}
 
 	return productMasterGeneralMapper
+}
+
+func BatchMapper(
+	batch *[]apiModuleRuntimesResponsesBatchMasterRecord.Batch,
+) map[string]apiModuleRuntimesResponsesBatchMasterRecord.Batch {
+	batchMapper := map[string]apiModuleRuntimesResponsesBatchMasterRecord.Batch{}
+
+	for _, v := range *batch {
+		batchMapper[v.Batch] = apiModuleRuntimesResponsesBatchMasterRecord.Batch{
+			Batch:             v.Batch,
+			ValidityStartDate: v.ValidityStartDate,
+			ValidityStartTime: v.ValidityStartTime,
+			ValidityEndDate:   v.ValidityEndDate,
+			ValidityEndTime:   v.ValidityEndTime,
+		}
+	}
+
+	return batchMapper
 }
 
 func CreateProductImage(

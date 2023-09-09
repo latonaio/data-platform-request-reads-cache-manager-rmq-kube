@@ -18,5 +18,5 @@ type REQUEST struct {
 }
 
 func (c *REQUEST) RequestURL() string {
-	return fmt.Sprintf("%s:%s", c.host, c.port)
+	return fmt.Sprintf("http://%s:%s", c.host, c.port)
 }

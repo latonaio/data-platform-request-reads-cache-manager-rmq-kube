@@ -5,6 +5,7 @@ import (
 	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesRequestsProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/production-order/production-order"
+	apiModuleRuntimesRequestsProductionOrderDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/production-order/production-order-doc"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/production-order"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -48,6 +49,12 @@ func (controller *ProductionOrderItemSingleUnitController) Get() {
 			ProductionOrder:     productionOrder,
 			ProductionOrderItem: productionOrderItem,
 			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
+		ProductionOrderDocItemDoc: &apiInputReader.ProductionOrderDocItemDoc{
+			ProductionOrder:          productionOrder,
+			ProductionOrderItem:      productionOrderItem,
+			DocType:                  "QRCODE",
+			DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
 		},
 	}
 
@@ -135,7 +142,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductMasterDocReads Unmarshal error")
+		controller.CustomLogger.Error("createProductMasterDocRequest Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -161,6 +168,33 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("createProductMasterRequestGenerals Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *ProductionOrderItemSingleUnitController,
+) createProductionOrderDocRequest(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.ProductionOrder,
+) *apiModuleRuntimesResponsesProductionOrder.ProductionOrderDocRes {
+	responseJsonData := apiModuleRuntimesResponsesProductionOrder.ProductionOrderDocRes{}
+	responseBody := apiModuleRuntimesRequestsProductionOrderDoc.ProductionOrderDocReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"ItemDoc",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createProductMasterDocRequest Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -272,12 +306,18 @@ func (
 		controller.UserInfo,
 	)
 
+	itemDocRes := controller.createProductionOrderDocRequest(
+		controller.UserInfo,
+		input,
+	)
+
 	controller.fin(
 		itemRes,
 		generalsRes,
 		bpPlantRes,
 		productionRes,
 		productDocRes,
+		itemDocRes,
 	)
 }
 
@@ -289,14 +329,11 @@ func (
 	bpPlantRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 	productionRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
+	productionOrderDocRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderDocRes,
 ) {
 	generalMapper := services.GeneralsMapper(
 		generalsRes.Message.General,
 	)
-
-	//businessPartnerMapper := services.BusinessPartnerMapper(
-	//	bpRes.Message.Generals,
-	//)
 
 	data := apiOutputFormatter.ProductionOrder{}
 
@@ -305,6 +342,10 @@ func (
 			productDocRes,
 			*v.ProductionPlantBusinessPartner,
 			*v.Product,
+		)
+
+		qrcode := services.CreateQRCodeProductionOrderItemDocImage(
+			productionOrderDocRes,
 		)
 
 		sizeOrDimensionText := fmt.Sprintf("%s", *generalMapper[*v.Product].SizeOrDimensionText)
@@ -332,6 +373,7 @@ func (
 				StandardProductionLotSizeQuantityInBaseUnit: &StandardProductionLotSizeQuantityInBaseUnit,
 				Images: apiOutputFormatter.Images{
 					Product: img,
+					QRCode:  qrcode,
 				},
 			},
 		)

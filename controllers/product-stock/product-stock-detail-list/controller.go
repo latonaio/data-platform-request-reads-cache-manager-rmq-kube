@@ -6,7 +6,7 @@ import (
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
-	apiModuleRuntimesRequestsProductStock "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-stock"
+	apiModuleRuntimesRequestsProductStock "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-stock/product-stock"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
@@ -91,7 +91,7 @@ func (controller *ProductStockDetailListController) Get() {
 
 func (
 	controller *ProductStockDetailListController,
-) createProductStockRequestHeaderByBuyer(
+) createProductStockRequestProductStockByBuyer(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductStock,
 ) *apiModuleRuntimesResponsesProductStock.ProductStockRes {
@@ -118,7 +118,7 @@ func (
 
 func (
 	controller *ProductStockDetailListController,
-) createProductStockRequestHeaderBySeller(
+) createProductStockRequestProductStockBySeller(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductStock,
 ) *apiModuleRuntimesResponsesProductStock.ProductStockRes {
@@ -201,9 +201,9 @@ func (
 	requestPram *apiInputReader.Request,
 	headerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*headerRes.Message.Header))
+	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*headerRes.Message.ProductStock))
 
-	for _, v := range *headerRes.Message.Header {
+	for _, v := range *headerRes.Message.ProductStock {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
 			BusinessPartner: v.Buyer,
 		})
@@ -241,10 +241,10 @@ func (
 	requestPram *apiInputReader.Request,
 	headerRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterRes {
-	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*headerRes.Message.Header))
+	productDescsByBP := make([]apiModuleRuntimesRequestsProductMaster.General, len(*headerRes.Message.ProductStock))
 	isMarkedForDeletion := false
 
-	for _, v := range *headerRes.Message.Header {
+	for _, v := range *headerRes.Message.ProductStock {
 		productDescsByBP = append(productDescsByBP, apiModuleRuntimesRequestsProductMaster.General{
 			Product: v.Product,
 			BusinessPartner: []apiModuleRuntimesRequestsProductMaster.BusinessPartner{
@@ -287,8 +287,8 @@ func (
 	requestPram *apiInputReader.Request,
 	plantRes *apiModuleRuntimesResponsesProductStock.ProductStockRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Header))
-	for i, v := range *plantRes.Message.Header {
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.ProductStock))
+	for i, v := range *plantRes.Message.ProductStock {
 		input[i].Plant = v.Plant
 	}
 
@@ -329,7 +329,7 @@ func (
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
 
 	if input.ProductStockHeader.Buyer != nil {
-		headerRes = *controller.createProductStockRequestHeaderByBuyer(
+		headerRes = *controller.createProductStockRequestProductStockByBuyer(
 			controller.UserInfo,
 			input,
 		)
@@ -340,7 +340,7 @@ func (
 	}
 
 	if input.ProductStockHeader.Seller != nil {
-		headerRes = *controller.createProductStockRequestHeaderBySeller(
+		headerRes = *controller.createProductStockRequestProductStockBySeller(
 			controller.UserInfo,
 			input,
 		)
@@ -396,7 +396,7 @@ func (
 
 	data := apiOutputFormatter.ProductStock{}
 
-	for _, v := range *headerRes.Message.Header {
+	for _, v := range *headerRes.Message.ProductStock {
 		img := services.CreateProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,

@@ -1,4 +1,4 @@
-package controllersProductionOrderInput
+package controllersProductionOrderConfHeaderSingleUnit
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
@@ -21,7 +21,7 @@ import (
 	"strconv"
 )
 
-type ProductionOrderItemOperationInputController struct {
+type ProductionOrderConfHeaderSingleUnitController struct {
 	beego.Controller
 	RedisCache   *cache.Cache
 	RedisKey     string
@@ -29,15 +29,15 @@ type ProductionOrderItemOperationInputController struct {
 	CustomLogger *logger.Logger
 }
 
-func (controller *ProductionOrderItemOperationInputController) Get() {
+func (controller *ProductionOrderConfHeaderSingleUnitController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	productionOrder, _ := controller.GetInt("productionOrder")
 	productionOrderItem, _ := controller.GetInt("productionOrderItem")
 	operations, _ := controller.GetInt("operations")
 	operationsItem, _ := controller.GetInt("operationsItem")
 	operationID, _ := controller.GetInt("operationID")
-	redisKeyCategory1 := "production-order"
-	redisKeyCategory2 := "item-operation-input"
+	redisKeyCategory1 := "production-order-conf"
+	redisKeyCategory2 := "header-single-unit"
 	redisKeyCategory3 := productionOrder
 
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
@@ -111,7 +111,7 @@ func (controller *ProductionOrderItemOperationInputController) Get() {
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductionOrderRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -138,7 +138,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductionOrderRequestItemOperation(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -165,7 +165,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductionOrderRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -192,7 +192,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductionOrderRequestItemOperationComponents(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.ProductionOrder,
@@ -219,7 +219,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -244,7 +244,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
 	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -275,7 +275,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createProductMasterRequestProductDescByBP(
 	requestPram *apiInputReader.Request,
 	bRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -321,7 +321,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) createBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
 	productionOrderHeaderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -365,7 +365,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) request(
 	input apiInputReader.ProductionOrder,
 ) {
@@ -424,7 +424,7 @@ func (
 }
 
 func (
-	controller *ProductionOrderItemOperationInputController,
+	controller *ProductionOrderConfHeaderSingleUnitController,
 ) fin(
 	headerRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 	itemRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
@@ -486,39 +486,18 @@ func (
 
 	data.ProductionOrderItemOperation = append(data.ProductionOrderItemOperation,
 		apiOutputFormatter.ProductionOrderItemOperation{
-			ProductionOrder:      itemOperation.ProductionOrder,
-			ProductionOrderItem:  itemOperation.ProductionOrderItem,
-			Operations:           itemOperation.Operations,
-			OperationsItem:       itemOperation.OperationsItem,
-			OperationID:          itemOperation.OperationID,
-			OperationText:        itemOperation.OperationText,
-			Product:              itemOperation.Product,
-			Seller:               itemOperation.Seller,
-			SellerName:           sellerName,
-			IsReleased:           itemOperation.IsReleased,
-			IsMarkedForDeletion:  itemOperation.IsMarkedForDeletion,
-			IsPartiallyConfirmed: itemOperation.IsPartiallyConfirmed,
-			IsConfirmed:          itemOperation.IsConfirmed,
+			ProductionOrder:     itemOperation.ProductionOrder,
+			ProductionOrderItem: itemOperation.ProductionOrderItem,
+			Operations:          itemOperation.Operations,
+			OperationsItem:      itemOperation.OperationsItem,
+			OperationID:         itemOperation.OperationID,
+			OperationText:       itemOperation.OperationText,
+			Product:             itemOperation.Product,
+			Seller:              itemOperation.Seller,
+			SellerName:          sellerName,
+			WorkCenter:          itemOperation.WorkCenter,
 		},
 	)
-
-	//for _, v := range *itemRes.Message.Item {
-	//	data.ProductionOrderItem = append(data.ProductionOrderItem,
-	//		apiOutputFormatter.ProductionOrderItem{
-	//			Product:                                 *v.Product,
-	//			ProductionOrderItem:                     v.ProductionOrderItem,
-	//			ProductDescription:                      productDescription,
-	//			OwnerProductionPlantBusinessPartnerName: businessPartnerMapper[v.OwnerProductionPlantBusinessPartner].BusinessPartnerName,
-	//			OwnerProductionPlant:                    v.OwnerProductionPlant,
-	//			OwnerProductionPlantName:                plantName,
-	//			ProductionOrderQuantityInDestinationProductionUnit: v.ProductionOrderQuantityInDestinationProductionUnit,
-	//			ProductionOrderPlannedStartDate:                    v.ProductionOrderPlannedStartDate,
-	//			ProductionOrderPlannedStartTime:                    v.ProductionOrderPlannedStartTime,
-	//			ProductionOrderPlannedEndDate:                      v.ProductionOrderPlannedEndDate,
-	//			ProductionOrderPlannedEndTime:                      v.ProductionOrderPlannedEndTime,
-	//		},
-	//	)
-	//}
 
 	err := controller.RedisCache.SetCache(
 		controller.RedisKey,

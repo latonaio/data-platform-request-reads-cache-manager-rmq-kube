@@ -5,6 +5,8 @@ type ProductionOrder struct {
 	ProductionOrderItem                   *ProductionOrderItem
 	ProductionOrderItemOperation          *ProductionOrderItemOperation
 	ProductionOrderItemOperationComponent *ProductionOrderItemOperationComponent
+	ProductionOrderDocHeaderDoc           *ProductionOrderDocHeaderDoc
+	ProductionOrderDocItemDoc             *ProductionOrderDocItemDoc
 }
 
 type ProductionOrderHeader struct {
@@ -32,4 +34,17 @@ type ProductionOrderItemOperationComponent struct {
 	ProductionOrder     int   `json:"ProductionOrder"`
 	ProductionOrderItem int   `json:"ProductionOrderItem"`
 	IsMarkedForDeletion *bool `json:"IsMarkedForDeletion"`
+}
+
+type ProductionOrderDocHeaderDoc struct {
+	ProductionOrder          *int    `json:"ProductionOrder"`
+	DocType                  *string `json:"DocType"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
+}
+
+type ProductionOrderDocItemDoc struct {
+	ProductionOrder          int    `json:"ProductionOrder"`
+	ProductionOrderItem      int    `json:"ProductionOrderItem"`
+	DocType                  string `json:"DocType"`
+	DocIssuerBusinessPartner int    `json:"DocIssuerBusinessPartner"`
 }
