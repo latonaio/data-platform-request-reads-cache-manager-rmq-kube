@@ -194,7 +194,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createProductMasterDocRequest Unmarshal error")
+		controller.CustomLogger.Error("createProductionOrderDocRequest Unmarshal error")
 	}
 
 	return &responseJsonData

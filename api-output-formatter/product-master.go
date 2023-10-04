@@ -6,6 +6,7 @@ type ProductMaster struct {
 	ProductMasterDetailGeneral         []ProductMasterDetailGeneral         `json:"DetailGeneral"`
 	ProductMasterDetailBusinessPartner []ProductMasterDetailBusinessPartner `json:"DetailBusinessPartner"`
 	ProductMasterDetailBPPlant         []ProductMasterDetailBPPlant         `json:"DetailBPPlant"`
+	ProductMasterSingleUnit            []ProductMasterSingleUnit            `json:"SingleUnit"`
 }
 
 type ProductMasterGeneral struct {
@@ -90,4 +91,31 @@ type ProductMasterDetailBPPlant struct {
 	LastChangeDate                            string   `json:"LastChangeDate"`
 	IsMarkedForDeletion                       *bool    `json:"IsMarkedForDeletion"`
 	Images                                    Images   `json:"Images"`
+}
+
+type ProductMasterSingleUnit struct {
+	Product                       string   `json:"Product"`
+	ProductName                   *string  `json:"ProductName"`
+	ProductType                   *string  `json:"ProductType"`
+	GrossWeight                   *float32 `json:"GrossWeight"`
+	NetWeight                     *float32 `json:"NetWeight"`
+	WeightUnit                    *string  `json:"WeightUnit"`
+	InternalCapacityQuantity      *float32 `json:"InternalCapacityQuantity"`
+	InternalCapacityQuantityUnit  *string  `json:"InternalCapacityQuantityUnit"`
+	SizeOrDimensionText           *string  `json:"SizeOrDimensionText"`
+	ProductStandardID             *string  `json:"ProductStandardID"`
+	IndustryStandardName          *string  `json:"IndustryStandardName"`
+	ItemCategory                  *string  `json:"ItemCategory"`
+	CountryOfOrigin               *string  `json:"CountryOfOrigin"`
+	CountryOfOriginLanguage       *string  `json:"CountryOfOriginLanguage"`
+	LocalRegionOfOrigin           *string  `json:"LocalRegionOfOrigin"`
+	LocalSubRegionOfOrigin        *string  `json:"LocalSubRegionOfOrigin"`
+	MarkingOfMaterial             *string  `json:"MarkingOfMaterial"`
+	BarcodeType                   *string  `json:"BarcodeType"`
+	ProductAccountAssignmentGroup *string  `json:"ProductAccountAssignmentGroup"`
+	ValidityEndDate               string   `json:"ValidityEndDate"`
+	CreationDate                  string   `json:"CreationDate"`
+	LastChangeDate                string   `json:"LastChangeDate"`
+	IsMarkedForDeletion           *bool    `json:"IsMarkedForDeletion"`
+	Images                        *Images  `json:"Images"`
 }

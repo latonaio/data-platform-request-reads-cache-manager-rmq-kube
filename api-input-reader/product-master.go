@@ -4,6 +4,7 @@ type ProductMaster struct {
 	ProductMasterGeneral         *ProductMasterGeneral
 	ProductMasterBusinessPartner *ProductMasterBusinessPartner
 	ProductMasterBPPlant         *ProductMasterBPPlant
+	ProductMasterGeneralDoc      *ProductMasterGeneralDoc
 }
 
 type ProductMasterGeneral struct {
@@ -25,5 +26,8 @@ type ProductMasterBPPlant struct {
 }
 
 type ProductMasterGeneralDoc struct {
-	Product string `json:"Product"`
+	Product                  string  `json:"Product"`
+	BusinessPartner          *int    `json:"BusinessPartner"`
+	DocType                  *string `json:"DocType"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
 }

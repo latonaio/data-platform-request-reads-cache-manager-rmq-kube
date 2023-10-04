@@ -171,8 +171,9 @@ type Production struct {
 	BusinessPartner                                   int      `json:"BusinessPartner"`
 	Plant                                             string   `json:"Plant"`
 	ProductionStorageLocation                         string   `json:"ProductionStorageLocation"`
-	ProductProcessingDuration                         float32  `json:"ProductProcessingDuration"`
-	ProductProductionQuantityUnit                     string   `json:"ProductProductionQuantityUnit"`
+	ProductionDuration                         		  float32  `json:"ProductionDuration"`
+	ProductionDurationUnit                     		  string   `json:"ProductionDurationUnit"`
+	ProductionQuantityUnit                     		  string   `json:"ProductionQuantityUnit"`
 	MinimumProductionQuantityInBaseUnit               float32  `json:"MinimumProductionQuantityInBaseUnit"`
 	MinimumProductionLotSizeQuantityInBaseUnit        float32  `json:"MinimumProductionLotSizeQuantityInBaseUnit"`
 	StandardProductionQuantityInBaseUnit              float32  `json:"StandardProductionQuantityInBaseUnit"`
@@ -184,8 +185,8 @@ type Production struct {
 	MinimumProductionLotSizeQuantityInProductionUnit  float32  `json:"MinimumProductionLotSizeQuantityInProductionUnit"`
 	StandardProductionQuantityInProductionUnit        float32  `json:"StandardProductionQuantityInProductionUnit"`
 	StandardProductionLotSizeQuantityInProductionUnit float32  `json:"StandardProductionLotSizeQuantityInProductionUnit"`
-	MaximumProductionLotSizeQuantityInProductionUnit  float32  `json:"MaximumProductionLotSizeQuantityInProductionUnit"`
 	MaximumProductionQuantityInProductionUnit         float32  `json:"MaximumProductionQuantityInProductionUnit"`
+	MaximumProductionLotSizeQuantityInProductionUnit  float32  `json:"MaximumProductionLotSizeQuantityInProductionUnit"`
 	ProductionLotSizeRoundingQuantityInProductionUnit *float32 `json:"ProductionLotSizeRoundingQuantityInProductionUnit"`
 	ProductionLotSizeIsFixed                          *bool    `json:"ProductionLotSizeIsFixed"`
 	ProductIsBatchManagedInProductionPlant            *bool    `json:"ProductIsBatchManagedInProductionPlant"`

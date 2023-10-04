@@ -26,6 +26,7 @@ import (
 	controllersProductMasterDetailBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/detail-business-partner"
 	controllersProductMasterDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/detail-general"
 	controllersProductMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/list"
+	controllersProductSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/product-master-single-unit"
 	controllersProductStockAvailabilityDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-availability-detail-list"
 	controllersProductStockAvailabilityList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-availability-list"
 	controllersProductStockByStorageBinByBatchList "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-by-storage-bin-by-batch-list"
@@ -136,6 +137,11 @@ func init() {
 	}
 
 	productMasterDetailBPPlantController := &controllersProductMasterDetailBPPlant.ProductMasterDetailBPPlantController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productMasterSingleUnitController := &controllersProductSingleUnit.ProductMasterSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -309,6 +315,7 @@ func init() {
 		beego.NSRouter("/list/:userType", productMasterDetailGeneralController),
 		beego.NSRouter("/list/:userType", productMasterDetailBusinessPartnerController),
 		beego.NSRouter("/list/:userType", productMasterDetailBPPlantController),
+		beego.NSRouter("/product-single-unit/:userType", productMasterSingleUnitController),
 	)
 
 	priceMaster := beego.NewNamespace(
