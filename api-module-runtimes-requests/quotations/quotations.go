@@ -59,6 +59,7 @@ type Header struct {
 	HeaderText                       *bool    `json:"HeaderText"`
 	HeaderIsClosed                   *bool    `json:"HeaderIsClosed"`
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
+	ExternalReferenceDocument        *string  `json:"ExternalReferenceDocument"`
 	CreationDate                     *string  `json:"CreationDate"`
 	LastChangeDate                   *string  `json:"LastChangeDate"`
 	IsCancelled                      *bool    `json:"IsCancelled"`
