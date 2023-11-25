@@ -17,6 +17,7 @@ import (
 	controllersOperationsDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/detail-list"
 	controllersOperationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/list"
 	controllersOrdersDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/detail-list"
+	controllersOrdersSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit"
 	controllersOrdersList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/list"
 	controllersPlantDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/detail-list"
 	controllersPlantList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/list"
@@ -77,6 +78,11 @@ func init() {
 	}
 
 	ordersDetailListController := &controllersOrdersDetailList.OrdersDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	ordersSingleUnit := &controllersOrdersSingleUnit.OrdersSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -278,6 +284,7 @@ func init() {
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", ordersListController),
 		beego.NSRouter("/detail/list/:userType", ordersDetailListController),
+		beego.NSRouter("/item-single-unit/:userType", ordersSingleUnit),
 	)
 
 	deliveryDocument := beego.NewNamespace(

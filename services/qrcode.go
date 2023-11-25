@@ -1,6 +1,7 @@
 package services
 
 import (
+	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProductStock "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-stock"
 	apiModuleRuntimesResponsesProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/production-order"
@@ -35,6 +36,19 @@ func CreateQRCodeProductStockDocImage(
 
 func CreateQRCodeProductionOrderItemDocImage(
 	itemDocRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderDocRes,
+) *apiOutputFormatter.QRCodeImage {
+	img := &apiOutputFormatter.QRCodeImage{}
+
+	img = &apiOutputFormatter.QRCodeImage{
+		DocID:         (*itemDocRes.Message.ItemDoc)[0].DocID,
+		FileExtension: (*itemDocRes.Message.ItemDoc)[0].FileExtension,
+	}
+
+	return img
+}
+
+func CreateQRCodeOrdersItemDocImage(
+	itemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
 ) *apiOutputFormatter.QRCodeImage {
 	img := &apiOutputFormatter.QRCodeImage{}
 

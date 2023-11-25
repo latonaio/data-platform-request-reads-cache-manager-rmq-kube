@@ -1,9 +1,10 @@
 package apiInputReader
 
 type Orders struct {
-	OrdersHeader *OrdersHeader
-	OrdersItems  *OrdersItems
-	OrdersItem   *OrdersItem
+	OrdersHeader     *OrdersHeader
+	OrdersItems      *OrdersItems
+	OrdersItem       *OrdersItem
+	OrdersDocItemDoc *OrdersDocItemDoc
 }
 
 type OrdersHeader struct {
@@ -34,4 +35,11 @@ type OrdersItem struct {
 	ItemDeliveryStatus            *string `json:"ItemDeliveryStatus"`
 	IsCancelled                   *bool   `json:"IsCancelled"`
 	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
+}
+
+type OrdersDocItemDoc struct {
+	OrderID                  int    `json:"OrderID"`
+	OrderItem                int    `json:"OrderItem"`
+	DocType                  string `json:"DocType"`
+	DocIssuerBusinessPartner int    `json:"DocIssuerBusinessPartner"`
 }

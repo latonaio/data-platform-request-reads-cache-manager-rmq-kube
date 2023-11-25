@@ -4,6 +4,7 @@ type Orders struct {
 	OrdersHeader         []OrdersHeader         `json:"Header"`
 	OrdersHeaderWithItem []OrdersHeaderWithItem `json:"HeaderWithItem"`
 	OrdersItem           []OrdersItem           `json:"Item"`
+	OrdersSingleUnit     []OrdersSingleUnit     `json:"SingleUnit"`
 }
 
 type OrdersHeader struct {
@@ -44,4 +45,22 @@ type OrdersItem struct {
 	IsCancelled                 *bool   `json:"IsCancelled"`
 	IsMarkedForDeletion         *bool   `json:"IsMarkedForDeletion"`
 	Images                      Images  `json:"Images"`
+}
+
+type OrdersSingleUnit struct {
+	OrderID               int     `json:"OrderID"`
+	OrderItem             int     `json:"OrderItem"`
+	Product               string  `json:"Product"`
+	RequestedDeliveryDate string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime string  `json:"RequestedDeliveryTime"`
+	NetAmount             float32 `json:"NetAmount"`
+	OrderType             *string `json:"OrderType"`
+	Buyer                 int     `json:"Buyer"`
+	BuyerName             string  `json:"BuyerName"`
+	Seller                int     `json:"Seller"`
+	SellerName            string  `json:"SellerName"`
+	OrderItemTextByBuyer  string  `json:"OrderItemTextByBuyer"`
+	OrderItemTextBySeller string  `json:"OrderItemTextBySeller"`
+	TransactionCurrency   string  `json:"TransactionCurrency"`
+	Images                Images  `json:"Images"`
 }
