@@ -17,6 +17,8 @@ import (
 	controllersOperationsDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/detail-list"
 	controllersOperationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/list"
 	controllersOrdersDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/detail-list"
+	controllersOrdersItemPricingElement "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-pricing-element"
+	controllersOrdersItemScheduleLine "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-schedule-line"
 	controllersOrdersSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit"
 	controllersOrdersList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/list"
 	controllersPlantDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/detail-list"
@@ -83,6 +85,16 @@ func init() {
 	}
 
 	ordersSingleUnit := &controllersOrdersSingleUnit.OrdersSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	ordersItemScheduleLineController := &controllersOrdersItemScheduleLine.OrdersItemScheduleLineController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	ordersItemPricingElementController := &controllersOrdersItemPricingElement.OrdersItemPricingElementController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -285,6 +297,8 @@ func init() {
 		beego.NSRouter("/list/:userType", ordersListController),
 		beego.NSRouter("/detail/list/:userType", ordersDetailListController),
 		beego.NSRouter("/item-single-unit/:userType", ordersSingleUnit),
+		beego.NSRouter("/item-schedule-line/:userType", ordersItemScheduleLineController),
+		beego.NSRouter("/item-pricing-element/:userType", ordersItemPricingElementController),
 	)
 
 	deliveryDocument := beego.NewNamespace(

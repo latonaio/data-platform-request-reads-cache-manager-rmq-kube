@@ -1,13 +1,15 @@
-package controllersOrdersSingleUnit
+package controllersOrdersItemPricingElement
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
 	apiModuleRuntimesRequestsOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders"
 	apiModuleRuntimesRequestsOrdersDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders-doc"
+	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
+	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
@@ -17,7 +19,7 @@ import (
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 )
 
-type OrdersSingleUnitController struct {
+type OrdersItemPricingElementController struct {
 	beego.Controller
 	RedisCache   *cache.Cache
 	RedisKey     string
@@ -30,12 +32,10 @@ const (
 	seller = "seller"
 )
 
-func (controller *OrdersSingleUnitController) Get() {
-	//isReleased, _ := controller.GetBool("isReleased")
-	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+func (controller *OrdersItemPricingElementController) Get() {
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "orders"
-	redisKeyCategory2 := "orders-item-single-unit"
+	redisKeyCategory2 := "orders-item-pricing-element"
 	orderId, _ := controller.GetInt("orderId")
 	orderItem, _ := controller.GetInt("orderItem")
 	userType := controller.GetString(":userType")
@@ -151,7 +151,7 @@ func (controller *OrdersSingleUnitController) Get() {
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createOrdersRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -178,7 +178,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createOrdersRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -205,34 +205,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
-) createOrdersRequestItemScheduleLines(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.Orders,
-) *apiModuleRuntimesResponsesOrders.OrdersRes {
-	responseJsonData := apiModuleRuntimesResponsesOrders.OrdersRes{}
-	responseBody := apiModuleRuntimesRequestsOrders.OrdersReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"ItemScheduleLines",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createOrdersRequestItemScheduleLines Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createOrdersRequestItemPricingElements(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -259,7 +232,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createOrdersDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -286,7 +259,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -311,7 +284,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -348,7 +321,38 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
+) createPlantRequestGenerals(
+	requestPram *apiInputReader.Request,
+	ordersItemScheduleLineRes *apiModuleRuntimesResponsesOrders.OrdersRes,
+) *apiModuleRuntimesResponsesPlant.PlantRes {
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*ordersItemScheduleLineRes.Message.ItemScheduleLine))
+	for i, v := range *ordersItemScheduleLineRes.Message.ItemScheduleLine {
+		input[i].Plant = v.StockConfirmationPlant
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
+	responseBody := apiModuleRuntimesRequestsPlant.PlantReadsGeneralsByPlants(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createPlantRequestGenerals Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+controller *OrdersItemPricingElementController,
 ) request(
 	input apiInputReader.Orders,
 ) {
@@ -360,11 +364,6 @@ func (
 	)
 
 	ordersItemRes := controller.createOrdersRequestItem(
-		controller.UserInfo,
-		input,
-	)
-
-	ordersItemScheduleLinesRes := controller.createOrdersRequestItemScheduleLines(
 		controller.UserInfo,
 		input,
 	)
@@ -383,32 +382,23 @@ func (
 		controller.UserInfo,
 	)
 
-	ordersItemDocRes := controller.createOrdersDocRequest(
-		controller.UserInfo,
-		input,
-	)
-
 	controller.fin(
 		&ordersHeaderRes,
 		ordersItemRes,
-		ordersItemScheduleLinesRes,
 		ordersItemPricingElementsRes,
 		&businessPartnerRes,
 		productDocRes,
-		ordersItemDocRes,
 	)
 }
 
 func (
-	controller *OrdersSingleUnitController,
+controller *OrdersItemPricingElementController,
 ) fin(
 	ordersHeaderRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-	ordersItemScheduleLinesRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	ordersItemPricingElementsRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
-	ordersItemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
@@ -423,56 +413,38 @@ func (
 			v.Product,
 		)
 
-		var orderType *string
-		var requestedDeliveryDate *string
-		var requestedDeliveryTime *string
-		var conditionCurrency *string
+		data.OrdersItem = append(data.OrdersItem, apiOutputFormatter.OrdersItem{
+			OrderItem:                   v.OrderItem,
+			Product:                     v.Product,
+			OrderItemTextByBuyer:        v.OrderItemTextByBuyer,
+			OrderItemTextBySeller:       v.OrderItemTextBySeller,
+			Buyer:                       v.Buyer,
+			BuyerName:                   businessPartnerMapper[v.Buyer].BusinessPartnerName,
+			Seller:                      v.Seller,
+			SellerName:                  businessPartnerMapper[v.Seller].BusinessPartnerName,
+			DeliveryUnit:                v.DeliveryUnit,
+			OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
+			RequestedDeliveryDate:       v.RequestedDeliveryDate,
+			RequestedDeliveryTime:       v.RequestedDeliveryTime,
+			Images: apiOutputFormatter.Images{
+				Product: img,
+			},
+		})
+	}
 
-		if ordersHeaderRes != nil && ordersHeaderRes.Message.Header != nil && len(*ordersHeaderRes.Message.Header) > 0 {
-			orderType = &(*ordersHeaderRes.Message.Header)[0].OrderType
-		} else {
-			orderType = nil
-		}
-
-		if ordersItemScheduleLinesRes != nil && ordersItemScheduleLinesRes.Message.ItemScheduleLine != nil && len(*ordersItemScheduleLinesRes.Message.ItemScheduleLine) > 0 {
-			requestedDeliveryDate = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryDate
-			requestedDeliveryTime = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryTime
-		} else {
-			requestedDeliveryDate = nil
-			requestedDeliveryTime = nil
-		}
-
-		if ordersItemPricingElementsRes != nil && ordersItemPricingElementsRes.Message.ItemPricingElement != nil && len(*ordersItemPricingElementsRes.Message.ItemPricingElement) > 0 {
-			conditionCurrency = (*ordersItemPricingElementsRes.Message.ItemPricingElement)[0].ConditionCurrency
-		} else {
-			conditionCurrency = nil
-		}
-
-		qrcode := services.CreateQRCodeOrdersItemDocImage(
-			ordersItemDocRes,
-		)
-
-		data.OrdersSingleUnit = append(data.OrdersSingleUnit,
-			apiOutputFormatter.OrdersSingleUnit{
-				OrderID:               v.OrderID,
-				OrderItem:             v.OrderItem,
-				Buyer:                 v.Buyer,
-				OrderType:             orderType,
-				BuyerName:             businessPartnerMapper[v.Buyer].BusinessPartnerName,
-				Seller:                v.Seller,
-				SellerName:            businessPartnerMapper[v.Seller].BusinessPartnerName,
-				Product:               v.Product,
-				OrderItemTextByBuyer:  v.OrderItemTextByBuyer,
-				OrderItemTextBySeller: v.OrderItemTextBySeller,
-				GrossAmount:           v.GrossAmount,
-				ConditionCurrency:     *conditionCurrency,
-				RequestedDeliveryDate: *requestedDeliveryDate,
-				RequestedDeliveryTime: *requestedDeliveryTime,
-
-				Images: apiOutputFormatter.Images{
-					Product: img,
-					QRCode:  qrcode,
-				},
+	for _, v := range *ordersItemPricingElementsRes.Message.ItemPricingElement {
+		data.OrdersItemPricingElement = append(data.OrdersItemPricingElement,
+			apiOutputFormatter.OrdersItemPricingElement{
+				OrderID:                 v.OrderID,
+				OrderItem:               v.OrderItem,
+				PricingProcedureCounter: v.PricingProcedureCounter,
+				ConditionRateValue:      *v.ConditionRateValue,
+				ConditionRateValueUnit:  *v.ConditionRateValueUnit,
+				ConditionScaleQuantity:  *v.ConditionScaleQuantity,
+				ConditionCurrency:       *v.ConditionCurrency,
+				ConditionQuantity:       *v.ConditionQuantity,
+				ConditionAmount:         *v.ConditionAmount,
+				ConditionType:           *v.ConditionType,
 			},
 		)
 	}

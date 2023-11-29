@@ -306,6 +306,43 @@ func CreateOrdersRequestItem(
 	return req
 }
 
+func CreateOrdersRequestItemScheduleLines(
+	requestPram *apiInputReader.Request,
+	ordersItem *apiInputReader.OrdersItem,
+) OrdersReq {
+	req := OrdersReq{
+		Header: Header{
+			OrderID: ordersItem.OrderID,
+			Item: []Item{
+				{
+					OrderItem: ordersItem.OrderItem,
+				},
+			},
+		},
+		Accepter: []string{
+			"ItemScheduleLines",
+		},
+	}
+	return req
+}
+
+func CreateOrdersRequestItemPricingElements(
+	requestPram *apiInputReader.Request,
+	ordersHeader *apiInputReader.OrdersHeader,
+) OrdersReq {
+	req := OrdersReq{
+		Header: Header{
+			OrderID: ordersHeader.OrderID,
+			Buyer:   ordersHeader.Buyer,
+			Seller:  ordersHeader.Seller,
+		},
+		Accepter: []string{
+			"ItemPricingElements",
+		},
+	}
+	return req
+}
+
 func OrdersReads(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -380,6 +417,27 @@ func OrdersReads(
 				ItemDeliveryStatus:            input.OrdersItems.ItemDeliveryStatus,
 				IsCancelled:                   input.OrdersItems.IsCancelled,
 				IsMarkedForDeletion:           input.OrdersItems.IsMarkedForDeletion,
+			},
+		)
+	}
+
+	if accepter == "ItemScheduleLines" {
+		request = CreateOrdersRequestItemScheduleLines(
+			requestPram,
+			&apiInputReader.OrdersItem{
+				OrderID:   input.OrdersItems.OrderID,
+				OrderItem: *input.OrdersItems.OrderItem,
+			},
+		)
+	}
+
+	if accepter == "ItemPricingElements" {
+		request = CreateOrdersRequestItemPricingElements(
+			requestPram,
+			&apiInputReader.OrdersHeader{
+				OrderID: input.OrdersHeader.OrderID,
+				Buyer:   input.OrdersHeader.Buyer,
+				Seller:  input.OrdersHeader.Seller,
 			},
 		)
 	}

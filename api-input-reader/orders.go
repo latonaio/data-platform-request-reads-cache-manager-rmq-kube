@@ -20,6 +20,7 @@ type OrdersHeader struct {
 
 type OrdersItems struct {
 	OrderID                       int     `json:"OrderID"`
+	OrderItem                     *int    `json:"OrderItem"`
 	ItemCompleteDeliveryIsDefined *bool   `json:"ItemCompleteDeliveryIsDefined"`
 	ItemDeliveryBlockStatus       *bool   `json:"ItemDeliveryBlockStatus"`
 	ItemDeliveryStatus            *string `json:"ItemDeliveryStatus"`
