@@ -9,6 +9,8 @@ import (
 	controllersBusinessPartnerDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/detail-general"
 	controllersBusinessPartnerList "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/list"
 	controllersDeliveryDocumentDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/detail-list"
+	controllersDeliveryDocumentItem "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/item"
+	controllersDeliveryDocumentSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/item-single-unit"
 	controllersDeliveryDocumentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/list"
 	controllersEquipmentMasterDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/detail-general"
 	controllersEquipmentMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/list"
@@ -105,6 +107,16 @@ func init() {
 	}
 
 	deliveryDocumentDetailListController := &controllersDeliveryDocumentDetailList.DeliveryDocumentDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	deliveryDocumentSingleUnitController := &controllersDeliveryDocumentSingleUnit.DeliveryDocumentSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	deliveryDocumentItemController := &controllersDeliveryDocumentItem.DeliveryDocumentItemController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -306,6 +318,8 @@ func init() {
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", deliveryDocumentListController),
 		beego.NSRouter("/detail/list/:userType", deliveryDocumentDetailListController),
+		beego.NSRouter("/item-single-unit/:userType", deliveryDocumentSingleUnitController),
+		beego.NSRouter("/item/:userType", deliveryDocumentItemController),
 	)
 
 	invoiceDocument := beego.NewNamespace(

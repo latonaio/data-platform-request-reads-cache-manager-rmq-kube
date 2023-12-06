@@ -1,9 +1,10 @@
 package apiInputReader
 
 type DeliveryDocument struct {
-	DeliveryDocumentHeader *DeliveryDocumentHeader
-	DeliveryDocumentItems  *DeliveryDocumentItems
-	DeliveryDocumentItem   *DeliveryDocumentItem
+	DeliveryDocumentHeader     *DeliveryDocumentHeader
+	DeliveryDocumentItems      *DeliveryDocumentItems
+	DeliveryDocumentItem       *DeliveryDocumentItem
+	DeliveryDocumentDocItemDoc *DeliveryDocumentDocItemDoc
 }
 
 type DeliveryDocumentHeader struct {
@@ -18,18 +19,26 @@ type DeliveryDocumentHeader struct {
 }
 
 type DeliveryDocumentItems struct {
-	DeliveryDocument    			int   	`json:"DeliveryDocument"`
-	ItemCompleteDeliveryIsDefined	*bool	`json:"ItemCompleteDeliveryIsDefined"`
-	ItemDeliveryBlockStatus			*bool	`json:"ItemDeliveryBlockStatus"`
-	IsCancelled         			*bool	`json:"IsCancelled"`
-	IsMarkedForDeletion 			*bool	`json:"IsMarkedForDeletion"`
+	DeliveryDocument              int   `json:"DeliveryDocument"`
+	DeliveryDocumentItem          *int  `json:"DeliveryDocumentItem"`
+	ItemCompleteDeliveryIsDefined *bool `json:"ItemCompleteDeliveryIsDefined"`
+	ItemDeliveryBlockStatus       *bool `json:"ItemDeliveryBlockStatus"`
+	IsCancelled                   *bool `json:"IsCancelled"`
+	IsMarkedForDeletion           *bool `json:"IsMarkedForDeletion"`
 }
 
 type DeliveryDocumentItem struct {
-	DeliveryDocument				int		`json:"DeliveryDocument"`
-	DeliveryDocumentItem			int		`json:"DeliveryDocumentItem"`
-	ItemCompleteDeliveryIsDefined	*bool	`json:"ItemCompleteDeliveryIsDefined"`
-	ItemDeliveryBlockStatus			*bool	`json:"ItemDeliveryBlockStatus"`
-	IsCancelled						*bool	`json:"IsCancelled"`
-	IsMarkedForDeletion				*bool	`json:"IsMarkedForDeletion"`
+	DeliveryDocument              int   `json:"DeliveryDocument"`
+	DeliveryDocumentItem          int   `json:"DeliveryDocumentItem"`
+	ItemCompleteDeliveryIsDefined *bool `json:"ItemCompleteDeliveryIsDefined"`
+	ItemDeliveryBlockStatus       *bool `json:"ItemDeliveryBlockStatus"`
+	IsCancelled                   *bool `json:"IsCancelled"`
+	IsMarkedForDeletion           *bool `json:"IsMarkedForDeletion"`
+}
+
+type DeliveryDocumentDocItemDoc struct {
+	DeliveryDocument         int    `json:"DeliveryDocument"`
+	DeliveryDocumentItem     int    `json:"DeliveryDocumentItem"`
+	DocType                  string `json:"DocType"`
+	DocIssuerBusinessPartner int    `json:"DocIssuerBusinessPartner"`
 }
