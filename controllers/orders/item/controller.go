@@ -1,4 +1,4 @@
-package controllersOrdersSingleUnit
+package controllersOrdersItem
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
@@ -17,7 +17,7 @@ import (
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 )
 
-type OrdersSingleUnitController struct {
+type OrdersItemController struct {
 	beego.Controller
 	RedisCache   *cache.Cache
 	RedisKey     string
@@ -30,19 +30,19 @@ const (
 	seller = "seller"
 )
 
-func (controller *OrdersSingleUnitController) Get() {
+func (controller *OrdersItemController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 	controller.UserInfo = services.UserRequestParams(&controller.Controller)
 	redisKeyCategory1 := "orders"
-	redisKeyCategory2 := "orders-item-single-unit"
+	redisKeyCategory2 := "orders-item"
 	orderId, _ := controller.GetInt("orderId")
 	orderItem, _ := controller.GetInt("orderItem")
 	userType := controller.GetString(":userType")
 	pBuyer, _ := controller.GetInt("buyer")
 	pSeller, _ := controller.GetInt("seller")
 
-	OrdersSingleUnit := apiInputReader.Orders{}
+	OrdersItem := apiInputReader.Orders{}
 
 	headerCompleteDeliveryIsDefined := false
 	headerDeliveryBlockStatus := false
@@ -55,7 +55,7 @@ func (controller *OrdersSingleUnitController) Get() {
 	itemDeliveryStatus := "NP"
 
 	if userType == buyer {
-		OrdersSingleUnit = apiInputReader.Orders{
+		OrdersItem = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
 				OrderID:                         orderId,
 				Buyer:                           &pBuyer,
@@ -83,7 +83,7 @@ func (controller *OrdersSingleUnitController) Get() {
 			},
 		}
 	} else {
-		OrdersSingleUnit = apiInputReader.Orders{
+		OrdersItem = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
 				OrderID:                         orderId,
 				Buyer:                           &pBuyer,
@@ -143,15 +143,15 @@ func (controller *OrdersSingleUnitController) Get() {
 
 	if cacheData != nil {
 		go func() {
-			controller.request(OrdersSingleUnit)
+			controller.request(OrdersItem)
 		}()
 	} else {
-		controller.request(OrdersSingleUnit)
+		controller.request(OrdersItem)
 	}
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createOrdersRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -178,7 +178,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createOrdersRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -205,7 +205,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createOrdersRequestItemScheduleLines(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -232,7 +232,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createOrdersRequestItemPricingElements(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -259,7 +259,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createOrdersDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -286,7 +286,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -311,7 +311,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -348,7 +348,7 @@ func (
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) request(
 	input apiInputReader.Orders,
 ) {
@@ -364,16 +364,6 @@ func (
 		input,
 	)
 
-	ordersItemScheduleLinesRes := controller.createOrdersRequestItemScheduleLines(
-		controller.UserInfo,
-		input,
-	)
-
-	ordersItemPricingElementsRes := controller.createOrdersRequestItemPricingElements(
-		controller.UserInfo,
-		input,
-	)
-
 	businessPartnerRes := *controller.createBusinessPartnerRequest(
 		controller.UserInfo,
 		ordersItemRes,
@@ -383,38 +373,43 @@ func (
 		controller.UserInfo,
 	)
 
-	ordersItemDocRes := controller.createOrdersDocRequest(
-		controller.UserInfo,
-		input,
-	)
-
 	controller.fin(
 		&ordersHeaderRes,
 		ordersItemRes,
-		ordersItemScheduleLinesRes,
-		ordersItemPricingElementsRes,
 		&businessPartnerRes,
 		productDocRes,
-		ordersItemDocRes,
 	)
 }
 
 func (
-	controller *OrdersSingleUnitController,
+	controller *OrdersItemController,
 ) fin(
 	ordersHeaderRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-	ordersItemScheduleLinesRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-	ordersItemPricingElementsRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
-	ordersItemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
 	)
 
 	data := apiOutputFormatter.Orders{}
+
+	for _, v := range *ordersHeaderRes.Message.Header {
+		data.OrdersHeaderWithItem = append(data.OrdersHeaderWithItem,
+			apiOutputFormatter.OrdersHeaderWithItem{
+				OrderID:               v.OrderID,
+				Buyer:                 v.Buyer,
+				BuyerName:             businessPartnerMapper[v.Buyer].BusinessPartnerName,
+				Seller:                v.Seller,
+				SellerName:            businessPartnerMapper[v.Seller].BusinessPartnerName,
+				RequestedDeliveryDate: v.RequestedDeliveryDate,
+				RequestedDeliveryTime: v.RequestedDeliveryTime,
+				TotalGrossAmount:      v.TotalGrossAmount,
+				OrderStatus:		   v.OrderStatus,
+			},
+		)
+	}
 
 	for _, v := range *ordersItemRes.Message.Item {
 		img := services.CreateProductImage(
@@ -423,56 +418,18 @@ func (
 			v.Product,
 		)
 
-		var orderType *string
-		var requestedDeliveryDate *string
-		var requestedDeliveryTime *string
-		var conditionCurrency *string
-
-		if ordersHeaderRes != nil && ordersHeaderRes.Message.Header != nil && len(*ordersHeaderRes.Message.Header) > 0 {
-			orderType = &(*ordersHeaderRes.Message.Header)[0].OrderType
-		} else {
-			orderType = nil
-		}
-
-		if ordersItemScheduleLinesRes != nil && ordersItemScheduleLinesRes.Message.ItemScheduleLine != nil && len(*ordersItemScheduleLinesRes.Message.ItemScheduleLine) > 0 {
-			requestedDeliveryDate = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryDate
-			requestedDeliveryTime = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryTime
-		} else {
-			requestedDeliveryDate = nil
-			requestedDeliveryTime = nil
-		}
-
-		if ordersItemPricingElementsRes != nil && ordersItemPricingElementsRes.Message.ItemPricingElement != nil && len(*ordersItemPricingElementsRes.Message.ItemPricingElement) > 0 {
-			conditionCurrency = (*ordersItemPricingElementsRes.Message.ItemPricingElement)[0].ConditionCurrency
-		} else {
-			conditionCurrency = nil
-		}
-
-		qrcode := services.CreateQRCodeOrdersItemDocImage(
-			ordersItemDocRes,
-		)
-
-		data.OrdersSingleUnit = append(data.OrdersSingleUnit,
-			apiOutputFormatter.OrdersSingleUnit{
-				OrderID:               v.OrderID,
+		data.OrdersItem = append(data.OrdersItem,
+			apiOutputFormatter.OrdersItem{
 				OrderItem:             v.OrderItem,
-				OrderStatus:           v.OrderStatus,
-				Buyer:                 v.Buyer,
-				OrderType:             orderType,
-				BuyerName:             businessPartnerMapper[v.Buyer].BusinessPartnerName,
-				Seller:                v.Seller,
-				SellerName:            businessPartnerMapper[v.Seller].BusinessPartnerName,
 				Product:               v.Product,
-				OrderItemTextByBuyer:  v.OrderItemTextByBuyer,
-				OrderItemTextBySeller: v.OrderItemTextBySeller,
-				GrossAmount:           v.GrossAmount,
-				ConditionCurrency:     *conditionCurrency,
-				RequestedDeliveryDate: *requestedDeliveryDate,
-				RequestedDeliveryTime: *requestedDeliveryTime,
+				OrderItemText:         v.OrderItemText,
+				DeliveryUnit:          v.DeliveryUnit,
+				RequestedDeliveryDate: v.RequestedDeliveryDate,
+				RequestedDeliveryTime: v.RequestedDeliveryTime,
+				OrderStatus:		   v.OrderStatus,
 
 				Images: apiOutputFormatter.Images{
 					Product: img,
-					QRCode:  qrcode,
 				},
 			},
 		)

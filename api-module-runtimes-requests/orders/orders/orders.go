@@ -19,6 +19,7 @@ type Header struct {
 	OrderID                          int      `json:"OrderID"`
 	OrderDate                        *string  `json:"OrderDate"`
 	OrderType                        *string  `json:"OrderType"`
+	OrderStatus                      *string  `json:"OrderStatus"`
 	SupplyChainRelationshipID        *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipBillingID *int     `json:"SupplyChainRelationshipBillingID"`
 	SupplyChainRelationshipPaymentID *int     `json:"SupplyChainRelationshipPaymentID"`
@@ -74,6 +75,7 @@ type Item struct {
 	OrderID                                       int      `json:"OrderID"`
 	OrderItem                                     int      `json:"OrderItem"`
 	OrderItemCategory                             *string  `json:"OrderItemCategory"`
+	OrderStatus                      			  *string  `json:"OrderStatus"`
 	SupplyChainRelationshipID                     *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID             *int     `json:"SupplyChainRelationshipDeliveryID"`
 	SupplyChainRelationshipDeliveryPlantID        *int     `json:"SupplyChainRelationshipDeliveryPlantID"`

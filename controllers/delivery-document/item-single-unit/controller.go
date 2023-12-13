@@ -39,7 +39,8 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "delivery-document-item-single-unit"
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
+	//deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
+	_, _ = controller.GetInt("deliveryDocumentItem")
 	userType := controller.GetString(":userType")
 	pDeliverToParty, _ := controller.GetInt("deliverToParty")
 	pDeliverFromParty, _ := controller.GetInt("deliverFromParty")
@@ -67,8 +68,8 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument:              deliveryDocument,
-				DeliveryDocumentItem:          &deliveryDocumentItem,
+				DeliveryDocument: deliveryDocument,
+				//DeliveryDocumentItem:          &deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
@@ -93,8 +94,8 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument:              deliveryDocument,
-				DeliveryDocumentItem:          &deliveryDocumentItem,
+				DeliveryDocument: deliveryDocument,
+				//DeliveryDocumentItem:          &deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
@@ -223,60 +224,6 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("createDeliveryDocumentRequestItem Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentSingleUnitController,
-) createDeliveryDocumentRequestItemScheduleLines(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.DeliveryDocument,
-) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
-	responseJsonData := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
-	responseBody := apiModuleRuntimesRequestsDeliveryDocument.DeliveryDocumentReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"ItemScheduleLines",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createDeliveryDocumentRequestItemScheduleLines Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentSingleUnitController,
-) createDeliveryDocumentRequestItemPricingElements(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.DeliveryDocument,
-) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
-	responseJsonData := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
-	responseBody := apiModuleRuntimesRequestsDeliveryDocument.DeliveryDocumentReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"ItemPricingElements",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createDeliveryDocumentRequestItemPricingElements Unmarshal error")
 	}
 
 	return &responseJsonData

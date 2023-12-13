@@ -22,26 +22,32 @@ type OrdersHeader struct {
 }
 
 type OrdersHeaderWithItem struct {
-	OrderID             int    `json:"OrderID"`
-	OrderDate           string `json:"OrderDate"`
-	PaymentTerms        string `json:"PaymentTerms"`
-	PaymentTermsName    string `json:"PaymentTermsName"`
-	PaymentMethod       string `json:"PaymentMethod"`
-	TransactionCurrency string `json:"TransactionCurrency"`
-	OrderType           string `json:"OrderType"`
-	Buyer               int    `json:"Buyer"`
-	BuyerName           string `json:"BuyerName"`
-	Seller              int    `json:"Seller"`
-	SellerName          string `json:"SellerName"`
+	OrderID               int     `json:"OrderID"`
+	OrderStatus           string  `json:"OrderStatus"`
+	OrderDate             string  `json:"OrderDate"`
+	PaymentTerms          string  `json:"PaymentTerms"`
+	PaymentTermsName      string  `json:"PaymentTermsName"`
+	PaymentMethod         string  `json:"PaymentMethod"`
+	TransactionCurrency   string  `json:"TransactionCurrency"`
+	OrderType             string  `json:"OrderType"`
+	Buyer                 int     `json:"Buyer"`
+	BuyerName             string  `json:"BuyerName"`
+	Seller                int     `json:"Seller"`
+	SellerName            string  `json:"SellerName"`
+	RequestedDeliveryDate string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime string  `json:"RequestedDeliveryTime"`
+	TotalGrossAmount      float32 `json:"TotalGrossAmount"`
 }
 
 type OrdersItem struct {
 	OrderItem                   int     `json:"OrderItem"`
+	OrderStatus                 string  `json:"OrderStatus"`
 	Product                     string  `json:"Product"`
 	Buyer                       int     `json:"Buyer"`
 	BuyerName                   string  `json:"BuyerName"`
 	Seller                      int     `json:"Seller"`
 	SellerName                  string  `json:"SellerName"`
+	OrderItemText               string  `json:"OrderItemText"`
 	OrderItemTextByBuyer        string  `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller       string  `json:"OrderItemTextBySeller"`
 	OrderQuantityInDeliveryUnit float32 `json:"OrderQuantityInDeliveryUnit"`
@@ -57,6 +63,7 @@ type OrdersItem struct {
 type OrdersSingleUnit struct {
 	OrderID               int     `json:"OrderID"`
 	OrderItem             int     `json:"OrderItem"`
+	OrderStatus           string  `json:"OrderStatus"`
 	Product               string  `json:"Product"`
 	RequestedDeliveryDate string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime string  `json:"RequestedDeliveryTime"`

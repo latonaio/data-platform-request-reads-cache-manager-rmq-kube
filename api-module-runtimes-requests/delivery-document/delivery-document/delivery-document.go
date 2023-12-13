@@ -82,7 +82,7 @@ type Header struct {
 
 type Item struct {
 	DeliveryDocument                              int      `json:"DeliveryDocument"`
-	DeliveryDocumentItem                          int      `json:"DeliveryDocumentItem"`
+	DeliveryDocumentItem                          *int     `json:"DeliveryDocumentItem"`
 	DeliveryDocumentItemCategory                  *string  `json:"DeliveryDocumentItemCategory"`
 	SupplyChainRelationshipID                     *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipDeliveryID             *int     `json:"SupplyChainRelationshipDeliveryID"`
@@ -299,7 +299,7 @@ func CreateDeliveryDocumentRequestItem(
 			DeliveryDocument: deliveryDocumentItem.DeliveryDocument,
 			Item: []Item{
 				{
-					DeliveryDocumentItem:          deliveryDocumentItem.DeliveryDocumentItem,
+					DeliveryDocumentItem:          &deliveryDocumentItem.DeliveryDocumentItem,
 					ItemCompleteDeliveryIsDefined: deliveryDocumentItem.ItemCompleteDeliveryIsDefined,
 					ItemDeliveryBlockStatus:       deliveryDocumentItem.ItemDeliveryBlockStatus,
 					IsCancelled:                   deliveryDocumentItem.IsCancelled,
@@ -323,7 +323,7 @@ func CreateDeliveryDocumentRequestItems(
 			DeliveryDocument: deliveryDocumentItems.DeliveryDocument,
 			Item: []Item{
 				{
-					DeliveryDocumentItem:          *deliveryDocumentItems.DeliveryDocumentItem,
+					DeliveryDocumentItem:          deliveryDocumentItems.DeliveryDocumentItem,
 					ItemCompleteDeliveryIsDefined: deliveryDocumentItems.ItemCompleteDeliveryIsDefined,
 					ItemDeliveryBlockStatus:       deliveryDocumentItems.ItemDeliveryBlockStatus,
 					IsCancelled:                   deliveryDocumentItems.IsCancelled,
