@@ -460,6 +460,17 @@ func (
 			v.Product,
 		)
 
+		var requestedDeliveryDate *string
+		var requestedDeliveryTime *string
+
+		if ordersHeaderRes != nil && ordersHeaderRes.Message.Header != nil && len(*ordersHeaderRes.Message.Header) > 0 {
+			requestedDeliveryDate = &(*ordersHeaderRes.Message.Header)[0].RequestedDeliveryDate
+			requestedDeliveryTime = &(*ordersHeaderRes.Message.Header)[0].RequestedDeliveryTime
+		} else {
+			requestedDeliveryDate = nil
+			requestedDeliveryTime = nil
+		}
+
 		data.OrdersItem = append(data.OrdersItem, apiOutputFormatter.OrdersItem{
 			OrderItem:                   v.OrderItem,
 			Product:                     v.Product,
@@ -471,8 +482,8 @@ func (
 			SellerName:                  businessPartnerMapper[v.Seller].BusinessPartnerName,
 			DeliveryUnit:                v.DeliveryUnit,
 			OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
-			RequestedDeliveryDate:       v.RequestedDeliveryDate,
-			RequestedDeliveryTime:       v.RequestedDeliveryTime,
+			RequestedDeliveryDate:       *requestedDeliveryDate,
+			RequestedDeliveryTime:       *requestedDeliveryTime,
 			Images: apiOutputFormatter.Images{
 				Product: img,
 			},
@@ -492,22 +503,24 @@ func (
 
 		data.OrdersItemScheduleLine = append(data.OrdersItemScheduleLine,
 			apiOutputFormatter.OrdersItemScheduleLine{
-				OrderID:                              v.OrderID,
-				OrderItem:                            v.OrderItem,
-				ScheduleLine:                         v.ScheduleLine,
-				Buyer:                                pBuyer,
-				BuyerName:                            businessPartnerMapper[*pBuyer].BusinessPartnerName,
-				Seller:                               pSeller,
-				SellerName:                           businessPartnerMapper[*pSeller].BusinessPartnerName,
-				Product:                              v.Product,
-				RequestedDeliveryDate:                v.RequestedDeliveryDate,
-				RequestedDeliveryTime:                v.RequestedDeliveryTime,
-				StockConfirmationBusinessPartner:     v.StockConfirmationBussinessPartner,
-				StockConfirmationBusinessPartnerName: businessPartnerMapper[v.StockConfirmationBussinessPartner].BusinessPartnerName,
-				StockConfirmationPlant:               v.StockConfirmationPlant,
-				StockConfirmationPlantName:           stockConfirmationPlantName,
-				DeliveredQuantityInBaseUnit:          *v.DeliveredQuantityInBaseUnit,
-				UndeliveredQuantityInBaseUnit:        *v.UndeliveredQuantityInBaseUnit,
+				OrderID:                             v.OrderID,
+				OrderItem:                           v.OrderItem,
+				ScheduleLine:                        v.ScheduleLine,
+				Buyer:                               pBuyer,
+				BuyerName:                           businessPartnerMapper[*pBuyer].BusinessPartnerName,
+				Seller:                              pSeller,
+				SellerName:                          businessPartnerMapper[*pSeller].BusinessPartnerName,
+				Product:                             v.Product,
+				RequestedDeliveryDate:               v.RequestedDeliveryDate,
+				RequestedDeliveryTime:               v.RequestedDeliveryTime,
+				ScheduleLineOrderQuantityInBaseUnit: &v.ScheduleLineOrderQuantityInBaseUnit,
+				ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit: v.ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit,
+				StockConfirmationBusinessPartner:                v.StockConfirmationBussinessPartner,
+				StockConfirmationBusinessPartnerName:            businessPartnerMapper[v.StockConfirmationBussinessPartner].BusinessPartnerName,
+				StockConfirmationPlant:                          v.StockConfirmationPlant,
+				StockConfirmationPlantName:                      stockConfirmationPlantName,
+				DeliveredQuantityInBaseUnit:                     *v.DeliveredQuantityInBaseUnit,
+				UndeliveredQuantityInBaseUnit:                   *v.UndeliveredQuantityInBaseUnit,
 			},
 		)
 	}

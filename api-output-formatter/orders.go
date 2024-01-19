@@ -87,22 +87,24 @@ type OrdersSingleUnit struct {
 }
 
 type OrdersItemScheduleLine struct {
-	OrderID                              int     `json:"OrderID"`
-	OrderItem                            int     `json:"OrderItem"`
-	ScheduleLine                         int     `json:"ScheduleLine"`
-	Product                              string  `json:"Product"`
-	RequestedDeliveryDate                string  `json:"RequestedDeliveryDate"`
-	RequestedDeliveryTime                string  `json:"RequestedDeliveryTime"`
-	Buyer                                *int    `json:"Buyer"`
-	BuyerName                            string  `json:"BuyerName"`
-	Seller                               *int    `json:"Seller"`
-	SellerName                           string  `json:"SellerName"`
-	StockConfirmationBusinessPartner     int     `json:"StockConfirmationBusinessPartner"`
-	StockConfirmationBusinessPartnerName string  `json:"StockConfirmationBusinessPartnerName"`
-	StockConfirmationPlant               string  `json:"StockConfirmationPlant"`
-	StockConfirmationPlantName           string  `json:"StockConfirmationPlantName"`
-	DeliveredQuantityInBaseUnit          float32 `json:"DeliveredQuantityInBaseUnit"`
-	UndeliveredQuantityInBaseUnit        float32 `json:"UndeliveredQuantityInBaseUnit"`
+	OrderID                                         int      `json:"OrderID"`
+	OrderItem                                       int      `json:"OrderItem"`
+	ScheduleLine                                    int      `json:"ScheduleLine"`
+	Product                                         string   `json:"Product"`
+	RequestedDeliveryDate                           string   `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime                           string   `json:"RequestedDeliveryTime"`
+	Buyer                                           *int     `json:"Buyer"`
+	BuyerName                                       string   `json:"BuyerName"`
+	Seller                                          *int     `json:"Seller"`
+	SellerName                                      string   `json:"SellerName"`
+	ScheduleLineOrderQuantityInBaseUnit             *float32 `json:"ScheduleLineOrderQuantityInBaseUnit"`
+	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
+	StockConfirmationBusinessPartner                int      `json:"StockConfirmationBusinessPartner"`
+	StockConfirmationBusinessPartnerName            string   `json:"StockConfirmationBusinessPartnerName"`
+	StockConfirmationPlant                          string   `json:"StockConfirmationPlant"`
+	StockConfirmationPlantName                      string   `json:"StockConfirmationPlantName"`
+	DeliveredQuantityInBaseUnit                     float32  `json:"DeliveredQuantityInBaseUnit"`
+	UndeliveredQuantityInBaseUnit                   float32  `json:"UndeliveredQuantityInBaseUnit"`
 }
 
 type OrdersItemPricingElement struct {

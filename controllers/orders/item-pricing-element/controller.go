@@ -413,6 +413,17 @@ func (
 			v.Product,
 		)
 
+		var requestedDeliveryDate *string
+		var requestedDeliveryTime *string
+
+		if ordersHeaderRes != nil && ordersHeaderRes.Message.Header != nil && len(*ordersHeaderRes.Message.Header) > 0 {
+			requestedDeliveryDate = &(*ordersHeaderRes.Message.Header)[0].RequestedDeliveryDate
+			requestedDeliveryTime = &(*ordersHeaderRes.Message.Header)[0].RequestedDeliveryTime
+		} else {
+			requestedDeliveryDate = nil
+			requestedDeliveryTime = nil
+		}
+
 		data.OrdersItem = append(data.OrdersItem, apiOutputFormatter.OrdersItem{
 			OrderItem:                   v.OrderItem,
 			Product:                     v.Product,
@@ -424,8 +435,8 @@ func (
 			SellerName:                  businessPartnerMapper[v.Seller].BusinessPartnerName,
 			DeliveryUnit:                v.DeliveryUnit,
 			OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
-			RequestedDeliveryDate:       v.RequestedDeliveryDate,
-			RequestedDeliveryTime:       v.RequestedDeliveryTime,
+			RequestedDeliveryDate:       *requestedDeliveryDate,
+			RequestedDeliveryTime:       *requestedDeliveryTime,
 			Images: apiOutputFormatter.Images{
 				Product: img,
 			},
