@@ -1,0 +1,143 @@
+{
+  "Header": null,
+  "HeaderWithItem": null,
+  "Item": null,
+  "SingleUnit": null,
+  "ItemScheduleLine": null,
+  "ItemPricingElement": null,
+  "OrdersItemSingleUnitMillSheetHeader": [
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "OrderType": "OD",
+      "OrderStatus": "FIX",
+      "Buyer": 101,
+      "BuyerName": "ローソン本社",
+      "Seller": 201,
+      "SellerName": "山崎製パン",
+      "Product": "A3750",
+      "SizeOrDimensionText": "10B",
+      "OrderItemTextByBuyer": "ランチパックたまご",
+      "OrderItemTextBySeller": "ランチパックたまご",
+      "OrderQuantityInBaseUnit": 120,
+      "RequestedDeliveryDate": "2023-07-19",
+      "RequestedDeliveryTime": "15:00:00",
+      "ProductSpecification": "TEST_01",
+      "MarkingOfMaterial": "SFVC 2A",
+      "ProductionVersion": null,
+      "ProductionVersionItem": null,
+      "ProductionOrder": null,
+      "ProductionOrderItem": null,
+      "Contract": null,
+      "ContractItem": null,
+      "Project": null,
+      "WBSElement": null,
+      "GrossAmount": 6600,
+      "InspectionLot": 1,
+      "InspectionLotDate": "",
+      "InspectionSpecification": null
+    }
+  ],
+  "OrdersItemSingleUnitMillSheetHeaderInspectionLot": [
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "InspectionLotDate": "2024-01-02",
+      "InspectionSpecification": "TEST_Specification"
+    }
+  ],
+  "OrdersItemSingleUnitMillSheetSpecDetails": [
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "SpecType": "Elongation",
+      "UpperLimitValue": 640,
+      "LowerLimitValue": 490,
+      "StandardValue": 0,
+      "SpecTypeUnit": "N/M"
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "SpecType": "YeildStrength",
+      "UpperLimitValue": 640,
+      "LowerLimitValue": 490,
+      "StandardValue": 0,
+      "SpecTypeUnit": "N/M"
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "SpecType": "TensibleStrength",
+      "UpperLimitValue": 640,
+      "LowerLimitValue": 490,
+      "StandardValue": 0,
+      "SpecTypeUnit": "N/M"
+    }
+  ],
+  "OrdersItemSingleUnitMillSheetComponentCompositions": [
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "ComponentCompositionType": "C",
+      "ComponentCompositionUpperLimitInPercent": 0.35,
+      "ComponentCompositionLowerLimitInPercent": 0,
+      "ComponentCompositionStandardValueInPercent": 0
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "ComponentCompositionType": "Mn",
+      "ComponentCompositionUpperLimitInPercent": 0.35,
+      "ComponentCompositionLowerLimitInPercent": 0,
+      "ComponentCompositionStandardValueInPercent": 0
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "ComponentCompositionType": "Si",
+      "ComponentCompositionUpperLimitInPercent": 0.35,
+      "ComponentCompositionLowerLimitInPercent": 0,
+      "ComponentCompositionStandardValueInPercent": 0
+    }
+  ],
+  "OrdersItemSingleUnitMillSheetInspections": [
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "Inspection": 1,
+      "InspectionType": "VisualInspection",
+      "InspectionTypeCertificateValueInText": "GOOD",
+      "InspectionTypeCertificateValueInQuantity": null,
+      "InspectionTypeValueUnit": null
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "Inspection": 2,
+      "InspectionType": "DimensionInspection",
+      "InspectionTypeCertificateValueInText": "GOOD",
+      "InspectionTypeCertificateValueInQuantity": null,
+      "InspectionTypeValueUnit": null
+    },
+    {
+      "OrderID": 1,
+      "OrderItem": 1,
+      "InspectionLot": 1,
+      "Inspection": 3,
+      "InspectionType": "HeatTreatmentConditionAndTemperature",
+      "InspectionTypeCertificateValueInText": "GOOD",
+      "InspectionTypeCertificateValueInQuantity": 880,
+      "InspectionTypeValueUnit": "℃"
+    }
+  ]
+}

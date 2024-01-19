@@ -378,7 +378,7 @@ func (
 	data := apiOutputFormatter.Orders{}
 
 	for _, v := range *headerRes.Message.Header {
-		//img := services.CreateProductImage(
+		//img := services.ReadProductImage(
 		//	productDocRes,
 		//	v.Buyer,	//Sellerの対応が必要
 		//	v.Product,

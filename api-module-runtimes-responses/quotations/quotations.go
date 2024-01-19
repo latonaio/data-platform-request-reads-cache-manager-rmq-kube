@@ -45,6 +45,8 @@ type Header struct {
 	Incoterms                        *string  `json:"Incoterms"`
 	PaymentTerms                     string   `json:"PaymentTerms"`
 	PaymentMethod                    string   `json:"PaymentMethod"`
+	Contract		                 *int     `json:"Contract"`
+	ContractItem	                 *int     `json:"ContractItem"`
 	ReferenceDocument                *int     `json:"ReferenceDocument"`
 	AccountAssignmentGroup           string   `json:"AccountAssignmentGroup"`
 	AccountingExchangeRate           *float32 `json:"AccountingExchangeRate"`
@@ -54,6 +56,8 @@ type Header struct {
 	HeaderIsClosed                   *bool    `json:"HeaderIsClosed"`
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
 	ExternalReferenceDocument        *string  `json:"ExternalReferenceDocument"`
+	CertificateAuthorityChain        *string  `json:"CertificateAuthorityChain"`
+	UsageControlChain        		 *string  `json:"UsageControlChain"`
 	CreationDate                     string   `json:"CreationDate"`
 	LastChangeDate                   string   `json:"LastChangeDate"`
 	IsCancelled                      *bool    `json:"IsCancelled"`

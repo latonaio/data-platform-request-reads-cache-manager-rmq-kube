@@ -3,6 +3,8 @@ package services
 import (
 	apiModuleRuntimesResponsesBatchMasterRecord "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/batch-master-record"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
+	apiModuleRuntimesResponsesDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/delivery-document"
+	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -109,7 +111,7 @@ func BatchMapper(
 	return batchMapper
 }
 
-func CreateProductImage(
+func ReadProductImage(
 	pdRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 	businessPartner int,
 	product string,
@@ -130,4 +132,46 @@ func CreateProductImage(
 	}
 
 	return img
+}
+
+func ReadDocumentImageOrders(
+	itemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
+	ordersId int,
+	ordersItem int,
+) *apiOutputFormatter.DocumentImageOrders {
+	for _, itemDoc := range *itemDocRes.Message.ItemDoc {
+		if itemDoc.OrderID == ordersId && itemDoc.OrderItem == ordersItem {
+			if itemDoc.DocType == "IMAGE" {
+				return &apiOutputFormatter.DocumentImageOrders{
+					OrdersID:      itemDoc.OrderID,
+					OrdersItem:    itemDoc.OrderItem,
+					DocID:         itemDoc.DocID,
+					FileExtension: itemDoc.FileExtension,
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func ReadDocumentImageDeliveryDocument(
+	itemDocRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentDocRes,
+	deliveryDocument int,
+	deliveryDocumentItem int,
+) *apiOutputFormatter.DocumentImageDeliveryDocument {
+	for _, itemDoc := range *itemDocRes.Message.ItemDoc {
+		if itemDoc.DeliveryDocument == deliveryDocument && itemDoc.DeliveryDocumentItem == deliveryDocumentItem {
+			if itemDoc.DocType == "IMAGE" {
+				return &apiOutputFormatter.DocumentImageDeliveryDocument{
+					DeliveryDocument:     itemDoc.DeliveryDocument,
+					DeliveryDocumentItem: itemDoc.DeliveryDocumentItem,
+					DocID:                itemDoc.DocID,
+					FileExtension:        itemDoc.FileExtension,
+				}
+			}
+		}
+	}
+
+	return nil
 }

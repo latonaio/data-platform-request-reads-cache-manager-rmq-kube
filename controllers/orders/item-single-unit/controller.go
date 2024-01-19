@@ -66,14 +66,18 @@ func (controller *OrdersSingleUnitController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			OrdersItems: &apiInputReader.OrdersItems{
+			OrdersItem: &apiInputReader.OrdersItem{
 				OrderID:                       orderId,
-				OrderItem:                     &orderItem,
+				OrderItem:                     orderItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				ItemDeliveryStatus:            &itemDeliveryStatus,
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
+			},
+			OrdersItemScheduleLines: &apiInputReader.OrdersItemScheduleLines{
+				OrderID:   orderId,
+				OrderItem: orderItem,
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
@@ -94,14 +98,18 @@ func (controller *OrdersSingleUnitController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			OrdersItems: &apiInputReader.OrdersItems{
+			OrdersItem: &apiInputReader.OrdersItem{
 				OrderID:                       orderId,
-				OrderItem:                     &orderItem,
+				OrderItem:                     orderItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				ItemDeliveryStatus:            &itemDeliveryStatus,
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
+			},
+			OrdersItemScheduleLines: &apiInputReader.OrdersItemScheduleLines{
+				OrderID:   orderId,
+				OrderItem: orderItem,
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
@@ -188,7 +196,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"Items",
+		"Item",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -417,7 +425,7 @@ func (
 	data := apiOutputFormatter.Orders{}
 
 	for _, v := range *ordersItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
@@ -443,13 +451,15 @@ func (
 		}
 
 		if ordersItemPricingElementsRes != nil && ordersItemPricingElementsRes.Message.ItemPricingElement != nil && len(*ordersItemPricingElementsRes.Message.ItemPricingElement) > 0 {
-			conditionCurrency = (*ordersItemPricingElementsRes.Message.ItemPricingElement)[0].ConditionCurrency
+			conditionCurrency = &(*ordersItemPricingElementsRes.Message.ItemPricingElement)[0].ConditionCurrency
 		} else {
 			conditionCurrency = nil
 		}
 
 		qrcode := services.CreateQRCodeOrdersItemDocImage(
 			ordersItemDocRes,
+			v.OrderID,
+			v.OrderItem,
 		)
 
 		data.OrdersSingleUnit = append(data.OrdersSingleUnit,

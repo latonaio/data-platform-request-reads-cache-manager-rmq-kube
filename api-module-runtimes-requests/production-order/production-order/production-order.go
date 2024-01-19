@@ -17,6 +17,7 @@ type ProductionOrderReq struct {
 
 type Header struct {
 	ProductionOrder                                    int      `json:"ProductionOrder"`
+	ProductionOrderDate                                string   `json:"ProductionOrderDate"`
 	SupplyChainRelationshipID                          int      `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipProductionPlantID           int      `json:"SupplyChainRelationshipProductionPlantID"`
 	SupplyChainRelationshipDeliveryID                  int      `json:"SupplyChainRelationshipDeliveryID"`
@@ -64,6 +65,8 @@ type Header struct {
 	OrderID                                            *int     `json:"OrderID"`
 	OrderItem                                          *int     `json:"OrderItem"`
 	ProductionOrderHeaderText                          *string  `json:"ProductionOrderHeaderText"`
+	CertificateAuthorityChain        				   *string  `json:"CertificateAuthorityChain"`
+	UsageControlChain        		 				   *string  `json:"UsageControlChain"`
 	CreationDate                                       string   `json:"CreationDate"`
 	CreationTime                                       string   `json:"CreationTime"`
 	LastChangeDate                                     string   `json:"LastChangeDate"`
@@ -80,6 +83,7 @@ type Header struct {
 type Item struct {
 	ProductionOrder                               int             `json:"ProductionOrder"`
 	ProductionOrderItem                           int             `json:"ProductionOrderItem"`
+	ProductionOrderItemDate                       string   		  `json:"ProductionOrderItemDate"`
 	PrecedingProductionOrderItem                  *int            `json:"PrecedingProductionOrderItem"`
 	FollowingProductionOrderItem                  *int            `json:"FollowingProductionOrderItem"`
 	SupplyChainRelationshipID                     *int            `json:"SupplyChainRelationshipID"`

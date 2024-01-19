@@ -1,12 +1,17 @@
 package apiOutputFormatter
 
 type Orders struct {
-	OrdersHeader             []OrdersHeader             `json:"Header"`
-	OrdersHeaderWithItem     []OrdersHeaderWithItem     `json:"HeaderWithItem"`
-	OrdersItem               []OrdersItem               `json:"Item"`
-	OrdersSingleUnit         []OrdersSingleUnit         `json:"SingleUnit"`
-	OrdersItemScheduleLine   []OrdersItemScheduleLine   `json:"ItemScheduleLine"`
-	OrdersItemPricingElement []OrdersItemPricingElement `json:"ItemPricingElement"`
+	OrdersHeader                                       []OrdersHeader                                       `json:"Header"`
+	OrdersHeaderWithItem                               []OrdersHeaderWithItem                               `json:"HeaderWithItem"`
+	OrdersItem                                         []OrdersItem                                         `json:"Item"`
+	OrdersSingleUnit                                   []OrdersSingleUnit                                   `json:"SingleUnit"`
+	OrdersItemScheduleLine                             []OrdersItemScheduleLine                             `json:"ItemScheduleLine"`
+	OrdersItemPricingElement                           []OrdersItemPricingElement                           `json:"ItemPricingElement"`
+	OrdersItemSingleUnitMillSheetHeader                []OrdersItemSingleUnitMillSheetHeader                `json:"OrdersItemSingleUnitMillSheetHeader"`
+	OrdersItemSingleUnitMillSheetHeaderInspectionLot   []OrdersItemSingleUnitMillSheetHeaderInspectionLot   `json:"OrdersItemSingleUnitMillSheetHeaderInspectionLot"`
+	OrdersItemSingleUnitMillSheetSpecDetails           []OrdersItemSingleUnitMillSheetSpecDetails           `json:"OrdersItemSingleUnitMillSheetSpecDetails"`
+	OrdersItemSingleUnitMillSheetComponentCompositions []OrdersItemSingleUnitMillSheetComponentCompositions `json:"OrdersItemSingleUnitMillSheetComponentCompositions"`
+	OrdersItemSingleUnitMillSheetInspections           []OrdersItemSingleUnitMillSheetInspections           `json:"OrdersItemSingleUnitMillSheetInspections"`
 }
 
 type OrdersHeader struct {
@@ -42,6 +47,7 @@ type OrdersHeaderWithItem struct {
 type OrdersItem struct {
 	OrderItem                   int     `json:"OrderItem"`
 	OrderStatus                 string  `json:"OrderStatus"`
+	OrderItemCategory           string  `json:"OrderItemCategory"`
 	Product                     string  `json:"Product"`
 	Buyer                       int     `json:"Buyer"`
 	BuyerName                   string  `json:"BuyerName"`
@@ -109,4 +115,78 @@ type OrdersItemPricingElement struct {
 	ConditionQuantity       float32 `json:"ConditionQuantity"`
 	ConditionAmount         float32 `json:"ConditionAmount"`
 	ConditionType           string  `json:"ConditionType"`
+}
+
+type OrdersItemSingleUnitMillSheetHeader struct {
+	OrderID                 int     `json:"OrderID"`
+	OrderItem               int     `json:"OrderItem"`
+	OrderType               *string `json:"OrderType"`
+	OrderStatus             string  `json:"OrderStatus"`
+	Buyer                   int     `json:"Buyer"`
+	BuyerName               string  `json:"BuyerName"`
+	Seller                  int     `json:"Seller"`
+	SellerName              string  `json:"SellerName"`
+	Product                 string  `json:"Product"`
+	SizeOrDimensionText     string  `json:"SizeOrDimensionText"`
+	OrderItemTextByBuyer    string  `json:"OrderItemTextByBuyer"`
+	OrderItemTextBySeller   string  `json:"OrderItemTextBySeller"`
+	OrderQuantityInBaseUnit float32 `json:"OrderQuantityInBaseUnit"`
+	RequestedDeliveryDate   string  `json:"RequestedDeliveryDate"`
+	RequestedDeliveryTime   string  `json:"RequestedDeliveryTime"`
+	ProductSpecification    string  `json:"ProductSpecification"`
+	MarkingOfMaterial       string  `json:"MarkingOfMaterial"`
+	ProductionVersion       *int    `json:"ProductionVersion"`
+	ProductionVersionItem   *int    `json:"ProductionVersionItem"`
+	ProductionOrder         *int    `json:"ProductionOrder"`
+	ProductionOrderItem     *int    `json:"ProductionOrderItem"`
+	Contract                *int    `json:"Contract"`
+	ContractItem            *int    `json:"ContractItem"`
+	Project                 *int    `json:"Project"`
+	WBSElement              *int    `json:"WBSElement"`
+	GrossAmount             float32 `json:"GrossAmount"`
+	//ConditionCurrency     	*string `json:"ConditionCurrency"`
+	InspectionLot           int     `json:"InspectionLot"`
+	InspectionLotDate       string  `json:"InspectionLotDate"`
+	InspectionSpecification *string `json:"InspectionSpecification"`
+	//Images                  Images  `json:"Images"`
+}
+
+type OrdersItemSingleUnitMillSheetHeaderInspectionLot struct {
+	OrderID                 int     `json:"OrderID"`
+	OrderItem               int     `json:"OrderItem"`
+	InspectionLot           int     `json:"InspectionLot"`
+	InspectionLotDate       string  `json:"InspectionLotDate"`
+	InspectionSpecification *string `json:"InspectionSpecification"`
+}
+
+type OrdersItemSingleUnitMillSheetSpecDetails struct {
+	OrderID         int      `json:"OrderID"`
+	OrderItem       int      `json:"OrderItem"`
+	InspectionLot   int      `json:"InspectionLot"`
+	SpecType        string   `json:"SpecType"`
+	UpperLimitValue *float32 `json:"UpperLimitValue"`
+	LowerLimitValue *float32 `json:"LowerLimitValue"`
+	StandardValue   *float32 `json:"StandardValue"`
+	SpecTypeUnit    *string  `json:"SpecTypeUnit"`
+}
+
+type OrdersItemSingleUnitMillSheetComponentCompositions struct {
+	OrderID                                    int      `json:"OrderID"`
+	OrderItem                                  int      `json:"OrderItem"`
+	InspectionLot                              int      `json:"InspectionLot"`
+	ComponentCompositionType                   string   `json:"ComponentCompositionType"`
+	ComponentCompositionUpperLimitInPercent    *float32 `json:"ComponentCompositionUpperLimitInPercent"`
+	ComponentCompositionLowerLimitInPercent    *float32 `json:"ComponentCompositionLowerLimitInPercent"`
+	ComponentCompositionStandardValueInPercent *float32 `json:"ComponentCompositionStandardValueInPercent"`
+}
+
+type OrdersItemSingleUnitMillSheetInspections struct {
+	OrderID                                  int      `json:"OrderID"`
+	OrderItem                                int      `json:"OrderItem"`
+	InspectionLot                            int      `json:"InspectionLot"`
+	Inspection                               int      `json:"Inspection"`
+	InspectionType                           string   `json:"InspectionType"`
+	InspectionTypeCertificateValueInText     *string  `json:"InspectionTypeCertificateValueInText"`
+	InspectionTypeCertificateValueInQuantity *float32 `json:"InspectionTypeCertificateValueInQuantity"`
+	InspectionTypeValueUnit                  *string  `json:"InspectionTypeValueUnit"`
 }

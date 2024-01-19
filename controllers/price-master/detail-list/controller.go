@@ -350,7 +350,7 @@ func (
 	data := apiOutputFormatter.PriceMaster{}
 
 	for _, v := range *headerRes.Message.Header {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,

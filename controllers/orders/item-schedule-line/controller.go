@@ -76,6 +76,10 @@ func (controller *OrdersItemScheduleLineController) Get() {
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
+			OrdersItemScheduleLines: &apiInputReader.OrdersItemScheduleLines{
+				OrderID:   orderId,
+				OrderItem: orderItem,
+			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
 				OrderItem:                orderItem,
@@ -103,6 +107,10 @@ func (controller *OrdersItemScheduleLineController) Get() {
 				ItemDeliveryStatus:            &itemDeliveryStatus,
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
+			},
+			OrdersItemScheduleLines: &apiInputReader.OrdersItemScheduleLines{
+				OrderID:   orderId,
+				OrderItem: orderItem,
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
@@ -446,7 +454,7 @@ func (
 	data := apiOutputFormatter.Orders{}
 
 	for _, v := range *ordersItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
@@ -494,8 +502,8 @@ func (
 				Product:                              v.Product,
 				RequestedDeliveryDate:                v.RequestedDeliveryDate,
 				RequestedDeliveryTime:                v.RequestedDeliveryTime,
-				StockConfirmationBusinessPartner:     v.StockConfirmationBusinessPartner,
-				StockConfirmationBusinessPartnerName: businessPartnerMapper[v.StockConfirmationBusinessPartner].BusinessPartnerName,
+				StockConfirmationBusinessPartner:     v.StockConfirmationBussinessPartner,
+				StockConfirmationBusinessPartnerName: businessPartnerMapper[v.StockConfirmationBussinessPartner].BusinessPartnerName,
 				StockConfirmationPlant:               v.StockConfirmationPlant,
 				StockConfirmationPlantName:           stockConfirmationPlantName,
 				DeliveredQuantityInBaseUnit:          *v.DeliveredQuantityInBaseUnit,

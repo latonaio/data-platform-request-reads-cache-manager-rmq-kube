@@ -39,7 +39,7 @@ type ItemDoc struct {
 	FileName                 *string `json:"FileName"`
 }
 
-func CreateOrdersDocRequestItemDoc(
+func CreateDeliveryDocumentDocRequestItemDoc(
 	requestPram *apiInputReader.Request,
 	itemDoc apiInputReader.DeliveryDocumentDocItemDoc,
 ) DeliveryDocumentDocReq {
@@ -72,7 +72,7 @@ func DeliveryDocumentDocReads(
 	var request DeliveryDocumentDocReq
 
 	if accepter == "ItemDoc" {
-		request = CreateOrdersDocRequestItemDoc(
+		request = CreateDeliveryDocumentDocRequestItemDoc(
 			requestPram,
 			apiInputReader.DeliveryDocumentDocItemDoc{
 				DeliveryDocument:         input.DeliveryDocumentDocItemDoc.DeliveryDocument,

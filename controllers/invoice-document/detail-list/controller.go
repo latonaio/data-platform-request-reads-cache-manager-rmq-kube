@@ -318,7 +318,7 @@ func (
 	data := apiOutputFormatter.InvoiceDocument{}
 
 	for _, v := range *headerRes.Message.Header {
-		//img := services.CreateProductImage(
+		//img := services.ReadProductImage(
 		//	productDocRes,
 		//	v.BillToParty,	//BillFromPartyの対応が必要
 		//	v.Product,

@@ -151,7 +151,7 @@ func (controller *OrdersItemPricingElementController) Get() {
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createOrdersRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -178,7 +178,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createOrdersRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -205,7 +205,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createOrdersRequestItemPricingElements(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -232,7 +232,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createOrdersDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -259,7 +259,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -284,7 +284,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -321,7 +321,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
 	ordersItemScheduleLineRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -352,7 +352,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) request(
 	input apiInputReader.Orders,
 ) {
@@ -392,7 +392,7 @@ controller *OrdersItemPricingElementController,
 }
 
 func (
-controller *OrdersItemPricingElementController,
+	controller *OrdersItemPricingElementController,
 ) fin(
 	ordersHeaderRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -407,7 +407,7 @@ controller *OrdersItemPricingElementController,
 	data := apiOutputFormatter.Orders{}
 
 	for _, v := range *ordersItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
@@ -438,13 +438,13 @@ controller *OrdersItemPricingElementController,
 				OrderID:                 v.OrderID,
 				OrderItem:               v.OrderItem,
 				PricingProcedureCounter: v.PricingProcedureCounter,
-				ConditionRateValue:      *v.ConditionRateValue,
-				ConditionRateValueUnit:  *v.ConditionRateValueUnit,
-				ConditionScaleQuantity:  *v.ConditionScaleQuantity,
-				ConditionCurrency:       *v.ConditionCurrency,
-				ConditionQuantity:       *v.ConditionQuantity,
-				ConditionAmount:         *v.ConditionAmount,
-				ConditionType:           *v.ConditionType,
+				ConditionRateValue:      v.ConditionRateValue,
+				ConditionRateValueUnit:  v.ConditionRateValueUnit,
+				ConditionScaleQuantity:  v.ConditionScaleQuantity,
+				ConditionCurrency:       v.ConditionCurrency,
+				ConditionQuantity:       v.ConditionQuantity,
+				ConditionAmount:         v.ConditionAmount,
+				ConditionType:           v.ConditionType,
 			},
 		)
 	}

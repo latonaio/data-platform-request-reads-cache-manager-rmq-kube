@@ -305,7 +305,7 @@ func (
 	data := apiOutputFormatter.ProductMaster{}
 
 	for _, v := range *generalRes.Message.General {
-		//img := services.CreateProductImage(
+		//img := services.ReadProductImage(
 		//	productDocRes,
 		//	v.BusinessPartner,
 		//	v.Product,

@@ -50,26 +50,38 @@ func CreateQRCodeProductionOrderItemDocImage(
 
 func CreateQRCodeOrdersItemDocImage(
 	itemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
+	orderId int,
+	orderItem int,
 ) *apiOutputFormatter.QRCodeImage {
-	img := &apiOutputFormatter.QRCodeImage{}
-
-	img = &apiOutputFormatter.QRCodeImage{
-		DocID:         (*itemDocRes.Message.ItemDoc)[0].DocID,
-		FileExtension: (*itemDocRes.Message.ItemDoc)[0].FileExtension,
+	for i, itemDoc := range *itemDocRes.Message.ItemDoc {
+		if itemDoc.OrderID == orderId && itemDoc.OrderItem == orderItem {
+			if itemDoc.DocType == "QRCODE" {
+				return &apiOutputFormatter.QRCodeImage{
+					DocID:         (*itemDocRes.Message.ItemDoc)[i].DocID,
+					FileExtension: (*itemDocRes.Message.ItemDoc)[i].FileExtension,
+				}
+			}
+		}
 	}
 
-	return img
+	return nil
 }
 
 func CreateQRCodeDeliveryDocumentItemDocImage(
 	itemDocRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentDocRes,
+	deliveryDocument int,
+	deliveryDocumentItem int,
 ) *apiOutputFormatter.QRCodeImage {
-	img := &apiOutputFormatter.QRCodeImage{}
-
-	img = &apiOutputFormatter.QRCodeImage{
-		DocID:         (*itemDocRes.Message.ItemDoc)[0].DocID,
-		FileExtension: (*itemDocRes.Message.ItemDoc)[0].FileExtension,
+	for i, itemDoc := range *itemDocRes.Message.ItemDoc {
+		if itemDoc.DeliveryDocument == deliveryDocument && itemDoc.DeliveryDocumentItem == deliveryDocumentItem {
+			if itemDoc.DocType == "QRCODE" {
+				return &apiOutputFormatter.QRCodeImage{
+					DocID:         (*itemDocRes.Message.ItemDoc)[i].DocID,
+					FileExtension: (*itemDocRes.Message.ItemDoc)[i].FileExtension,
+				}
+			}
+		}
 	}
 
-	return img
+	return nil
 }

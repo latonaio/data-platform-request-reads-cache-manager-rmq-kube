@@ -47,6 +47,8 @@ type General struct {
 	LocalSubRegionOfOrigin        *string  `json:"LocalSubRegionOfOrigin"`
 	BarcodeType                   *string  `json:"BarcodeType"`
 	ProductAccountAssignmentGroup *string  `json:"ProductAccountAssignmentGroup"`
+	CertificateAuthorityChain     *string  `json:"CertificateAuthorityChain"`
+	UsageControlChain        	  *string  `json:"UsageControlChain"`
 	CreationDate                  string   `json:"CreationDate"`
 	LastChangeDate                string   `json:"LastChangeDate"`
 	IsMarkedForDeletion           *bool    `json:"IsMarkedForDeletion"`

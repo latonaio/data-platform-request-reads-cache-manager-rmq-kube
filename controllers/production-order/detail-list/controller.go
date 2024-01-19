@@ -356,7 +356,7 @@ func (
 	data := apiOutputFormatter.ProductionOrder{}
 
 	for _, v := range *headerRes.Message.Header {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			v.OwnerProductionPlantBusinessPartner,
 			v.Product,
@@ -384,7 +384,7 @@ func (
 	}
 
 	for _, v := range *itemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*v.ProductionPlantBusinessPartner,
 			*v.Product,

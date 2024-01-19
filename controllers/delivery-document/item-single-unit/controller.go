@@ -39,8 +39,8 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "delivery-document-item-single-unit"
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	//deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
-	_, _ = controller.GetInt("deliveryDocumentItem")
+	deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
+	//_, _ = controller.GetInt("deliveryDocumentItem")
 	userType := controller.GetString(":userType")
 	pDeliverToParty, _ := controller.GetInt("deliverToParty")
 	pDeliverFromParty, _ := controller.GetInt("deliverFromParty")
@@ -67,9 +67,9 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument: deliveryDocument,
-				//DeliveryDocumentItem:          &deliveryDocumentItem,
+			DeliveryDocumentItem: &apiInputReader.DeliveryDocumentItem{
+				DeliveryDocument:              deliveryDocument,
+				DeliveryDocumentItem:          deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
@@ -93,9 +93,9 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
-				DeliveryDocument: deliveryDocument,
-				//DeliveryDocumentItem:          &deliveryDocumentItem,
+			DeliveryDocumentItem: &apiInputReader.DeliveryDocumentItem{
+				DeliveryDocument:              deliveryDocument,
+				DeliveryDocumentItem:          deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
@@ -150,7 +150,7 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 
 func (
 	controller *DeliveryDocumentSingleUnitController,
-) createDeliveryDocumentRequestHeaderByDeliverToParty(
+) createDeliveryDocumentRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
 ) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
@@ -159,34 +159,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"HeadersByDeliverToParty",
-	)
-
-	err := json.Unmarshal(responseBody, &responseJsonData)
-	if err != nil {
-		services.HandleError(
-			&controller.Controller,
-			err,
-			nil,
-		)
-		controller.CustomLogger.Error("createDeliveryDocumentRequestHeaderByDeliverToParty Unmarshal error")
-	}
-
-	return &responseJsonData
-}
-
-func (
-	controller *DeliveryDocumentSingleUnitController,
-) createDeliveryDocumentRequestHeaderByDeliverFromParty(
-	requestPram *apiInputReader.Request,
-	input apiInputReader.DeliveryDocument,
-) *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes {
-	responseJsonData := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
-	responseBody := apiModuleRuntimesRequestsDeliveryDocument.DeliveryDocumentReads(
-		requestPram,
-		input,
-		&controller.Controller,
-		"HeadersByDeliverFromParty",
+		"Header",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -213,7 +186,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"Items",
+		"Item",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -364,19 +337,10 @@ func (
 
 	deliveryDocumentHeaderRes := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
 
-	if input.DeliveryDocumentHeader.DeliverToParty != nil {
-		deliveryDocumentHeaderRes = *controller.createDeliveryDocumentRequestHeaderByDeliverToParty(
-			controller.UserInfo,
-			input,
-		)
-	}
-
-	if input.DeliveryDocumentHeader.DeliverFromParty != nil {
-		deliveryDocumentHeaderRes = *controller.createDeliveryDocumentRequestHeaderByDeliverFromParty(
-			controller.UserInfo,
-			input,
-		)
-	}
+	deliveryDocumentHeaderRes = *controller.createDeliveryDocumentRequestHeader(
+		controller.UserInfo,
+		input,
+	)
 
 	deliveryDocumentItemRes := controller.createDeliveryDocumentRequestItem(
 		controller.UserInfo,
@@ -432,7 +396,7 @@ func (
 	data := apiOutputFormatter.DeliveryDocument{}
 
 	for _, v := range *deliveryDocumentItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
@@ -440,6 +404,8 @@ func (
 
 		qrcode := services.CreateQRCodeDeliveryDocumentItemDocImage(
 			deliveryDocumentItemDocRes,
+			v.DeliveryDocument,
+			v.DeliveryDocumentItem,
 		)
 
 		data.DeliveryDocumentSingleUnit = append(data.DeliveryDocumentSingleUnit,

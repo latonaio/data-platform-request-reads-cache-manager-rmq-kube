@@ -373,11 +373,17 @@ func (
 		controller.UserInfo,
 	)
 
+	ordersItemDocRes := controller.createOrdersDocRequest(
+		controller.UserInfo,
+		input,
+	)
+
 	controller.fin(
 		&ordersHeaderRes,
 		ordersItemRes,
 		&businessPartnerRes,
 		productDocRes,
+		ordersItemDocRes,
 	)
 }
 
@@ -388,6 +394,7 @@ func (
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
+	ordersItemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
@@ -406,30 +413,39 @@ func (
 				RequestedDeliveryDate: v.RequestedDeliveryDate,
 				RequestedDeliveryTime: v.RequestedDeliveryTime,
 				TotalGrossAmount:      v.TotalGrossAmount,
-				OrderStatus:		   v.OrderStatus,
+				OrderStatus:           v.OrderStatus,
 			},
 		)
 	}
 
 	for _, v := range *ordersItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
 		)
 
+		documentImage := services.ReadDocumentImageOrders(
+			ordersItemDocRes,
+			v.OrderID,
+			v.OrderItem,
+		)
+
 		data.OrdersItem = append(data.OrdersItem,
 			apiOutputFormatter.OrdersItem{
-				OrderItem:             v.OrderItem,
-				Product:               v.Product,
-				OrderItemText:         v.OrderItemText,
-				DeliveryUnit:          v.DeliveryUnit,
-				RequestedDeliveryDate: v.RequestedDeliveryDate,
-				RequestedDeliveryTime: v.RequestedDeliveryTime,
-				OrderStatus:		   v.OrderStatus,
+				OrderItem:                   v.OrderItem,
+				Product:                     v.Product,
+				OrderItemText:               v.OrderItemText,
+				OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
+				DeliveryUnit:                v.DeliveryUnit,
+				RequestedDeliveryDate:       v.RequestedDeliveryDate,
+				RequestedDeliveryTime:       v.RequestedDeliveryTime,
+				OrderStatus:                 v.OrderStatus,
+				OrderItemCategory:           v.OrderItemCategory,
 
 				Images: apiOutputFormatter.Images{
-					Product: img,
+					Product:             img,
+					DocumentImageOrders: documentImage,
 				},
 			},
 		)

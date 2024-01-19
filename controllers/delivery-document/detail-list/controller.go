@@ -369,7 +369,7 @@ func (
 	data := apiOutputFormatter.DeliveryDocument{}
 
 	for _, v := range *headerRes.Message.Header {
-		//img := services.CreateProductImage(
+		//img := services.ReadProductImage(
 		//	productDocRes,
 		//	v.DeliverToParty,	//DeliverFromPartyの対応が必要
 		//	v.Product,

@@ -22,6 +22,7 @@ import (
 	controllersOrdersItem "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item"
 	controllersOrdersItemPricingElement "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-pricing-element"
 	controllersOrdersItemScheduleLine "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-schedule-line"
+	controllersOrdersItemSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit-mill-sheet"
 	controllersOrdersSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit"
 	controllersOrdersList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/list"
 	controllersPlantDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/detail-list"
@@ -88,6 +89,11 @@ func init() {
 	}
 
 	ordersSingleUnit := &controllersOrdersSingleUnit.OrdersSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+	
+	ordersItemSingleUnitMillSheet := &controllersOrdersItemSingleUnitMillSheet.OrdersItemSingleUnitMillSheetController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -315,6 +321,7 @@ func init() {
 		beego.NSRouter("/list/:userType", ordersListController),
 		beego.NSRouter("/detail/list/:userType", ordersDetailListController),
 		beego.NSRouter("/item-single-unit/:userType", ordersSingleUnit),
+		beego.NSRouter("/item-single-unit-mill-sheet/:userType", ordersItemSingleUnitMillSheet),
 		beego.NSRouter("/item-schedule-line/:userType", ordersItemScheduleLineController),
 		beego.NSRouter("/item-pricing-element/:userType", ordersItemPricingElementController),
 		beego.NSRouter("/item/:userType", ordersItemController),

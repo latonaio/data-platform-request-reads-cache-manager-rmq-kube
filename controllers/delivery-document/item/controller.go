@@ -39,7 +39,7 @@ func (controller *DeliveryDocumentItemController) Get() {
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "delivery-document-item"
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	_, _ = controller.GetInt("deliveryDocumentItem")
+	deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
 	userType := controller.GetString(":userType")
 	pDeliverToParty, _ := controller.GetInt("deliverToParty")
 	pDeliverFromParty, _ := controller.GetInt("deliverFromParty")
@@ -55,8 +55,6 @@ func (controller *DeliveryDocumentItemController) Get() {
 	itemCompleteDeliveryIsDefined := false
 	itemDeliveryBlockStatus := false
 
-	deliveryDocumentItem := 0
-
 	if userType == deliverToParty {
 		DeliveryDocumentItem = apiInputReader.DeliveryDocument{
 			DeliveryDocumentHeader: &apiInputReader.DeliveryDocumentHeader{
@@ -70,18 +68,17 @@ func (controller *DeliveryDocumentItemController) Get() {
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
 				DeliveryDocument:              deliveryDocument,
-				DeliveryDocumentItem:          &deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
-			//DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
-			//	OrderID:                  orderId,
-			//	OrderItem:                orderItem,
-			//	DocType:                  "QRCODE",
-			//	DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
-			//},
+			DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
+				DeliveryDocument:         deliveryDocument,
+				DeliveryDocumentItem:     deliveryDocumentItem,
+				DocType:                  "IMAGE",
+				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+			},
 		}
 	} else {
 		DeliveryDocumentItem = apiInputReader.DeliveryDocument{
@@ -96,18 +93,17 @@ func (controller *DeliveryDocumentItemController) Get() {
 			},
 			DeliveryDocumentItems: &apiInputReader.DeliveryDocumentItems{
 				DeliveryDocument:              deliveryDocument,
-				DeliveryDocumentItem:          &deliveryDocumentItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
-			//DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
-			//	OrderID:                  orderId,
-			//	OrderItem:                orderItem,
-			//	DocType:                  "QRCODE",
-			//	DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
-			//},
+			DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
+				DeliveryDocument:         deliveryDocument,
+				DeliveryDocumentItem:     deliveryDocumentItem,
+				DocType:                  "IMAGE",
+				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+			},
 		}
 	}
 
@@ -150,7 +146,7 @@ func (controller *DeliveryDocumentItemController) Get() {
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createDeliveryDocumentRequestHeaderByDeliverToParty(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
@@ -177,7 +173,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createDeliveryDocumentRequestHeaderByDeliverFromParty(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
@@ -204,7 +200,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createDeliveryDocumentRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
@@ -231,7 +227,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createDeliveryDocumentRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
@@ -258,7 +254,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createDeliveryDocumentDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.DeliveryDocument,
@@ -268,7 +264,7 @@ controller *DeliveryDocumentItemController,
 		requestPram,
 		input,
 		&controller.Controller,
-		"DeliveryDocumentDoc",
+		"ItemDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -285,7 +281,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -310,7 +306,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	deliveryDocumentItemRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
@@ -347,7 +343,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) createPlantRequest(
 	requestPram *apiInputReader.Request,
 	deliveryDocumentItemRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
@@ -384,7 +380,7 @@ controller *DeliveryDocumentItemController,
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) request(
 	input apiInputReader.DeliveryDocument,
 ) {
@@ -416,23 +412,30 @@ controller *DeliveryDocumentItemController,
 		deliveryDocumentItemRes,
 	)
 
+	deliveryDocumentItemDocRes := controller.createDeliveryDocumentDocRequest(
+		controller.UserInfo,
+		input,
+	)
+
 	controller.fin(
 		&deliveryDocumentHeaderRes,
 		deliveryDocumentItemRes,
 		&businessPartnerRes,
 		productDocRes,
 		&plantRes,
+		deliveryDocumentItemDocRes,
 	)
 }
 
 func (
-controller *DeliveryDocumentItemController,
+	controller *DeliveryDocumentItemController,
 ) fin(
 	deliveryDocumentHeaderRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 	deliveryDocumentItemRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	deliveryDocumentItemDocRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentDocRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
@@ -444,7 +447,7 @@ controller *DeliveryDocumentItemController,
 	data := apiOutputFormatter.DeliveryDocument{}
 
 	for _, v := range *deliveryDocumentHeaderRes.Message.Header {
-		//img := services.CreateProductImage(
+		//img := services.ReadProductImage(
 		//	productDocRes,
 		//	v.DeliverToParty,	//DeliverFromPartyの対応が必要
 		//	v.Product,
@@ -474,10 +477,16 @@ controller *DeliveryDocumentItemController,
 	}
 
 	for _, v := range *deliveryDocumentItemRes.Message.Item {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
+		)
+
+		documentImage := services.ReadDocumentImageDeliveryDocument(
+			deliveryDocumentItemDocRes,
+			v.DeliveryDocument,
+			v.DeliveryDocumentItem,
 		)
 
 		data.DeliveryDocumentItem = append(data.DeliveryDocumentItem,
@@ -493,7 +502,8 @@ controller *DeliveryDocumentItemController,
 				DeliveryUnit:              v.DeliveryUnit,
 
 				Images: apiOutputFormatter.Images{
-					Product: img,
+					Product:                       img,
+					DocumentImageDeliveryDocument: documentImage,
 				},
 			},
 		)

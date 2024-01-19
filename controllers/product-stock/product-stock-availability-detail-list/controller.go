@@ -397,7 +397,7 @@ func (
 	data := apiOutputFormatter.ProductStock{}
 
 	for _, v := range *headerRes.Message.ProductStockAvailability {
-		img := services.CreateProductImage(
+		img := services.ReadProductImage(
 			productDocRes,
 			*controller.UserInfo.BusinessPartner,
 			v.Product,
