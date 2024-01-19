@@ -432,28 +432,14 @@ func (
 		)
 
 		var orderType *string
-		var requestedDeliveryDate *string
-		var requestedDeliveryTime *string
-		var conditionCurrency *string
+		var transactionCurrency *string
 
 		if ordersHeaderRes != nil && ordersHeaderRes.Message.Header != nil && len(*ordersHeaderRes.Message.Header) > 0 {
 			orderType = &(*ordersHeaderRes.Message.Header)[0].OrderType
+			transactionCurrency = &(*ordersHeaderRes.Message.Header)[0].TransactionCurrency
 		} else {
 			orderType = nil
-		}
-
-		if ordersItemScheduleLinesRes != nil && ordersItemScheduleLinesRes.Message.ItemScheduleLine != nil && len(*ordersItemScheduleLinesRes.Message.ItemScheduleLine) > 0 {
-			requestedDeliveryDate = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryDate
-			requestedDeliveryTime = &(*ordersItemScheduleLinesRes.Message.ItemScheduleLine)[0].RequestedDeliveryTime
-		} else {
-			requestedDeliveryDate = nil
-			requestedDeliveryTime = nil
-		}
-
-		if ordersItemPricingElementsRes != nil && ordersItemPricingElementsRes.Message.ItemPricingElement != nil && len(*ordersItemPricingElementsRes.Message.ItemPricingElement) > 0 {
-			conditionCurrency = &(*ordersItemPricingElementsRes.Message.ItemPricingElement)[0].ConditionCurrency
-		} else {
-			conditionCurrency = nil
+			transactionCurrency = nil
 		}
 
 		qrcode := services.CreateQRCodeOrdersItemDocImage(
@@ -476,9 +462,9 @@ func (
 				OrderItemTextByBuyer:  v.OrderItemTextByBuyer,
 				OrderItemTextBySeller: v.OrderItemTextBySeller,
 				GrossAmount:           v.GrossAmount,
-				ConditionCurrency:     *conditionCurrency,
-				RequestedDeliveryDate: *requestedDeliveryDate,
-				RequestedDeliveryTime: *requestedDeliveryTime,
+				TransactionCurrency:   *transactionCurrency,
+				RequestedDeliveryDate: v.RequestedDeliveryDate,
+				RequestedDeliveryTime: v.RequestedDeliveryTime,
 
 				Images: apiOutputFormatter.Images{
 					Product: img,

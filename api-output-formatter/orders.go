@@ -74,6 +74,7 @@ type OrdersSingleUnit struct {
 	RequestedDeliveryDate string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime string  `json:"RequestedDeliveryTime"`
 	GrossAmount           float32 `json:"GrossAmount"`
+	TransactionCurrency   string  `json:"TransactionCurrency"`
 	OrderType             *string `json:"OrderType"`
 	Buyer                 int     `json:"Buyer"`
 	BuyerName             string  `json:"BuyerName"`
