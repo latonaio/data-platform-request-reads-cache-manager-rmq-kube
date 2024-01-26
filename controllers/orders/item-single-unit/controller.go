@@ -54,6 +54,8 @@ func (controller *OrdersSingleUnitController) Get() {
 	itemDeliveryBlockStatus := false
 	itemDeliveryStatus := "NP"
 
+	docType := "QRCODE"
+
 	if userType == buyer {
 		OrdersSingleUnit = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
@@ -79,11 +81,15 @@ func (controller *OrdersSingleUnitController) Get() {
 				OrderID:   orderId,
 				OrderItem: orderItem,
 			},
+			OrdersItemPricingElements: &apiInputReader.OrdersItemPricingElements{
+				OrderID:   orderId,
+				OrderItem: orderItem,
+			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				OrderItem:                &orderItem,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	} else {
@@ -111,11 +117,15 @@ func (controller *OrdersSingleUnitController) Get() {
 				OrderID:   orderId,
 				OrderItem: orderItem,
 			},
+			OrdersItemPricingElements: &apiInputReader.OrdersItemPricingElements{
+				OrderID:   orderId,
+				OrderItem: orderItem,
+			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				OrderItem:                &orderItem,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}

@@ -56,7 +56,9 @@ type OrdersItem struct {
 	OrderItemText               string  `json:"OrderItemText"`
 	OrderItemTextByBuyer        string  `json:"OrderItemTextByBuyer"`
 	OrderItemTextBySeller       string  `json:"OrderItemTextBySeller"`
+	OrderQuantityInBaseUnit     float32 `json:"OrderQuantityInBaseUnit"`
 	OrderQuantityInDeliveryUnit float32 `json:"OrderQuantityInDeliveryUnit"`
+	BaseUnit                    string  `json:"BaseUnit"`
 	DeliveryUnit                string  `json:"DeliveryUnit"`
 	RequestedDeliveryDate       string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime       string  `json:"RequestedDeliveryTime"`
@@ -97,14 +99,14 @@ type OrdersItemScheduleLine struct {
 	BuyerName                                       string   `json:"BuyerName"`
 	Seller                                          *int     `json:"Seller"`
 	SellerName                                      string   `json:"SellerName"`
-	ScheduleLineOrderQuantityInBaseUnit             *float32 `json:"ScheduleLineOrderQuantityInBaseUnit"`
+	ScheduleLineOrderQuantityInBaseUnit             float32  `json:"ScheduleLineOrderQuantityInBaseUnit"`
 	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
 	StockConfirmationBusinessPartner                int      `json:"StockConfirmationBusinessPartner"`
 	StockConfirmationBusinessPartnerName            string   `json:"StockConfirmationBusinessPartnerName"`
 	StockConfirmationPlant                          string   `json:"StockConfirmationPlant"`
 	StockConfirmationPlantName                      string   `json:"StockConfirmationPlantName"`
-	DeliveredQuantityInBaseUnit                     float32  `json:"DeliveredQuantityInBaseUnit"`
-	UndeliveredQuantityInBaseUnit                   float32  `json:"UndeliveredQuantityInBaseUnit"`
+	DeliveredQuantityInBaseUnit                     *float32 `json:"DeliveredQuantityInBaseUnit"`
+	UndeliveredQuantityInBaseUnit                   *float32 `json:"UndeliveredQuantityInBaseUnit"`
 }
 
 type OrdersItemPricingElement struct {

@@ -48,9 +48,9 @@ func CreateDeliveryDocumentDocRequestItemDoc(
 			DeliveryDocument: &itemDoc.DeliveryDocument,
 			ItemDoc: ItemDoc{
 				DeliveryDocument:         &itemDoc.DeliveryDocument,
-				DeliveryDocumentItem:     &itemDoc.DeliveryDocumentItem,
-				DocType:                  &itemDoc.DocType,
-				DocIssuerBusinessPartner: &itemDoc.DocIssuerBusinessPartner,
+				DeliveryDocumentItem:     itemDoc.DeliveryDocumentItem,
+				DocType:                  itemDoc.DocType,
+				DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
 			},
 		},
 		Accepter: []string{

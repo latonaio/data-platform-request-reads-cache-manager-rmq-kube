@@ -48,9 +48,9 @@ func CreateOrdersDocRequestItemDoc(
 			OrderID: &itemDoc.OrderID,
 			ItemDoc: ItemDoc{
 				OrderID:                  &itemDoc.OrderID,
-				OrderItem:                &itemDoc.OrderItem,
-				DocType:                  &itemDoc.DocType,
-				DocIssuerBusinessPartner: &itemDoc.DocIssuerBusinessPartner,
+				OrderItem:                itemDoc.OrderItem,
+				DocType:                  itemDoc.DocType,
+				DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
 			},
 		},
 		Accepter: []string{

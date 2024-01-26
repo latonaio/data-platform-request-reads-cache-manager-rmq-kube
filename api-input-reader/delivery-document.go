@@ -37,8 +37,8 @@ type DeliveryDocumentItem struct {
 }
 
 type DeliveryDocumentDocItemDoc struct {
-	DeliveryDocument         int    `json:"DeliveryDocument"`
-	DeliveryDocumentItem     int    `json:"DeliveryDocumentItem"`
-	DocType                  string `json:"DocType"`
-	DocIssuerBusinessPartner int    `json:"DocIssuerBusinessPartner"`
+	DeliveryDocument         int     `json:"DeliveryDocument"`
+	DeliveryDocumentItem     *int    `json:"DeliveryDocumentItem"`
+	DocType                  *string `json:"DocType"`
+	DocIssuerBusinessPartner *int    `json:"DocIssuerBusinessPartner"`
 }

@@ -54,6 +54,8 @@ func (controller *OrdersItemController) Get() {
 	itemDeliveryBlockStatus := false
 	itemDeliveryStatus := "NP"
 
+	docType := "IMAGE"
+
 	if userType == buyer {
 		OrdersItem = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
@@ -77,9 +79,8 @@ func (controller *OrdersItemController) Get() {
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	} else {
@@ -105,9 +106,8 @@ func (controller *OrdersItemController) Get() {
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -269,7 +269,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"OrdersDoc",
+		"ItemDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -436,7 +436,9 @@ func (
 				OrderItem:                   v.OrderItem,
 				Product:                     v.Product,
 				OrderItemText:               v.OrderItemText,
+				OrderQuantityInBaseUnit:     v.OrderQuantityInBaseUnit,
 				OrderQuantityInDeliveryUnit: v.OrderQuantityInDeliveryUnit,
+				BaseUnit:                    v.BaseUnit,
 				DeliveryUnit:                v.DeliveryUnit,
 				RequestedDeliveryDate:       v.RequestedDeliveryDate,
 				RequestedDeliveryTime:       v.RequestedDeliveryTime,

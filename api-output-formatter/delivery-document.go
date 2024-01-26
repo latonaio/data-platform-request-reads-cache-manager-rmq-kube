@@ -52,7 +52,9 @@ type DeliveryDocumentItem struct {
 	DeliveryDocumentItemItemTextByBuyer  string  `json:"DeliveryDocumentItemItemTextByBuyer"`
 	DeliveryDocumentItemItemTextBySeller string  `json:"DeliveryDocumentItemItemTextBySeller"`
 	PlannedGoodsIssueQuantity            float32 `json:"PlannedGoodsIssueQuantity"`
+	PlannedGoodsIssueQtyInBaseUnit       float32 `json:"PlannedGoodsIssueQtyInBaseUnit"`
 	DeliveryUnit                         string  `json:"DeliveryUnit"`
+	BaseUnit                             string  `json:"BaseUnit"`
 	PlannedGoodsIssueDate                string  `json:"PlannedGoodsIssueDate"`
 	PlannedGoodsIssueTime                string  `json:"PlannedGoodsIssueTime"`
 	PlannedGoodsReceiptDate              string  `json:"PlannedGoodsReceiptDate"`

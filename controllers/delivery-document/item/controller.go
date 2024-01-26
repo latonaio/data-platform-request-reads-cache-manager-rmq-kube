@@ -39,7 +39,6 @@ func (controller *DeliveryDocumentItemController) Get() {
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "delivery-document-item"
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	deliveryDocumentItem, _ := controller.GetInt("deliveryDocumentItem")
 	userType := controller.GetString(":userType")
 	pDeliverToParty, _ := controller.GetInt("deliverToParty")
 	pDeliverFromParty, _ := controller.GetInt("deliverFromParty")
@@ -54,6 +53,8 @@ func (controller *DeliveryDocumentItemController) Get() {
 
 	itemCompleteDeliveryIsDefined := false
 	itemDeliveryBlockStatus := false
+
+	docType := "IMAGE"
 
 	if userType == deliverToParty {
 		DeliveryDocumentItem = apiInputReader.DeliveryDocument{
@@ -75,9 +76,8 @@ func (controller *DeliveryDocumentItemController) Get() {
 			},
 			DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
 				DeliveryDocument:         deliveryDocument,
-				DeliveryDocumentItem:     deliveryDocumentItem,
-				DocType:                  "IMAGE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	} else {
@@ -100,9 +100,8 @@ func (controller *DeliveryDocumentItemController) Get() {
 			},
 			DeliveryDocumentDocItemDoc: &apiInputReader.DeliveryDocumentDocItemDoc{
 				DeliveryDocument:         deliveryDocument,
-				DeliveryDocumentItem:     deliveryDocumentItem,
-				DocType:                  "IMAGE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -491,15 +490,17 @@ func (
 
 		data.DeliveryDocumentItem = append(data.DeliveryDocumentItem,
 			apiOutputFormatter.DeliveryDocumentItem{
-				DeliveryDocumentItem:      v.DeliveryDocumentItem,
-				Product:                   v.Product,
-				DeliveryDocumentItemText:  *v.DeliveryDocumentItemText,
-				PlannedGoodsIssueDate:     v.PlannedGoodsIssueDate,
-				PlannedGoodsIssueTime:     v.PlannedGoodsIssueTime,
-				PlannedGoodsReceiptDate:   v.PlannedGoodsReceiptDate,
-				PlannedGoodsReceiptTime:   v.PlannedGoodsReceiptTime,
-				PlannedGoodsIssueQuantity: v.PlannedGoodsIssueQuantity,
-				DeliveryUnit:              v.DeliveryUnit,
+				DeliveryDocumentItem:           v.DeliveryDocumentItem,
+				Product:                        v.Product,
+				DeliveryDocumentItemText:       *v.DeliveryDocumentItemText,
+				PlannedGoodsIssueDate:          v.PlannedGoodsIssueDate,
+				PlannedGoodsIssueTime:          v.PlannedGoodsIssueTime,
+				PlannedGoodsReceiptDate:        v.PlannedGoodsReceiptDate,
+				PlannedGoodsReceiptTime:        v.PlannedGoodsReceiptTime,
+				PlannedGoodsIssueQuantity:      v.PlannedGoodsIssueQuantity,
+				PlannedGoodsIssueQtyInBaseUnit: v.PlannedGoodsIssueQtyInBaseUnit,
+				DeliveryUnit:                   v.DeliveryUnit,
+				BaseUnit:                       v.BaseUnit,
 
 				Images: apiOutputFormatter.Images{
 					Product:                       img,

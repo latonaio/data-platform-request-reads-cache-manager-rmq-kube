@@ -273,7 +273,7 @@ type ItemScheduleLine struct {
 	RequestedDeliveryDate                           *string  `json:"RequestedDeliveryDate"`
 	RequestedDeliveryTime                           *string  `json:"RequestedDeliveryTime"`
 	ConfirmedDeliveryDate                           *string  `json:"ConfirmedDeliveryDate"`
-	ConfirmedDeliveryTime                           *string  `json:"ConfirmedDeliveryDate"`
+	ConfirmedDeliveryTime                           *string  `json:"ConfirmedDeliveryTime"`
 	ScheduleLineOrderQuantityInBaseUnit             *float32 `json:"ScheduleLineOrderQuantityInBaseUnit"`
 	OriginalOrderQuantityInBaseUnit                 *float32 `json:"OriginalOrderQuantityInBaseUnit"`
 	ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit *float32 `json:"ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit"`
@@ -452,13 +452,17 @@ func CreateOrdersRequestItemScheduleLines(
 
 func CreateOrdersRequestItemPricingElements(
 	requestPram *apiInputReader.Request,
-	ordersHeader *apiInputReader.OrdersHeader,
+	ordersItem *apiInputReader.OrdersItemPricingElements,
 ) OrdersReq {
 	req := OrdersReq{
 		Header: Header{
-			OrderID: ordersHeader.OrderID,
-			Buyer:   ordersHeader.Buyer,
-			Seller:  ordersHeader.Seller,
+			OrderID: ordersItem.OrderID,
+			Item: []Item{
+				{
+					OrderID:   ordersItem.OrderID,
+					OrderItem: ordersItem.OrderItem,
+				},
+			},
 		},
 		Accepter: []string{
 			"ItemPricingElements",
@@ -559,10 +563,9 @@ func OrdersReads(
 	if accepter == "ItemPricingElements" {
 		request = CreateOrdersRequestItemPricingElements(
 			requestPram,
-			&apiInputReader.OrdersHeader{
-				OrderID: input.OrdersHeader.OrderID,
-				Buyer:   input.OrdersHeader.Buyer,
-				Seller:  input.OrdersHeader.Seller,
+			&apiInputReader.OrdersItemPricingElements{
+				OrderID:   input.OrdersItemPricingElements.OrderID,
+				OrderItem: input.OrdersItemPricingElements.OrderItem,
 			},
 		)
 	}

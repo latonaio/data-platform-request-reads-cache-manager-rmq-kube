@@ -119,9 +119,18 @@ func ReadProductImage(
 	img := &apiOutputFormatter.ProductImage{}
 
 	for _, pmdResHeaderV := range *pdRes.Message.GeneralDoc {
-		if &pmdResHeaderV.DocIssuerBusinessPartner != nil &&
-			pmdResHeaderV.DocIssuerBusinessPartner == businessPartner &&
-			&product != nil &&
+		//if &pmdResHeaderV.DocIssuerBusinessPartner != nil &&
+		//	pmdResHeaderV.DocIssuerBusinessPartner == businessPartner &&
+		//	&product != nil &&
+		//	pmdResHeaderV.Product == product {
+		//	img = &apiOutputFormatter.ProductImage{
+		//		//BusinessPartnerID: pmdResHeaderV.DocIssuerBusinessPartner,
+		//		DocID:         pmdResHeaderV.DocID,
+		//		FileExtension: pmdResHeaderV.FileExtension,
+		//	}
+		//}
+
+		if &product != nil &&
 			pmdResHeaderV.Product == product {
 			img = &apiOutputFormatter.ProductImage{
 				BusinessPartnerID: pmdResHeaderV.DocIssuerBusinessPartner,
@@ -129,6 +138,7 @@ func ReadProductImage(
 				FileExtension:     pmdResHeaderV.FileExtension,
 			}
 		}
+
 	}
 
 	return img

@@ -57,6 +57,8 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 	itemDeliveryBlockStatus := false
 	itemDeliveryStatus := "NP"
 
+	docType := "QRCODE"
+
 	if userType == buyer {
 		OrdersItemSingleUnitMillSheet = apiInputReader.Orders{
 			OrdersHeader: &apiInputReader.OrdersHeader{
@@ -80,9 +82,9 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				OrderItem:                &orderItem,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	} else {
@@ -108,9 +110,9 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
 				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+				OrderItem:                &orderItem,
+				DocType:                  &docType,
+				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -154,7 +156,7 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createOrdersRequestHeader(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -181,7 +183,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createOrdersRequestItem(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -208,7 +210,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createOrdersRequestItemScheduleLines(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -235,7 +237,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createOrdersRequestItemPricingElements(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -262,7 +264,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createOrdersDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Orders,
@@ -289,7 +291,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createProductMasterDocRequest(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes {
@@ -314,7 +316,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -351,7 +353,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createInspectionLotRequestHeader(
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -384,7 +386,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createInspectionLotRequestSpecDetails(
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -417,7 +419,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createInspectionLotRequestComponentCompositions(
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -449,7 +451,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) createInspectionLotRequestInspections(
 	requestPram *apiInputReader.Request,
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
@@ -482,7 +484,7 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) request(
 	input apiInputReader.Orders,
 ) {
@@ -558,12 +560,12 @@ controller *OrdersItemSingleUnitMillSheetController,
 }
 
 func (
-controller *OrdersItemSingleUnitMillSheetController,
+	controller *OrdersItemSingleUnitMillSheetController,
 ) fin(
 	ordersHeaderRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	ordersItemRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-//ordersItemScheduleLinesRes *apiModuleRuntimesResponsesOrders.OrdersRes,
-//ordersItemPricingElementsRes *apiModuleRuntimesResponsesOrders.OrdersRes,
+	//ordersItemScheduleLinesRes *apiModuleRuntimesResponsesOrders.OrdersRes,
+	//ordersItemPricingElementsRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 	ordersItemDocRes *apiModuleRuntimesResponsesOrders.OrdersDocRes,

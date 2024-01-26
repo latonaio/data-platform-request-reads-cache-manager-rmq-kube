@@ -80,12 +80,6 @@ func (controller *OrdersItemScheduleLineController) Get() {
 				OrderID:   orderId,
 				OrderItem: orderItem,
 			},
-			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
-			},
 		}
 	} else {
 		OrdersSingleUnit = apiInputReader.Orders{
@@ -111,12 +105,6 @@ func (controller *OrdersItemScheduleLineController) Get() {
 			OrdersItemScheduleLines: &apiInputReader.OrdersItemScheduleLines{
 				OrderID:   orderId,
 				OrderItem: orderItem,
-			},
-			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
 			},
 		}
 	}
@@ -513,14 +501,14 @@ func (
 				Product:                             v.Product,
 				RequestedDeliveryDate:               v.RequestedDeliveryDate,
 				RequestedDeliveryTime:               v.RequestedDeliveryTime,
-				ScheduleLineOrderQuantityInBaseUnit: &v.ScheduleLineOrderQuantityInBaseUnit,
+				ScheduleLineOrderQuantityInBaseUnit: v.ScheduleLineOrderQuantityInBaseUnit,
 				ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit: v.ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit,
 				StockConfirmationBusinessPartner:                v.StockConfirmationBussinessPartner,
 				StockConfirmationBusinessPartnerName:            businessPartnerMapper[v.StockConfirmationBussinessPartner].BusinessPartnerName,
 				StockConfirmationPlant:                          v.StockConfirmationPlant,
 				StockConfirmationPlantName:                      stockConfirmationPlantName,
-				DeliveredQuantityInBaseUnit:                     *v.DeliveredQuantityInBaseUnit,
-				UndeliveredQuantityInBaseUnit:                   *v.UndeliveredQuantityInBaseUnit,
+				DeliveredQuantityInBaseUnit:                     v.DeliveredQuantityInBaseUnit,
+				UndeliveredQuantityInBaseUnit:                   v.UndeliveredQuantityInBaseUnit,
 			},
 		)
 	}

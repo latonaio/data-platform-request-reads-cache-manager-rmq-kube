@@ -75,11 +75,9 @@ func (controller *OrdersItemPricingElementController) Get() {
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
-			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+			OrdersItemPricingElements: &apiInputReader.OrdersItemPricingElements{
+				OrderID:   orderId,
+				OrderItem: orderItem,
 			},
 		}
 	} else {
@@ -103,11 +101,9 @@ func (controller *OrdersItemPricingElementController) Get() {
 				IsCancelled:                   &isCancelled,
 				IsMarkedForDeletion:           &isMarkedForDeletion,
 			},
-			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                orderItem,
-				DocType:                  "QRCODE",
-				DocIssuerBusinessPartner: *controller.UserInfo.BusinessPartner,
+			OrdersItemPricingElements: &apiInputReader.OrdersItemPricingElements{
+				OrderID:   orderId,
+				OrderItem: orderItem,
 			},
 		}
 	}
