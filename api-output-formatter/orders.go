@@ -12,6 +12,7 @@ type Orders struct {
 	OrdersItemSingleUnitMillSheetSpecDetails           []OrdersItemSingleUnitMillSheetSpecDetails           `json:"OrdersItemSingleUnitMillSheetSpecDetails"`
 	OrdersItemSingleUnitMillSheetComponentCompositions []OrdersItemSingleUnitMillSheetComponentCompositions `json:"OrdersItemSingleUnitMillSheetComponentCompositions"`
 	OrdersItemSingleUnitMillSheetInspections           []OrdersItemSingleUnitMillSheetInspections           `json:"OrdersItemSingleUnitMillSheetInspections"`
+	MillSheetPdfMountPath                              *string                                              `json:"MillSheetPdfMountPath"`
 }
 
 type OrdersHeader struct {

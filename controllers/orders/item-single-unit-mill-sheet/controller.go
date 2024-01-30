@@ -10,6 +10,7 @@ import (
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/inspection-lot"
+	apiModuleRuntimesResponsesMillSheetPdf "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/mill-sheet-pdf"
 	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -71,9 +72,9 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			OrdersItems: &apiInputReader.OrdersItems{
+			OrdersItem: &apiInputReader.OrdersItem{
 				OrderID:                       orderId,
-				OrderItem:                     &orderItem,
+				OrderItem:                     orderItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				ItemDeliveryStatus:            &itemDeliveryStatus,
@@ -99,9 +100,9 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 				IsCancelled:                     &isCancelled,
 				IsMarkedForDeletion:             &isMarkedForDeletion,
 			},
-			OrdersItems: &apiInputReader.OrdersItems{
+			OrdersItem: &apiInputReader.OrdersItem{
 				OrderID:                       orderId,
-				OrderItem:                     &orderItem,
+				OrderItem:                     orderItem,
 				ItemCompleteDeliveryIsDefined: &itemCompleteDeliveryIsDefined,
 				ItemDeliveryBlockStatus:       &itemDeliveryBlockStatus,
 				ItemDeliveryStatus:            &itemDeliveryStatus,
@@ -125,34 +126,36 @@ func (controller *OrdersItemSingleUnitMillSheetController) Get() {
 		},
 	)
 
-	cacheData, _ := controller.RedisCache.ConfirmCashDataExisting(controller.RedisKey)
+	//cacheData, _ := controller.RedisCache.ConfirmCashDataExisting(controller.RedisKey)
+	//
+	//if cacheData != nil {
+	//	var responseData apiOutputFormatter.Orders
+	//
+	//	err := json.Unmarshal(cacheData, &responseData)
+	//
+	//	if err != nil {
+	//		services.HandleError(
+	//			&controller.Controller,
+	//			err,
+	//			nil,
+	//		)
+	//	}
+	//
+	//	services.Respond(
+	//		&controller.Controller,
+	//		&responseData,
+	//	)
+	//}
 
-	if cacheData != nil {
-		var responseData apiOutputFormatter.Orders
+	//if cacheData != nil {
+	//	go func() {
+	//		controller.request(OrdersItemSingleUnitMillSheet)
+	//	}()
+	//} else {
+	//	controller.request(OrdersItemSingleUnitMillSheet)
+	//}
 
-		err := json.Unmarshal(cacheData, &responseData)
-
-		if err != nil {
-			services.HandleError(
-				&controller.Controller,
-				err,
-				nil,
-			)
-		}
-
-		services.Respond(
-			&controller.Controller,
-			&responseData,
-		)
-	}
-
-	if cacheData != nil {
-		go func() {
-			controller.request(OrdersItemSingleUnitMillSheet)
-		}()
-	} else {
-		controller.request(OrdersItemSingleUnitMillSheet)
-	}
+	controller.request(OrdersItemSingleUnitMillSheet)
 }
 
 func (
@@ -712,23 +715,36 @@ func (
 
 	// ここから generates に rabbitmq で送信
 	// accepter 対応
-	apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGeneratesGenerates(
+	responseJsonData := apiModuleRuntimesResponsesMillSheetPdf.MillSheetPdfRes{}
+	responseBody := apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGeneratesGenerates(
 		data,
 		&controller.Controller,
 		"MillSheet",
 	)
 
-	err := controller.RedisCache.SetCache(
-		controller.RedisKey,
-		data,
-	)
+	err := json.Unmarshal(responseBody, &responseJsonData)
 	if err != nil {
 		services.HandleError(
 			&controller.Controller,
 			err,
 			nil,
 		)
+		controller.CustomLogger.Error("apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGeneratesGenerates Unmarshal error")
 	}
+
+	data.MillSheetPdfMountPath = responseJsonData.MountPath
+
+	//err = controller.RedisCache.SetCache(
+	//	controller.RedisKey,
+	//	data,
+	//)
+	//if err != nil {
+	//	services.HandleError(
+	//		&controller.Controller,
+	//		err,
+	//		nil,
+	//	)
+	//}
 
 	controller.Data["json"] = &data
 	controller.ServeJSON()
