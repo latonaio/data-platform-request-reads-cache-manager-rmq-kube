@@ -54,7 +54,7 @@ func (controller *OrdersSingleUnitController) Get() {
 	itemDeliveryBlockStatus := false
 	itemDeliveryStatus := "NP"
 
-	docType := "QRCODE"
+	//docType := "QRCODE"
 
 	if userType == buyer {
 		OrdersSingleUnit = apiInputReader.Orders{
@@ -86,9 +86,9 @@ func (controller *OrdersSingleUnitController) Get() {
 				OrderItem: orderItem,
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                &orderItem,
-				DocType:                  &docType,
+				OrderID:   orderId,
+				OrderItem: &orderItem,
+				//DocType:                  &docType,
 				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
@@ -122,9 +122,9 @@ func (controller *OrdersSingleUnitController) Get() {
 				OrderItem: orderItem,
 			},
 			OrdersDocItemDoc: &apiInputReader.OrdersDocItemDoc{
-				OrderID:                  orderId,
-				OrderItem:                &orderItem,
-				DocType:                  &docType,
+				OrderID:   orderId,
+				OrderItem: &orderItem,
+				//DocType:                  &docType,
 				DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 			},
 		}
@@ -287,7 +287,7 @@ func (
 		requestPram,
 		input,
 		&controller.Controller,
-		"OrdersDoc",
+		"ItemDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -458,6 +458,12 @@ func (
 			v.OrderItem,
 		)
 
+		documentImage := services.ReadDocumentImageOrders(
+			ordersItemDocRes,
+			v.OrderID,
+			v.OrderItem,
+		)
+
 		data.OrdersSingleUnit = append(data.OrdersSingleUnit,
 			apiOutputFormatter.OrdersSingleUnit{
 				OrderID:               v.OrderID,
@@ -477,8 +483,9 @@ func (
 				RequestedDeliveryTime: v.RequestedDeliveryTime,
 
 				Images: apiOutputFormatter.Images{
-					Product: img,
-					QRCode:  qrcode,
+					Product:             img,
+					QRCode:              qrcode,
+					DocumentImageOrders: documentImage,
 				},
 			},
 		)
