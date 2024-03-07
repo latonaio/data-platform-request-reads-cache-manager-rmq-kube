@@ -34,6 +34,8 @@ type Header struct {
 	OrderValidityEndDate             *string  `json:"OrderValidityEndDate"`
 	InvoicePeriodStartDate           *string  `json:"InvoicePeriodStartDate"`
 	InvoicePeriodEndDate             *string  `json:"InvoicePeriodEndDate"`
+	Project                          *int     `json:"Project"`
+	WBSElement                       *int     `json:"WBSElement"`
 	TotalNetAmount                   float32  `json:"TotalNetAmount"`
 	TotalTaxAmount                   float32  `json:"TotalTaxAmount"`
 	TotalGrossAmount                 float32  `json:"TotalGrossAmount"`

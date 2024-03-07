@@ -44,11 +44,11 @@ type OperationDoc struct {
 
 func CreateInspectionLotDocRequestHeaderDoc(
 	requestPram *apiInputReader.Request,
-	// headerDoc *apiInputReader.InspectionLotDocOperationDoc,
+	headerDoc apiInputReader.InspectionLotDocHeaderDoc,
 ) InspectionLotDocReq {
 	req := InspectionLotDocReq{
 		HeaderDoc: HeaderDoc{
-			//DocType:                  headerDoc.DocType,
+			DocType:                  headerDoc.DocType,
 			DocIssuerBusinessPartner: requestPram.BusinessPartner,
 		},
 		Accepter: []string{
@@ -95,6 +95,11 @@ func InspectionLotDocReads(
 	if accepter == "HeaderDoc" {
 		request = CreateInspectionLotDocRequestHeaderDoc(
 			requestPram,
+			apiInputReader.InspectionLotDocHeaderDoc{
+				InspectionLot:            input.InspectionLotDocHeaderDoc.InspectionLot,
+				DocType:                  input.InspectionLotDocHeaderDoc.DocType,
+				DocIssuerBusinessPartner: input.InspectionLotDocHeaderDoc.DocIssuerBusinessPartner,
+			},
 		)
 	}
 

@@ -89,7 +89,7 @@ type Inspections struct {
 	InspectionTypeTextInJA                   string   `json:"InspectionTypeTextInJA"`
 }
 
-func FunctionMillSheetPdfGeneratesGenerates(
+func FunctionMillSheetPdfGenerates(
 	input apiOutputFormatter.Orders,
 	controller *beego.Controller,
 	accepter string,

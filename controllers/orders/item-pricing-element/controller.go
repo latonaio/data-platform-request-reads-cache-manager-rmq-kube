@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type OrdersItemPricingElementController struct {
@@ -113,6 +114,7 @@ func (controller *OrdersItemPricingElementController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			strconv.Itoa(orderId),
 		},
 	)
 

@@ -25,7 +25,7 @@ type Header struct {
 	ProductSpecification           *string                `json:"ProductSpecification"`
 	InspectionSpecification        *string                `json:"InspectionSpecification"`
 	ProductionOrder                *int                   `json:"ProductionOrder"`
-	ProductionOrderOperation       *int                   `json:"ProductionOrderOperation"`
+	ProductionOrderItem            *int                   `json:"ProductionOrderItem"`
 	InspectionLotHeaderText        *string                `json:"InspectionLotHeaderText"`
 	ExternalReferenceDocument      *string                `json:"ExternalReferenceDocument"`
 	CertificateAuthorityChain      *string                `json:"CertificateAuthorityChain"`
@@ -45,6 +45,7 @@ type Header struct {
 	ComponentComposition           []ComponentComposition `json:"ComponentComposition"`
 	Inspection                     []Inspection           `json:"Inspection"`
 	Operation                      []Operation            `json:"Operation"`
+	Partner                        []Partner              `json:"Partner"`
 }
 
 type SpecGeneral struct {
@@ -197,6 +198,21 @@ type Operation struct {
 	IsMarkedForDeletion                             *bool    `json:"IsMarkedForDeletion"`
 }
 
+type Partner struct {
+	InspectionLot           int     `json:"InspectionLot"`
+	PartnerFunction         string  `json:"PartnerFunction"`
+	BusinessPartner         int     `json:"BusinessPartner"`
+	BusinessPartnerFullName *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName     *string `json:"BusinessPartnerName"`
+	Organization            *string `json:"Organization"`
+	Country                 *string `json:"Country"`
+	Language                *string `json:"Language"`
+	Currency                *string `json:"Currency"`
+	ExternalDocumentID      *string `json:"ExternalDocumentID"`
+	AddressID               *int    `json:"AddressID"`
+	EmailAddress            *string `json:"EmailAddress"`
+}
+
 func CreateInspectionLotRequestHeader(
 	requestPram *apiInputReader.Request,
 	inspectionLotHeader *apiInputReader.InspectionLotHeader,
@@ -214,17 +230,17 @@ func CreateInspectionLotRequestHeader(
 	return req
 }
 
-func CreateInspectionLotRequestHeaderByInspectionPlantBP(
+func CreateInspectionLotRequestHeaders(
 	requestPram *apiInputReader.Request,
-	inspectionLotHeader *apiInputReader.InspectionLotHeader,
+	inspectionLotHeaders *apiInputReader.InspectionLotHeader,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionPlantBusinessPartner: *requestPram.BusinessPartner,
-			IsMarkedForDeletion:            inspectionLotHeader.IsMarkedForDeletion,
+			IsReleased:          inspectionLotHeaders.IsReleased,
+			IsMarkedForDeletion: inspectionLotHeaders.IsMarkedForDeletion,
 		},
 		Accepter: []string{
-			"HeadersByInspectionPlantBP",
+			"Headers",
 		},
 	}
 	return req
@@ -232,16 +248,17 @@ func CreateInspectionLotRequestHeaderByInspectionPlantBP(
 
 func CreateInspectionLotRequestSpecDetail(
 	requestPram *apiInputReader.Request,
-	inspectionLotSpecDetails *apiInputReader.InspectionLotSpecDetail,
+	inspectionLotSpecDetail *apiInputReader.InspectionLotSpecDetail,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionLot: inspectionLotSpecDetails.InspectionLot,
+			InspectionLot: inspectionLotSpecDetail.InspectionLot,
 			SpecDetail: []SpecDetail{
 				{
-					InspectionLot:       inspectionLotSpecDetails.InspectionLot,
-					SpecType:            inspectionLotSpecDetails.SpecType,
-					IsMarkedForDeletion: inspectionLotSpecDetails.IsMarkedForDeletion,
+					InspectionLot:       inspectionLotSpecDetail.InspectionLot,
+					SpecType:            inspectionLotSpecDetail.SpecType,
+					IsReleased:          inspectionLotSpecDetail.IsReleased,
+					IsMarkedForDeletion: inspectionLotSpecDetail.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -262,6 +279,7 @@ func CreateInspectionLotRequestSpecDetails(
 			SpecDetail: []SpecDetail{
 				{
 					InspectionLot:       inspectionLotSpecDetails.InspectionLot,
+					IsReleased:          inspectionLotSpecDetails.IsReleased,
 					IsMarkedForDeletion: inspectionLotSpecDetails.IsMarkedForDeletion,
 				},
 			},
@@ -275,15 +293,17 @@ func CreateInspectionLotRequestSpecDetails(
 
 func CreateInspectionLotRequestComponentComposition(
 	requestPram *apiInputReader.Request,
-	inspectionLotSpecDetails *apiInputReader.InspectionLotComponentComposition,
+	inspectionLotComponentComposition *apiInputReader.InspectionLotComponentComposition,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionLot: inspectionLotSpecDetails.InspectionLot,
+			InspectionLot: inspectionLotComponentComposition.InspectionLot,
 			ComponentComposition: []ComponentComposition{
 				{
-					InspectionLot:       inspectionLotSpecDetails.InspectionLot,
-					IsMarkedForDeletion: inspectionLotSpecDetails.IsMarkedForDeletion,
+					InspectionLot:            inspectionLotComponentComposition.InspectionLot,
+					ComponentCompositionType: inspectionLotComponentComposition.ComponentCompositionType,
+					IsReleased:               inspectionLotComponentComposition.IsReleased,
+					IsMarkedForDeletion:      inspectionLotComponentComposition.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -303,9 +323,9 @@ func CreateInspectionLotRequestComponentCompositions(
 			InspectionLot: inspectionLotComponentCompositions.InspectionLot,
 			ComponentComposition: []ComponentComposition{
 				{
-					InspectionLot:            inspectionLotComponentCompositions.InspectionLot,
-					ComponentCompositionType: inspectionLotComponentCompositions.ComponentCompositionType,
-					IsMarkedForDeletion:      inspectionLotComponentCompositions.IsMarkedForDeletion,
+					InspectionLot:       inspectionLotComponentCompositions.InspectionLot,
+					IsReleased:          inspectionLotComponentCompositions.IsReleased,
+					IsMarkedForDeletion: inspectionLotComponentCompositions.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -318,16 +338,17 @@ func CreateInspectionLotRequestComponentCompositions(
 
 func CreateInspectionLotRequestInspection(
 	requestPram *apiInputReader.Request,
-	inspectionLotInspections *apiInputReader.InspectionLotInspection,
+	inspectionLotInspection *apiInputReader.InspectionLotInspection,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionLot: inspectionLotInspections.InspectionLot,
+			InspectionLot: inspectionLotInspection.InspectionLot,
 			Inspection: []Inspection{
 				{
-					InspectionLot:       inspectionLotInspections.InspectionLot,
-					Inspection:          inspectionLotInspections.Inspection,
-					IsMarkedForDeletion: inspectionLotInspections.IsMarkedForDeletion,
+					InspectionLot:       inspectionLotInspection.InspectionLot,
+					Inspection:          inspectionLotInspection.Inspection,
+					IsReleased:          inspectionLotInspection.IsReleased,
+					IsMarkedForDeletion: inspectionLotInspection.IsMarkedForDeletion,
 				},
 			},
 		},
@@ -348,6 +369,7 @@ func CreateInspectionLotRequestInspections(
 			Inspection: []Inspection{
 				{
 					InspectionLot:       inspectionLotInspections.InspectionLot,
+					IsReleased:          inspectionLotInspections.IsReleased,
 					IsMarkedForDeletion: inspectionLotInspections.IsMarkedForDeletion,
 				},
 			},
@@ -359,44 +381,40 @@ func CreateInspectionLotRequestInspections(
 	return req
 }
 
-func CreateInspectionLotRequestOperation(
+func CreateInspectionLotRequestPartner(
 	requestPram *apiInputReader.Request,
-	inspectionLotOperations *apiInputReader.InspectionLotOperation,
+	inspectionLotPartner *apiInputReader.InspectionLotPartner,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionLot: inspectionLotOperations.InspectionLot,
-			Operation: []Operation{
+			InspectionLot: inspectionLotPartner.InspectionLot,
+			Partner: []Partner{
 				{
-					Operations:          inspectionLotOperations.Operations,
-					OperationsItem:      inspectionLotOperations.OperationsItem,
-					OperationID:         inspectionLotOperations.OperationID,
-					IsMarkedForDeletion: inspectionLotOperations.IsMarkedForDeletion,
+					PartnerFunction: inspectionLotPartner.PartnerFunction,
+					BusinessPartner: inspectionLotPartner.BusinessPartner,
 				},
 			},
+			//IsReleased:          inspectionLotHeader.IsReleased,
+			//IsMarkedForDeletion: inspectionLotHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
-			"Operation",
+			"Partner",
 		},
 	}
 	return req
 }
 
-func CreateInspectionLotRequestOperations(
+func CreateInspectionLotRequestPartners(
 	requestPram *apiInputReader.Request,
-	inspectionLotOperations *apiInputReader.InspectionLotOperation,
+	inspectionLotPartner *apiInputReader.InspectionLotPartner,
 ) InspectionLotReq {
 	req := InspectionLotReq{
 		Header: Header{
-			InspectionLot: inspectionLotOperations.InspectionLot,
-			Operation: []Operation{
-				{
-					IsMarkedForDeletion: inspectionLotOperations.IsMarkedForDeletion,
-				},
-			},
+			//IsReleased:          inspectionLotHeader.IsReleased,
+			//IsMarkedForDeletion: inspectionLotHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
-			"Operations",
+			"Partners",
 		},
 	}
 	return req
@@ -424,8 +442,8 @@ func InspectionLotReads(
 		)
 	}
 
-	if accepter == "HeadersByInspectionPlantBP" {
-		request = CreateInspectionLotRequestHeaderByInspectionPlantBP(
+	if accepter == "Headers" {
+		request = CreateInspectionLotRequestHeaders(
 			requestPram,
 			&apiInputReader.InspectionLotHeader{
 				IsReleased:          input.InspectionLotHeader.IsReleased,
@@ -438,9 +456,10 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestSpecDetail(
 			requestPram,
 			&apiInputReader.InspectionLotSpecDetail{
-				InspectionLot: input.InspectionLotSpecDetail.InspectionLot,
-				SpecType:      input.InspectionLotSpecDetail.SpecType,
-				//IsMarkedForDeletion: input.InspectionLotSpecDetails.IsMarkedForDeletion,
+				InspectionLot:       input.InspectionLotSpecDetail.InspectionLot,
+				SpecType:            input.InspectionLotSpecDetail.SpecType,
+				IsReleased:          input.InspectionLotSpecDetail.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotSpecDetail.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -449,8 +468,9 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestSpecDetails(
 			requestPram,
 			&apiInputReader.InspectionLotSpecDetail{
-				InspectionLot: input.InspectionLotSpecDetail.InspectionLot,
-				//IsMarkedForDeletion: input.InspectionLotSpecDetails.IsMarkedForDeletion,
+				InspectionLot:       input.InspectionLotSpecDetails.InspectionLot,
+				IsReleased:          input.InspectionLotSpecDetails.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotSpecDetails.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -461,7 +481,8 @@ func InspectionLotReads(
 			&apiInputReader.InspectionLotComponentComposition{
 				InspectionLot:            input.InspectionLotComponentComposition.InspectionLot,
 				ComponentCompositionType: input.InspectionLotComponentComposition.ComponentCompositionType,
-				//IsMarkedForDeletion: input.InspectionLotComponentCompositions.IsMarkedForDeletion,
+				IsReleased:               input.InspectionLotComponentComposition.IsReleased,
+				IsMarkedForDeletion:      input.InspectionLotComponentComposition.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -470,8 +491,9 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestComponentCompositions(
 			requestPram,
 			&apiInputReader.InspectionLotComponentComposition{
-				InspectionLot: input.InspectionLotComponentComposition.InspectionLot,
-				//IsMarkedForDeletion: input.InspectionLotComponentCompositions.IsMarkedForDeletion,
+				InspectionLot:       input.InspectionLotComponentCompositions.InspectionLot,
+				IsReleased:          input.InspectionLotComponentCompositions.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotComponentCompositions.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -480,9 +502,10 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestInspection(
 			requestPram,
 			&apiInputReader.InspectionLotInspection{
-				InspectionLot: input.InspectionLotInspection.InspectionLot,
-				Inspection:    input.InspectionLotInspection.Inspection,
-				//IsMarkedForDeletion: input.InspectionLotInspections.IsMarkedForDeletion,
+				InspectionLot:       input.InspectionLotInspection.InspectionLot,
+				Inspection:          input.InspectionLotInspection.Inspection,
+				IsReleased:          input.InspectionLotInspection.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotInspection.IsMarkedForDeletion,
 			},
 		)
 	}
@@ -491,9 +514,28 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestInspections(
 			requestPram,
 			&apiInputReader.InspectionLotInspection{
-				InspectionLot: input.InspectionLotInspection.InspectionLot,
-				//IsMarkedForDeletion: input.InspectionLotInspections.IsMarkedForDeletion,
+				InspectionLot:       input.InspectionLotInspections.InspectionLot,
+				IsReleased:          input.InspectionLotInspections.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotInspections.IsMarkedForDeletion,
 			},
+		)
+	}
+
+	if accepter == "Partner" {
+		request = CreateInspectionLotRequestPartner(
+			requestPram,
+			&apiInputReader.InspectionLotPartner{
+				InspectionLot:   input.InspectionLotPartner.InspectionLot,
+				PartnerFunction: input.InspectionLotPartner.PartnerFunction,
+				BusinessPartner: input.InspectionLotPartner.BusinessPartner,
+			},
+		)
+	}
+
+	if accepter == "Partners" {
+		request = CreateInspectionLotRequestPartners(
+			requestPram,
+			&apiInputReader.InspectionLotPartner{},
 		)
 	}
 
@@ -515,40 +557,3 @@ func InspectionLotReads(
 
 	return responseBody
 }
-
-//func InspectionLotReadsSpecDetail(
-//	requestPram *apiInputReader.Request,
-//	input apiInputReader.InspectionLot,
-//	controller *beego.Controller,
-//) []byte {
-//	aPIServiceName := "DPFM_API_INSPECTION_LOT_SRV"
-//	aPIType := "reads"
-//
-//	var request InspectionLotReq
-//
-//	request = CreateInspectionLotRequestSpecDetail(
-//		requestPram,
-//		&apiInputReader.InspectionLotSpecDetail{
-//			InspectionLot: input.InspectionLotSpecDetail.InspectionLot,
-//			SpecType:      input.InspectionLotSpecDetail.SpecType,
-//		},
-//	)
-//
-//	marshaledRequest, err := json.Marshal(request)
-//	if err != nil {
-//		services.HandleError(
-//			controller,
-//			err,
-//			nil,
-//		)
-//	}
-//
-//	responseBody := services.Request(
-//		aPIServiceName,
-//		aPIType,
-//		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-//		controller,
-//	)
-//
-//	return responseBody
-//}

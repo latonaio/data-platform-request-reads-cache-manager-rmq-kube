@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type OrdersItemScheduleLineController struct {
@@ -114,6 +115,7 @@ func (controller *OrdersItemScheduleLineController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			strconv.Itoa(orderId),
 		},
 	)
 

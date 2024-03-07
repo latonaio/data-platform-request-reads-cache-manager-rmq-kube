@@ -46,6 +46,8 @@ type Header struct {
 	OrderItem                              *int     `json:"OrderItem"`
 	Contract                               *int     `json:"Contract"`
 	ContractItem                           *int     `json:"ContractItem"`
+	Project                                *int     `json:"Project"`
+	WBSElement                             *int     `json:"WBSElement"`
 	ProductionVersion                      *int     `json:"ProductionVersion"`
 	ProductionVersionItem                  *int     `json:"ProductionVersionItem"`
 	ProductionOrder                        *int     `json:"ProductionOrder"`
@@ -188,6 +190,8 @@ type Item struct {
 	QuantityPerPackage                            *float32 `json:"QuantityPerPackage"`
 	ItemBillingStatus                             *string  `json:"ItemBillingStatus"`
 	ItemCompleteDeliveryIsDefined                 *bool    `json:"ItemCompleteDeliveryIsDefined"`
+	ProductWeightUnit                             *string  `json:"ProductWeightUnit"`
+	ProductNetWeight                              *float32 `json:"ProductNetWeight"`
 	ItemWeightUnit                                *string  `json:"ItemWeightUnit"`
 	ItemNetWeight                                 *float32 `json:"ItemNetWeight"`
 	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`

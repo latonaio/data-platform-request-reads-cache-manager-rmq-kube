@@ -2,6 +2,7 @@ package services
 
 import (
 	apiModuleRuntimesResponsesDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/delivery-document"
+	apiModuleRuntimesResponsesInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/inspection-lot"
 	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProductStock "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-stock"
@@ -78,6 +79,24 @@ func CreateQRCodeDeliveryDocumentItemDocImage(
 				return &apiOutputFormatter.QRCodeImage{
 					DocID:         (*itemDocRes.Message.ItemDoc)[i].DocID,
 					FileExtension: (*itemDocRes.Message.ItemDoc)[i].FileExtension,
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func CreateQRCodeInspectionLotHeaderDocImage(
+	inspectionLotHeaderDocRes *apiModuleRuntimesResponsesInspectionLot.InspectionLotDocRes,
+	inspectionLot int,
+) *apiOutputFormatter.QRCodeImage {
+	for i, headerDoc := range *inspectionLotHeaderDocRes.Message.HeaderDoc {
+		if headerDoc.InspectionLot == inspectionLot {
+			if headerDoc.DocType == "QRCODE" {
+				return &apiOutputFormatter.QRCodeImage{
+					DocID:         (*inspectionLotHeaderDocRes.Message.HeaderDoc)[i].DocID,
+					FileExtension: (*inspectionLotHeaderDocRes.Message.HeaderDoc)[i].FileExtension,
 				}
 			}
 		}

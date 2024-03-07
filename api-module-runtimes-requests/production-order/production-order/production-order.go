@@ -64,6 +64,8 @@ type Header struct {
 	PlannedOrder                                       *int     `json:"PlannedOrder"`
 	OrderID                                            *int     `json:"OrderID"`
 	OrderItem                                          *int     `json:"OrderItem"`
+	Project                                            *int     `json:"Project"`
+	WBSElement                                         *int     `json:"WBSElement"`
 	ProductionOrderHeaderText                          *string  `json:"ProductionOrderHeaderText"`
 	CertificateAuthorityChain        				   *string  `json:"CertificateAuthorityChain"`
 	UsageControlChain        		 				   *string  `json:"UsageControlChain"`
@@ -135,6 +137,8 @@ type Item struct {
 	PlannedOrderItem                              *int            `json:"PlannedOrderItem"`
 	OrderID                                       *int            `json:"OrderID"`
 	OrderItem                                     *int            `json:"OrderItem"`
+	Project                                       *int            `json:"Project"`
+	WBSElement                                    *int            `json:"WBSElement"`
 	ProductIsBatchManagedInProductionPlant        *bool           `json:"ProductIsBatchManagedInProductionPlant"`
 	BatchMgmtPolicyInProductionOrder              *string         `json:"BatchMgmtPolicyInProductionOrder"`
 	ProductionOrderTargetedBatch                  *string         `json:"ProductionOrderTargetedBatch"`

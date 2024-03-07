@@ -9,6 +9,7 @@ type Images struct {
 	Operations                    *ProductImage                  `json:"Operations,omitempty"`
 	DocumentImageOrders           *DocumentImageOrders           `json:"DocumentImageOrders,omitempty"`
 	DocumentImageDeliveryDocument *DocumentImageDeliveryDocument `json:"DocumentImageDeliveryDocument,omitempty"`
+	DocumentImageInspectionLot    *DocumentImageInspectionLot    `json:"DocumentImageInspectionLot,omitempty"`
 }
 
 type ProductImage struct {
@@ -42,4 +43,11 @@ type DocumentImageDeliveryDocument struct {
 	DeliveryDocumentItem int    `json:"DeliveryDocumentItem"`
 	DocID                string `json:"DocID"`
 	FileExtension        string `json:"FileExtension"`
+}
+
+type DocumentImageInspectionLot struct {
+	DocType       string `json:"DocType"`
+	InspectionLot int    `json:"InspectionLot"`
+	DocID         string `json:"DocID"`
+	FileExtension string `json:"FileExtension"`
 }

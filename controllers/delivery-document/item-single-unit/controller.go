@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type DeliveryDocumentSingleUnitController struct {
@@ -115,6 +116,7 @@ func (controller *DeliveryDocumentSingleUnitController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			strconv.Itoa(deliveryDocument),
 		},
 	)
 
@@ -301,10 +303,12 @@ func (
 
 	for _, v := range *deliveryDocumentItemRes.Message.Item {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			Plant: v.DeliverToPlant,
+			BusinessPartner: v.DeliverToParty,
+			Plant:           v.DeliverToPlant,
 		})
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			Plant: v.DeliverFromPlant,
+			BusinessPartner: v.DeliverFromParty,
+			Plant:           v.DeliverFromPlant,
 		})
 	}
 
@@ -419,11 +423,13 @@ func (
 				DeliverToParty:          v.DeliverToParty,
 				DeliverToPartyName:      businessPartnerMapper[v.DeliverToParty].BusinessPartnerName,
 				DeliverToPlant:          v.DeliverToPlant,
-				DeliverToPlantName:      plantMapper[v.DeliverToPlant].PlantName,
+				DeliverToPlantName:      plantMapper[strconv.Itoa(v.DeliverToParty)].PlantName,
 				DeliverFromParty:        v.DeliverFromParty,
 				DeliverFromPartyName:    businessPartnerMapper[v.DeliverFromParty].BusinessPartnerName,
 				DeliverFromPlant:        v.DeliverFromPlant,
-				DeliverFromPlantName:    plantMapper[v.DeliverFromPlant].PlantName,
+				DeliverFromPlantName:    plantMapper[strconv.Itoa(v.DeliverFromParty)].PlantName,
+				OrderID:                 v.OrderID,
+				OrderItem:               v.OrderItem,
 
 				Images: apiOutputFormatter.Images{
 					Product: img,

@@ -8,22 +8,31 @@ import (
 	controllersBillOfMaterialList "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/list"
 	controllersBusinessPartnerDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/detail-general"
 	controllersBusinessPartnerList "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/list"
+	controllersCertificateAuthorityChainWithUsageControlChain "data-platform-request-reads-cache-manager-rmq-kube/controllers/certificate-authority-chain-with-usage-control-chain/certificate-authority-chain-with-usage-control-chain"
 	controllersDeliveryDocumentDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/detail-list"
+	controllersDeliveryDocumentDetailListForADeliveryInstruction "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/detail-list-for-a-delivery-instruction"
 	controllersDeliveryDocumentItem "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/item"
 	controllersDeliveryDocumentSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/item-single-unit"
 	controllersDeliveryDocumentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/list"
 	controllersEquipmentMasterDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/detail-general"
 	controllersEquipmentMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/list"
+	controllersInspectionLotComponentComposition "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/component-composition"
+	controllersInspectionLotSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/header-single-unit"
+	controllersInspectionLotSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/header-single-unit-mill-sheet"
+	controllersInspectionLotInspection "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/inspection"
+	controllersInspectionLotList "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/list"
+	controllersInspectionLotSpecDetail "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/spec-detail"
 	controllersInvoiceDocumentDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/invoice-document/detail-list"
 	controllersInvoiceDocumentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/invoice-document/list"
 	controllersOperationsDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/detail-list"
 	controllersOperationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/list"
 	controllersOrdersDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/detail-list"
+	controllersOrdersDetailListForAnOrderDocument "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/detail-list-for-an-order-document"
 	controllersOrdersItem "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item"
 	controllersOrdersItemPricingElement "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-pricing-element"
 	controllersOrdersItemScheduleLine "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-schedule-line"
-	controllersOrdersItemSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit-mill-sheet"
 	controllersOrdersSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit"
+	controllersOrdersItemSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit-mill-sheet"
 	controllersOrdersList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/list"
 	controllersPlantDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/detail-list"
 	controllersPlantList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/list"
@@ -88,11 +97,16 @@ func init() {
 		CustomLogger: l,
 	}
 
+	ordersDetailListForAnOrderDocumentController := &controllersOrdersDetailListForAnOrderDocument.OrdersDetailListForAnOrderDocumentController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	ordersSingleUnit := &controllersOrdersSingleUnit.OrdersSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
-	
+
 	ordersItemSingleUnitMillSheet := &controllersOrdersItemSingleUnitMillSheet.OrdersItemSingleUnitMillSheetController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
@@ -113,12 +127,52 @@ func init() {
 		CustomLogger: l,
 	}
 
+	inspectionLotSingleUnitController := &controllersInspectionLotSingleUnit.InspectionLotSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotSingleUnitMillSheetController := &controllersInspectionLotSingleUnitMillSheet.InspectionLotSingleUnitMillSheetController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotListController := &controllersInspectionLotList.InspectionLotListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotSpecDetailController := &controllersInspectionLotSpecDetail.InspectionLotSpecDetailController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotComponentCompositionController := &controllersInspectionLotComponentComposition.InspectionLotComponentCompositionController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotInspectionController := &controllersInspectionLotInspection.InspectionLotInspectionController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	certificateAuthorityChainWithUsageControlChainController := &controllersCertificateAuthorityChainWithUsageControlChain.CertificateAuthorityChainWithUsageControlChainController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	deliveryDocumentListController := &controllersDeliveryDocumentList.DeliveryDocumentListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
 
 	deliveryDocumentDetailListController := &controllersDeliveryDocumentDetailList.DeliveryDocumentDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	deliveryDocumentDetailListForADeliveryInstructionController := &controllersDeliveryDocumentDetailListForADeliveryInstruction.DeliveryDocumentDetailListForADeliveryInstructionController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -320,6 +374,7 @@ func init() {
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", ordersListController),
 		beego.NSRouter("/detail/list/:userType", ordersDetailListController),
+		beego.NSRouter("/detail/list-for-an-order-document", ordersDetailListForAnOrderDocumentController),
 		beego.NSRouter("/item-single-unit/:userType", ordersSingleUnit),
 		beego.NSRouter("/item-single-unit-mill-sheet/:userType", ordersItemSingleUnitMillSheet),
 		beego.NSRouter("/item-schedule-line/:userType", ordersItemScheduleLineController),
@@ -327,11 +382,29 @@ func init() {
 		beego.NSRouter("/item/:userType", ordersItemController),
 	)
 
+	inspectionLot := beego.NewNamespace(
+		"/inspection-lot",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/header-single-unit", inspectionLotSingleUnitController),
+		beego.NSRouter("/header-single-unit-mill-sheet", inspectionLotSingleUnitMillSheetController),
+		beego.NSRouter("/list", inspectionLotListController),
+		beego.NSRouter("/spec-detail", inspectionLotSpecDetailController),
+		beego.NSRouter("/component-composition", inspectionLotComponentCompositionController),
+		beego.NSRouter("/inspection", inspectionLotInspectionController),
+	)
+
+	certificateAuthorityChainWithUsageControlChain := beego.NewNamespace(
+		"/certificate-authority-chain-with-usage-control-chain",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/certificate-authority-chain-with-usage-control-chain", certificateAuthorityChainWithUsageControlChainController),
+	)
+
 	deliveryDocument := beego.NewNamespace(
 		"/delivery-document",
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", deliveryDocumentListController),
 		beego.NSRouter("/detail/list/:userType", deliveryDocumentDetailListController),
+		beego.NSRouter("/detail/list-for-a-delivery-instruction", deliveryDocumentDetailListForADeliveryInstructionController),
 		beego.NSRouter("/item-single-unit/:userType", deliveryDocumentSingleUnitController),
 		beego.NSRouter("/item/:userType", deliveryDocumentItemController),
 	)
@@ -459,6 +532,8 @@ func init() {
 		storageBin,
 		productionOrder,
 		productionOrderConf,
+		inspectionLot,
+		certificateAuthorityChainWithUsageControlChain,
 	)
 
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{

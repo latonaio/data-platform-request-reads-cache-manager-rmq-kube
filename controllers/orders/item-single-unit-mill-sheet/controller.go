@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"golang.org/x/xerrors"
 )
 
 type OrdersItemSingleUnitMillSheetController struct {
@@ -395,7 +396,7 @@ func (
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes {
 	input := apiInputReader.InspectionLot{
-		InspectionLotSpecDetail: &apiInputReader.InspectionLotSpecDetail{
+		InspectionLotSpecDetails: &apiInputReader.InspectionLotSpecDetails{
 			InspectionLot: *(*ordersRes.Message.Item)[0].InspectionLot,
 		},
 	}
@@ -428,7 +429,7 @@ func (
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes {
 	input := apiInputReader.InspectionLot{
-		InspectionLotComponentComposition: &apiInputReader.InspectionLotComponentComposition{
+		InspectionLotComponentCompositions: &apiInputReader.InspectionLotComponentCompositions{
 			InspectionLot: *(*ordersRes.Message.Item)[0].InspectionLot,
 		},
 	}
@@ -460,7 +461,7 @@ func (
 	ordersRes *apiModuleRuntimesResponsesOrders.OrdersRes,
 ) *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes {
 	input := apiInputReader.InspectionLot{
-		InspectionLotInspection: &apiInputReader.InspectionLotInspection{
+		InspectionLotInspections: &apiInputReader.InspectionLotInspections{
 			InspectionLot: *(*ordersRes.Message.Item)[0].InspectionLot,
 		},
 	}
@@ -502,6 +503,14 @@ func (
 		controller.UserInfo,
 		input,
 	)
+	// TODO orderItem の inspectionLot が null だったらエラーメッセージを返して終了
+	if (*ordersItemRes.Message.Item)[0].InspectionLot == nil {
+		services.HandleError(
+			&controller.Controller,
+			xerrors.Errorf("inspectionLot is null"),
+			nil,
+		)
+	}
 
 	//ordersItemScheduleLinesRes := controller.createOrdersRequestItemScheduleLines(
 	//	controller.UserInfo,
@@ -716,7 +725,7 @@ func (
 	// ここから generates に rabbitmq で送信
 	// accepter 対応
 	responseJsonData := apiModuleRuntimesResponsesMillSheetPdf.MillSheetPdfRes{}
-	responseBody := apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGeneratesGenerates(
+	responseBody := apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGenerates(
 		data,
 		&controller.Controller,
 		"MillSheet",
@@ -729,7 +738,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGeneratesGenerates Unmarshal error")
+		controller.CustomLogger.Error("apiModuleRuntimesRequestsMillSheetPdf.FunctionMillSheetPdfGenerates Unmarshal error")
 	}
 
 	data.MillSheetPdfMountPath = responseJsonData.MountPath

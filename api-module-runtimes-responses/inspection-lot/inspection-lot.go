@@ -10,6 +10,7 @@ type InspectionLot struct {
 	ComponentComposition *[]ComponentComposition `json:"ComponentComposition,omitempty"`
 	Inspection           *[]Inspection           `json:"Inspection,omitempty"`
 	Operation            *[]Operation            `json:"Operation,omitempty"`
+	Partner              *[]Partner              `json:"Partner,omitempty"`
 }
 
 type Header struct {
@@ -174,4 +175,19 @@ type Operation struct {
 	IsLocked                                        *bool    `json:"IsLocked"`
 	IsCancelled                                     *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion                             *bool    `json:"IsMarkedForDeletion"`
+}
+
+type Partner struct {
+	InspectionLot           int     `json:"InspectionLot"`
+	PartnerFunction         string  `json:"PartnerFunction"`
+	BusinessPartner         int     `json:"BusinessPartner"`
+	BusinessPartnerFullName *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName     *string `json:"BusinessPartnerName"`
+	Organization            *string `json:"Organization"`
+	Country                 *string `json:"Country"`
+	Language                *string `json:"Language"`
+	Currency                *string `json:"Currency"`
+	ExternalDocumentID      *string `json:"ExternalDocumentID"`
+	AddressID               *int    `json:"AddressID"`
+	EmailAddress            *string `json:"EmailAddress"`
 }

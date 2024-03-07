@@ -11,49 +11,35 @@ type MillSheetPdf struct {
 }
 
 type Header struct {
-	OrderID   int `json:"OrderID"`
-	OrderItem int `json:"OrderItem"`
-	//	↑OrderNo                   			string	`json:"orderNo"`
-	BuyerName string `json:"BuyerName"`
-	//	↑Customer                  			string	`json:"customer"`
-	SellerName string `json:"SellerName"`
-	Product    string `json:"Product"`
-	//	↑Product                   			string	`json:"product"`
-	SizeOrDimensionText     string  `json:"SizeOrDimensionText"`
-	OrderQuantityInBaseUnit float32 `json:"OrderQuantityInBaseUnit"`
-	//	Quantity                   			string	`json:"quantity"`
-	ProductSpecification string `json:"ProductSpecification"`
-	//	↑StandardOfRawMaterial     			string	`json:"standardOfRawMaterial"`
-	MarkingOfMaterial string `json:"MarkingOfMaterial"`
-	//	↑MarkingOfMaterial         			string	`json:"markingOfMaterial"`
-	ProductionVersion     *int `json:"ProductionVersion"`
-	ProductionVersionItem *int `json:"ProductionVersionItem"`
-	ProductionOrder       *int `json:"ProductionOrder"`
-	ProductionOrderItem   *int `json:"ProductionOrderItem"`
-	//	↑MfgNo                     			string	`json:"mfgNo"`
-	Contract      *int `json:"Contract"`
-	ContractItem  *int `json:"ContractItem"`
-	Project       int  `json:"Project"`
-	WBSElement    int  `json:"WBSElement"`
-	InspectionLot int  `json:"InspectionLot"`
-	//	↑CertificateNo             			string	`json:"certificateNo"`
-	InspectionPlantBusinessPartnerName string `json:"InspectionPlantBusinessPartnerName"`
-	//	↑RawMaterialMaker					string	`json:"rawMaterialMaker"`
-	InspectionLotDate string `json:"InspectionLotDate"`
-	//	↑Date                      	string	`json:"date"`
-	InspectionSpecification string `json:"InspectionSpecification"`
-	//	↑SpecificationForInspection	string	`json:"specificationForInspection"`
-	HeatNumber      string        `json:"HeatNumber"`
-	DrawingNo       string        `json:"DrawingNo"`
-	PurchaseOrderNo string        `json:"PurchaseOrderNo"`
-	SpecDetails     []SpecDetails `json:"SpecDetails"`
-	//	MechanicalProperties       []MechanicalProperty  	`json:"mechanicalProperties"`
-	ComponentCompositions []ComponentCompositions `json:"ComponentCompositions"`
-	//	ChemicalCompositions       []ChemicalComposition 	`json:"chemicalCompositions"`
-	Inspections []Inspections `json:"Inspections"`
-	//	Specifications             []Specification       	`json:"specifications"`
-	Remarks                  string `json:"Remarks"`
-	ChiefOfInspectionSection string `json:"ChiefOfInspectionSection"`
+	OrderID                            string                  `json:"OrderID"`
+	OrderItem                          int                     `json:"OrderItem"`
+	BuyerName                          string                  `json:"BuyerName"`
+	SellerName                         string                  `json:"SellerName"`
+	Product                            string                  `json:"Product"`
+	SizeOrDimensionText                string                  `json:"SizeOrDimensionText"`
+	OrderQuantityInBaseUnit            float32                 `json:"OrderQuantityInBaseUnit"`
+	ProductSpecification               string                  `json:"ProductSpecification"`
+	MarkingOfMaterial                  string                  `json:"MarkingOfMaterial"`
+	ProductionVersion                  *int                    `json:"ProductionVersion"`
+	ProductionVersionItem              *int                    `json:"ProductionVersionItem"`
+	ProductionOrder                    *int                    `json:"ProductionOrder"`
+	ProductionOrderItem                *int                    `json:"ProductionOrderItem"`
+	Contract                           *int                    `json:"Contract"`
+	ContractItem                       *int                    `json:"ContractItem"`
+	Project                            int                     `json:"Project"`
+	WBSElement                         int                     `json:"WBSElement"`
+	InspectionLot                      string                  `json:"InspectionLot"`
+	InspectionPlantBusinessPartnerName string                  `json:"InspectionPlantBusinessPartnerName"`
+	InspectionLotDate                  string                  `json:"InspectionLotDate"`
+	InspectionSpecification            string                  `json:"InspectionSpecification"`
+	HeatNumber                         string                  `json:"HeatNumber"`
+	DrawingNo                          string                  `json:"DrawingNo"`
+	PurchaseOrderNo                    string                  `json:"PurchaseOrderNo"`
+	SpecDetails                        []SpecDetails           `json:"SpecDetails"`
+	ComponentCompositions              []ComponentCompositions `json:"ComponentCompositions"`
+	Inspections                        []Inspections           `json:"Inspections"`
+	Remarks                            string                  `json:"Remarks"`
+	ChiefOfInspectionSection           string                  `json:"ChiefOfInspectionSection"`
 }
 
 type SpecDetails struct {
@@ -69,15 +55,6 @@ type SpecDetails struct {
 	SpecTypeTextInJA string   `json:"SpecTypeTextInJA"`
 }
 
-//type MechanicalProperty struct {
-//	LabelEn string `json:"labelEn"`
-//	Label   string `json:"label"`
-//	Unit    string `json:"unit,omitempty"`
-//	Min     string `json:"min,omitempty"`
-//	Max     string `json:"max,omitempty"`
-//	HeatNo  string `json:"heatNo,omitempty"`
-//}
-
 type ComponentCompositions struct {
 	OrderID                                    int      `json:"OrderID"`
 	OrderItem                                  int      `json:"OrderItem"`
@@ -88,13 +65,6 @@ type ComponentCompositions struct {
 	ComponentCompositionStandardValueInPercent *float32 `json:"ComponentCompositionStandardValueInPercent"`
 	HeatNumber                                 *string  `json:"HeatNumber"`
 }
-
-//type ChemicalComposition struct {
-//	Label  string `json:"label"`
-//	Min    string `json:"min,omitempty"`
-//	Max    string `json:"max,omitempty"`
-//	HeatNo string `json:"heatNo,omitempty"`
-//}
 
 type Inspections struct {
 	OrderID                                  int      `json:"OrderID"`
@@ -107,13 +77,6 @@ type Inspections struct {
 	InspectionTypeValueUnit                  *string  `json:"InspectionTypeValueUnit"`
 	InspectionTypeTextInJA                   string   `json:"InspectionTypeTextInJA"`
 }
-
-//type Specification struct {
-//	LabelEn string `json:"labelEn"`
-//	Label   string `json:"label"`
-//	Value1  string `json:"value1,omitempty"`
-//	Value2  string `json:"value2,omitempty"`
-//}
 
 type GeneralDoc struct {
 	Product                  string  `json:"Product"`

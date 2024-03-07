@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type DeliveryDocumentItemController struct {
@@ -111,6 +112,7 @@ func (controller *DeliveryDocumentItemController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			strconv.Itoa(deliveryDocument),
 		},
 	)
 
@@ -345,16 +347,18 @@ func (
 	controller *DeliveryDocumentItemController,
 ) createPlantRequest(
 	requestPram *apiInputReader.Request,
-	deliveryDocumentItemRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
+	deliveryDocumentHeaderRes *apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, len(*deliveryDocumentItemRes.Message.Item))
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*deliveryDocumentHeaderRes.Message.Header))
 
-	for _, v := range *deliveryDocumentItemRes.Message.Item {
+	for _, v := range *deliveryDocumentHeaderRes.Message.Header {
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			Plant: v.DeliverToPlant,
+			BusinessPartner: v.DeliverToParty,
+			Plant:           v.DeliverToPlant,
 		})
 		input = append(input, apiModuleRuntimesRequestsPlant.General{
-			Plant: v.DeliverFromPlant,
+			BusinessPartner: v.DeliverFromParty,
+			Plant:           v.DeliverFromPlant,
 		})
 	}
 
@@ -408,7 +412,7 @@ func (
 
 	plantRes := *controller.createPlantRequest(
 		controller.UserInfo,
-		deliveryDocumentItemRes,
+		&deliveryDocumentHeaderRes,
 	)
 
 	deliveryDocumentItemDocRes := controller.createDeliveryDocumentDocRequest(
@@ -461,9 +465,9 @@ func (
 				DeliverFromParty:        v.DeliverFromParty,
 				DeliverFromPartyName:    businessPartnerMapper[v.DeliverFromParty].BusinessPartnerName,
 				DeliverToPlant:          v.DeliverToPlant,
-				DeliverToPlantName:      plantMapper[v.DeliverToPlant].PlantName,
+				DeliverToPlantName:      plantMapper[strconv.Itoa(v.DeliverToParty)].PlantName,
 				DeliverFromPlant:        v.DeliverFromPlant,
-				DeliverFromPlantName:    plantMapper[v.DeliverFromPlant].PlantName,
+				DeliverFromPlantName:    plantMapper[strconv.Itoa(v.DeliverFromParty)].PlantName,
 				PlannedGoodsIssueDate:   v.PlannedGoodsIssueDate,
 				PlannedGoodsIssueTime:   v.PlannedGoodsIssueTime,
 				PlannedGoodsReceiptDate: v.PlannedGoodsReceiptDate,
@@ -492,11 +496,15 @@ func (
 			apiOutputFormatter.DeliveryDocumentItem{
 				DeliveryDocumentItem:           v.DeliveryDocumentItem,
 				Product:                        v.Product,
-				DeliveryDocumentItemText:       *v.DeliveryDocumentItemText,
+				DeliveryDocumentItemText:       v.DeliveryDocumentItemText,
 				PlannedGoodsIssueDate:          v.PlannedGoodsIssueDate,
 				PlannedGoodsIssueTime:          v.PlannedGoodsIssueTime,
 				PlannedGoodsReceiptDate:        v.PlannedGoodsReceiptDate,
 				PlannedGoodsReceiptTime:        v.PlannedGoodsReceiptTime,
+				ActualGoodsIssueDate:           v.ActualGoodsIssueDate,
+				ActualGoodsIssueTime:           v.ActualGoodsIssueTime,
+				ActualGoodsReceiptDate:         v.ActualGoodsReceiptDate,
+				ActualGoodsReceiptTime:         v.ActualGoodsReceiptTime,
 				PlannedGoodsIssueQuantity:      v.PlannedGoodsIssueQuantity,
 				PlannedGoodsIssueQtyInBaseUnit: v.PlannedGoodsIssueQtyInBaseUnit,
 				DeliveryUnit:                   v.DeliveryUnit,

@@ -394,8 +394,8 @@ func (
 			apiOutputFormatter.DeliveryDocumentItem{
 				DeliveryDocumentItem:                 v.DeliveryDocumentItem,
 				Product:                              v.Product,
-				DeliveryDocumentItemItemTextByBuyer:  *v.DeliveryDocumentItemTextByBuyer,
-				DeliveryDocumentItemItemTextBySeller: *v.DeliveryDocumentItemTextBySeller,
+				DeliveryDocumentItemItemTextByBuyer:  v.DeliveryDocumentItemTextByBuyer,
+				DeliveryDocumentItemItemTextBySeller: v.DeliveryDocumentItemTextBySeller,
 				PlannedGoodsIssueQuantity:            v.PlannedGoodsIssueQuantity,
 				DeliveryUnit:                         v.DeliveryUnit,
 				PlannedGoodsIssueDate:                v.PlannedGoodsIssueDate,

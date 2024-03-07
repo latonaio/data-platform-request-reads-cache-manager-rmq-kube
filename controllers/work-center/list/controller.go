@@ -198,7 +198,7 @@ func (
 ) {
 
 	plantMapper := services.PlantMapper(
-		plantRes.Message.Generals,
+		plantRes.Message.General,
 	)
 
 	data := apiOutputFormatter.WorkCenter{}
