@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:experimental
 # Build Container
-FROM golang:1.19 as builder
+FROM golang:1.22 as builder
 
 ENV GO111MODULE on
 ENV GOPRIVATE=github.com/latonaio
@@ -11,7 +11,7 @@ RUN go mod download
 RUN go build -o data-platform-api-request-reads-cache-manager-rmq-kube ./
 
 # Runtime Container
-FROM alpine:3.14
+FROM alpine:3.19
 RUN apk add --no-cache libc6-compat
 ENV SERVICE=data-platform-api-request-reads-cache-manager-rmq-kube \
     APP_DIR="${AION_HOME}/${POSITION}/${SERVICE}"

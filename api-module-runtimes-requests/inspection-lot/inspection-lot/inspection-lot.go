@@ -246,6 +246,22 @@ func CreateInspectionLotRequestHeaders(
 	return req
 }
 
+func CreateInspectionLotRequestHeadersExcludeRoleManufacturer(
+	requestPram *apiInputReader.Request,
+	inspectionLotHeaders *apiInputReader.InspectionLotHeader,
+) InspectionLotReq {
+	req := InspectionLotReq{
+		Header: Header{
+			IsReleased:          inspectionLotHeaders.IsReleased,
+			IsMarkedForDeletion: inspectionLotHeaders.IsMarkedForDeletion,
+		},
+		Accepter: []string{
+			"HeadersExcludeRoleManufacturer",
+		},
+	}
+	return req
+}
+
 func CreateInspectionLotRequestSpecDetail(
 	requestPram *apiInputReader.Request,
 	inspectionLotSpecDetail *apiInputReader.InspectionLotSpecDetail,
@@ -420,6 +436,36 @@ func CreateInspectionLotRequestPartners(
 	return req
 }
 
+func CreateInspectionLotRequestPartnersExcludeRoleManufacturer(
+	requestPram *apiInputReader.Request,
+	inspectionLotPartner *apiInputReader.InspectionLotPartner,
+) InspectionLotReq {
+	req := InspectionLotReq{
+		Header: Header{},
+		Accepter: []string{
+			"PartnersExcludeRoleManufacturer",
+		},
+	}
+	return req
+}
+
+func CreateInspectionLotRequestMillBoxInterface(
+	requestPram *apiInputReader.Request,
+	inspectionLotHeader *apiInputReader.InspectionLotHeader,
+) InspectionLotReq {
+	req := InspectionLotReq{
+		Header: Header{
+			InspectionLot:       inspectionLotHeader.InspectionLot,
+			IsReleased:          inspectionLotHeader.IsReleased,
+			IsMarkedForDeletion: inspectionLotHeader.IsMarkedForDeletion,
+		},
+		Accepter: []string{
+			"MillBoxInterface",
+		},
+	}
+	return req
+}
+
 func InspectionLotReads(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.InspectionLot,
@@ -444,6 +490,16 @@ func InspectionLotReads(
 
 	if accepter == "Headers" {
 		request = CreateInspectionLotRequestHeaders(
+			requestPram,
+			&apiInputReader.InspectionLotHeader{
+				IsReleased:          input.InspectionLotHeader.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotHeader.IsMarkedForDeletion,
+			},
+		)
+	}
+
+	if accepter == "HeadersExcludeRoleManufacturer" {
+		request = CreateInspectionLotRequestHeadersExcludeRoleManufacturer(
 			requestPram,
 			&apiInputReader.InspectionLotHeader{
 				IsReleased:          input.InspectionLotHeader.IsReleased,
@@ -536,6 +592,24 @@ func InspectionLotReads(
 		request = CreateInspectionLotRequestPartners(
 			requestPram,
 			&apiInputReader.InspectionLotPartner{},
+		)
+	}
+
+	if accepter == "PartnersExcludeRoleManufacturer" {
+		request = CreateInspectionLotRequestPartnersExcludeRoleManufacturer(
+			requestPram,
+			&apiInputReader.InspectionLotPartner{},
+		)
+	}
+
+	if accepter == "MillBoxInterface" {
+		request = CreateInspectionLotRequestMillBoxInterface(
+			requestPram,
+			&apiInputReader.InspectionLotHeader{
+				InspectionLot:       input.InspectionLotHeader.InspectionLot,
+				IsReleased:          input.InspectionLotHeader.IsReleased,
+				IsMarkedForDeletion: input.InspectionLotHeader.IsMarkedForDeletion,
+			},
 		)
 	}
 

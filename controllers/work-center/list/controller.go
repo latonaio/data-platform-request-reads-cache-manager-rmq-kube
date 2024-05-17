@@ -172,7 +172,7 @@ func (
 ) request(
 	input apiInputReader.WorkCenter,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	generalRes := controller.createWorkCenterRequestHeaderByBusinessPartner(
 		controller.UserInfo,

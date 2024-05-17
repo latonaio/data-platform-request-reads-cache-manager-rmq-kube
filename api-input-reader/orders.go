@@ -3,7 +3,7 @@ package apiInputReader
 type Orders struct {
 	OrdersHeader              *OrdersHeader
 	OrdersPartner             *OrdersPartner
-	OrdersPartners            *OrdersPartners
+	OrdersAddress             *OrdersAddress
 	OrdersItems               *OrdersItems
 	OrdersItem                *OrdersItem
 	OrdersItemScheduleLines   *OrdersItemScheduleLines
@@ -26,7 +26,7 @@ type OrdersPartner struct {
 	OrderID int `json:"OrderID"`
 }
 
-type OrdersPartners struct {
+type OrdersAddress struct {
 	OrderID int `json:"OrderID"`
 }
 

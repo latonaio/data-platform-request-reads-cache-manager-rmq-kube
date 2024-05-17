@@ -2,7 +2,7 @@ package controllersOrdersDetailListForAnOrderDocument
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsIncoterms "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/incoterms"
 	apiModuleRuntimesRequestsOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders"
 	apiModuleRuntimesRequestsPaymentTerms "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/payment-terms"
@@ -53,7 +53,7 @@ func (controller *OrdersDetailListForAnOrderDocumentController) Get() {
 			OrderID:   orderID,
 			OrderItem: 1,
 		},
-		OrdersPartners: &apiInputReader.OrdersPartners{
+		OrdersPartner: &apiInputReader.OrdersPartner{
 			OrderID: orderID,
 		},
 	}
@@ -465,7 +465,7 @@ func (
 ) request(
 	input apiInputReader.Orders,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := apiModuleRuntimesResponsesOrders.OrdersRes{}
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}

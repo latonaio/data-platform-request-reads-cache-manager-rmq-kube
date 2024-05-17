@@ -46,10 +46,13 @@ func CreateInspectionLotDocRequestHeaderDoc(
 	requestPram *apiInputReader.Request,
 	headerDoc apiInputReader.InspectionLotDocHeaderDoc,
 ) InspectionLotDocReq {
+	docIssuerBusinessPartner := 201 // TODO 暫定対応
+
 	req := InspectionLotDocReq{
 		HeaderDoc: HeaderDoc{
 			DocType:                  headerDoc.DocType,
-			DocIssuerBusinessPartner: requestPram.BusinessPartner,
+			DocIssuerBusinessPartner: &docIssuerBusinessPartner,
+			//DocIssuerBusinessPartner: requestPram.BusinessPartner,
 		},
 		Accepter: []string{
 			"HeaderDoc",

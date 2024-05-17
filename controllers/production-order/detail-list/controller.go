@@ -2,7 +2,7 @@ package controllersProductionOrderDetailList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
@@ -36,21 +36,27 @@ func (controller *ProductionOrderDetailListController) Get() {
 	redisKeyCategory1 := "production-order"
 	redisKeyCategory2 := "detail-list"
 	redisKeyCategory3 := productionOrder
-	userType := controller.GetString(":userType")
+	//	userType := controller.GetString(":userType")
 
+	isReleased, _ := controller.GetBool("isReleased")
+	isCancelled, _ := controller.GetBool("isCancelled")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
 
+	isReleased = false
+	isCancelled = false
 	isMarkedForDeletion = false
-	isReleased := false
 
 	productionOrderItems := apiInputReader.ProductionOrder{
 		ProductionOrderHeader: &apiInputReader.ProductionOrderHeader{
 			ProductionOrder:     productionOrder,
-			IsMarkedForDeletion: &isMarkedForDeletion,
+			IsCancelled:         &isCancelled,
 			IsReleased:          &isReleased,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 		ProductionOrderItem: &apiInputReader.ProductionOrderItem{
 			ProductionOrder:     productionOrder,
+			IsCancelled:         &isCancelled,
+			IsReleased:          &isReleased,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 	}
@@ -61,7 +67,7 @@ func (controller *ProductionOrderDetailListController) Get() {
 			redisKeyCategory1,
 			redisKeyCategory2,
 			strconv.Itoa(redisKeyCategory3),
-			userType,
+			//			userType,
 		},
 	)
 
@@ -143,7 +149,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("ProductionOrderReads Unmarshal error")
+		controller.CustomLogger.Error("createProductionOrderRequestItems Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -178,11 +184,22 @@ func (
 	controller *ProductionOrderDetailListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	plantRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	plantHeaderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	plantItemRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Item))
-	for i, v := range *plantRes.Message.Item {
-		input[i].Plant = *v.ProductionPlant
+	var input []apiModuleRuntimesRequestsPlant.General
+	for _, v := range *plantHeaderRes.Message.Header {
+		input = append(input, apiModuleRuntimesRequestsPlant.General{
+			Plant:           v.OwnerProductionPlant,
+			BusinessPartner: v.OwnerProductionPlantBusinessPartner,
+		})
+	}
+
+	for _, v := range *plantItemRes.Message.Item {
+		input = append(input, apiModuleRuntimesRequestsPlant.General{
+			Plant:           v.ProductionPlant,
+			BusinessPartner: v.ProductionPlantBusinessPartner,
+		})
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
@@ -255,13 +272,29 @@ func (
 	controller *ProductionOrderDetailListController,
 ) createBusinessPartnerRequestGeneralsByBusinessPartners(
 	requestPram *apiInputReader.Request,
-	productionOrderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	productionOrderHeaderRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
+	productionOrderItemRes *apiModuleRuntimesResponsesProductionOrder.ProductionOrderRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	generals := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*productionOrderRes.Message.Item))
+	var generals []apiModuleRuntimesRequestsBusinessPartner.General
 
-	for _, v := range *productionOrderRes.Message.Item {
+	for _, v := range *productionOrderHeaderRes.Message.Header {
 		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
-			BusinessPartner: *v.ProductionPlantBusinessPartner,
+			BusinessPartner: v.Buyer,
+		})
+		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Seller,
+		})
+	}
+
+	for _, v := range *productionOrderItemRes.Message.Item {
+		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.ProductionPlantBusinessPartner,
+		})
+		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Buyer,
+		})
+		generals = append(generals, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Seller,
 		})
 	}
 
@@ -290,7 +323,7 @@ func (
 ) request(
 	input apiInputReader.ProductionOrder,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := controller.createProductionOrderRequestHeader(
 		controller.UserInfo,
@@ -304,11 +337,13 @@ func (
 
 	businessPartnerRes := controller.createBusinessPartnerRequestGeneralsByBusinessPartners(
 		controller.UserInfo,
+		headerRes,
 		itemRes,
 	)
 
 	plantRes := controller.createPlantRequestGenerals(
 		controller.UserInfo,
+		headerRes,
 		itemRes,
 	)
 
@@ -363,19 +398,41 @@ func (
 		)
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
-		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
+		plantName := fmt.Sprintf("%s", plantMapper[strconv.Itoa(v.OwnerProductionPlantBusinessPartner)].PlantName)
+
+		var buyerName string
+
+		buyerNameMapperName := businessPartnerMapper[v.Buyer].BusinessPartnerName
+		if &buyerNameMapperName != nil {
+			buyerName = buyerNameMapperName
+		}
+
+		var sellerName string
+
+		sellerNameMapperName := businessPartnerMapper[v.Seller].BusinessPartnerName
+		if &sellerNameMapperName != nil {
+			sellerName = sellerNameMapperName
+		}
 
 		data.ProductionOrderHeaderWithItem = append(data.ProductionOrderHeaderWithItem,
 			apiOutputFormatter.ProductionOrderHeaderWithItem{
-				Product:                         v.Product,
-				ProductionOrder:                 v.ProductionOrder,
-				ProductDescription:              productDescription,
-				OwnerProductionPlant:            v.OwnerProductionPlant,
-				OwnerProductionPlantName:        plantName,
-				ProductionOrderPlannedStartDate: v.ProductionOrderPlannedStartDate,
-				ProductionOrderPlannedStartTime: v.ProductionOrderPlannedStartTime,
-				ProductionOrderPlannedEndDate:   v.ProductionOrderPlannedEndDate,
-				ProductionOrderPlannedEndTime:   v.ProductionOrderPlannedEndTime,
+				ProductionOrder:                   v.ProductionOrder,
+				ProductionOrderDate:               v.ProductionOrderDate,
+				Product:                           v.Product,
+				ProductDescription:                productDescription,
+				Buyer:                             v.Buyer,
+				BuyerName:                         buyerName,
+				Seller:                            v.Seller,
+				SellerName:                        sellerName,
+				OwnerProductionPlant:              v.OwnerProductionPlant,
+				OwnerProductionPlantName:          plantName,
+				ProductionOrderQuantityInBaseUnit: v.ProductionOrderQuantityInBaseUnit,
+				ProductionOrderQuantityInDestinationProductionUnit: v.ProductionOrderQuantityInDestinationProductionUnit,
+				ProductionOrderPlannedStartDate:                    v.ProductionOrderPlannedStartDate,
+				ProductionOrderPlannedStartTime:                    v.ProductionOrderPlannedStartTime,
+				ProductionOrderPlannedEndDate:                      v.ProductionOrderPlannedEndDate,
+				ProductionOrderPlannedEndTime:                      v.ProductionOrderPlannedEndTime,
+				InspectionLot:                                      v.InspectionLot,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},
@@ -386,29 +443,56 @@ func (
 	for _, v := range *itemRes.Message.Item {
 		img := services.ReadProductImage(
 			productDocRes,
-			*v.ProductionPlantBusinessPartner,
-			*v.Product,
+			v.ProductionPlantBusinessPartner,
+			v.Product,
 		)
 
-		plantName := fmt.Sprintf("%s", plantMapper[*v.ProductionPlant].PlantName)
-		productionPlantBusinessPartnerName := fmt.Sprintf("%s", businessPartnerMapper[*v.ProductionPlantBusinessPartner].BusinessPartnerName)
-		productDescription := fmt.Sprintf("%s", descriptionMapper[*v.Product].ProductDescription)
+		plantName := fmt.Sprintf("%s", plantMapper[v.ProductionPlant].PlantName)
+		productionPlantBusinessPartnerName := fmt.Sprintf("%s", businessPartnerMapper[v.ProductionPlantBusinessPartner].BusinessPartnerName)
+		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
+
+		var buyerName string
+
+		buyerNameMapperName := businessPartnerMapper[v.Buyer].BusinessPartnerName
+		if &buyerNameMapperName != nil {
+			buyerName = buyerNameMapperName
+		}
+
+		var sellerName string
+
+		sellerNameMapperName := businessPartnerMapper[v.Seller].BusinessPartnerName
+		if &sellerNameMapperName != nil {
+			sellerName = sellerNameMapperName
+		}
 
 		data.ProductionOrderItem = append(data.ProductionOrderItem,
 			apiOutputFormatter.ProductionOrderItem{
-				ProductionOrderItem:                v.ProductionOrderItem,
-				MRPArea:                            v.MRPArea,
-				Product:                            *v.Product,
-				ProductDescription:                 productDescription,
-				ProductionPlantBusinessPartner:     *v.ProductionPlantBusinessPartner,
-				ProductionPlantBusinessPartnerName: productionPlantBusinessPartnerName,
-				ProductionPlantName:                plantName,
-				ProductionOrderQuantityInBaseUnit:  *v.ProductionOrderQuantityInBaseUnit,
-				ConfirmedYieldQuantityInBaseUnit:   v.ConfirmedYieldQuantityInBaseUnit,
-				IsReleased:                         v.IsReleased,
-				IsMarkedForDeletion:                v.IsMarkedForDeletion,
-				IsPartiallyConfirmed:               v.IsPartiallyConfirmed,
-				IsConfirmed:                        v.IsConfirmed,
+				ProductionOrder:                         v.ProductionOrder,
+				ProductionOrderItem:                     v.ProductionOrderItem,
+				MRPArea:                                 v.MRPArea,
+				Product:                                 v.Product,
+				ProductDescription:                      productDescription,
+				Buyer:                                   v.Buyer,
+				BuyerName:                               buyerName,
+				Seller:                                  v.Seller,
+				SellerName:                              sellerName,
+				ProductBaseUnit:                         v.ProductBaseUnit,
+				ProductProductionUnit:                   v.ProductProductionUnit,
+				ProductionPlantBusinessPartner:          v.ProductionPlantBusinessPartner,
+				ProductionPlantBusinessPartnerName:      productionPlantBusinessPartnerName,
+				ProductionPlantName:                     plantName,
+				ProductionOrderQuantityInBaseUnit:       v.ProductionOrderQuantityInBaseUnit,
+				ProductionOrderQuantityInProductionUnit: v.ProductionOrderQuantityInProductionUnit,
+				ProductionOrderPlannedStartDate:         v.ProductionOrderPlannedStartDate,
+				ProductionOrderPlannedStartTime:         v.ProductionOrderPlannedStartTime,
+				ProductionOrderPlannedEndDate:           v.ProductionOrderPlannedEndDate,
+				ProductionOrderPlannedEndTime:           v.ProductionOrderPlannedEndTime,
+				ConfirmedYieldQuantityInBaseUnit:        v.ConfirmedYieldQuantityInBaseUnit,
+				InspectionLot:                           v.InspectionLot,
+				IsReleased:                              v.IsReleased,
+				IsMarkedForDeletion:                     v.IsMarkedForDeletion,
+				IsPartiallyConfirmed:                    v.IsPartiallyConfirmed,
+				IsConfirmed:                             v.IsConfirmed,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},

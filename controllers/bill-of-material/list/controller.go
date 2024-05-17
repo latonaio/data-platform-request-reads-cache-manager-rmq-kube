@@ -2,7 +2,7 @@ package controllersBillOfMaterialList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material"
+	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material/bill-of-material"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
@@ -221,14 +221,14 @@ func (
 ) request(
 	input apiInputReader.BillOfMaterial,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := controller.createBillOfMaterialRequestHeaderByOwnerProductionPlantBP(
 		controller.UserInfo,
 		input,
 	)
 
-	plantlRes := controller.createPlantRequestGenerals(
+	plantRes := controller.createPlantRequestGenerals(
 		controller.UserInfo,
 		headerRes,
 	)
@@ -244,7 +244,7 @@ func (
 
 	controller.fin(
 		headerRes,
-		plantlRes,
+		plantRes,
 		productDescByBPRes,
 		productDocRes,
 	)
@@ -254,13 +254,13 @@ func (
 	controller *BillOfMaterialListController,
 ) fin(
 	headerRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
-	plantlRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
 	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 ) {
 
 	plantMapper := services.PlantMapper(
-		plantlRes.Message.General,
+		plantRes.Message.General,
 	)
 
 	descriptionMapper := services.ProductDescByBPMapper(
@@ -281,11 +281,11 @@ func (
 
 		data.BillOfMaterialHeader = append(data.BillOfMaterialHeader,
 			apiOutputFormatter.BillOfMaterialHeader{
-				Product:                  v.Product,
 				BillOfMaterial:           v.BillOfMaterial,
+				Product:                  v.Product,
 				ProductDescription:       &productDescription,
 				OwnerProductionPlant:     v.OwnerProductionPlant,
-				OwnerProductionPlantName: &plantName,
+				OwnerProductionPlantName: plantName,
 				ValidityStartDate:        v.ValidityStartDate,
 				IsMarkedForDeletion:      v.IsMarkedForDeletion,
 				Images: apiOutputFormatter.Images{

@@ -29,10 +29,13 @@ type GeneralDoc struct {
 func CreateProductMasterDocRequestGeneralDoc(
 	requestPram *apiInputReader.Request,
 ) ProductMasterDocReq {
+	docIssuerBusinessPartner := 201 // TODO 暫定対応
+
 	req := ProductMasterDocReq{
 		GeneralDoc: GeneralDoc{
 			DocType:                  "IMAGE",
-			DocIssuerBusinessPartner: requestPram.BusinessPartner,
+			DocIssuerBusinessPartner: &docIssuerBusinessPartner,
+			//DocIssuerBusinessPartner: requestPram.BusinessPartner,
 		},
 		Accepter: []string{},
 	}

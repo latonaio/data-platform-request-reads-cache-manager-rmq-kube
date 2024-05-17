@@ -135,7 +135,7 @@ func (
 ) request(
 	input apiInputReader.ProductMaster,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	bGeneralRes := controller.createProductMasterRequestGeneral(
 		controller.UserInfo,

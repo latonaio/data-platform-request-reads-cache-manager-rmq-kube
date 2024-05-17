@@ -2,7 +2,7 @@ package controllersDeliveryDocumentDetailListForADeliveryInstruction
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/delivery-document/delivery-document"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProject "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/project"
@@ -290,7 +290,7 @@ func (
 ) request(
 	input apiInputReader.DeliveryDocument,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := apiModuleRuntimesResponsesDeliveryDocument.DeliveryDocumentRes{}
 	businessPartnerRes := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}

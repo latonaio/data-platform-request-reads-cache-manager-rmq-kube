@@ -83,6 +83,7 @@ type Header struct {
 	IsMarkedForDeletion              *bool     `json:"IsMarkedForDeletion"`
 	Item                             []Item    `json:"Item"`
 	Partner                          []Partner `json:"Partner"`
+	Address                          []Address `json:"Address"`
 }
 
 type Item struct {
@@ -267,7 +268,7 @@ type ItemScheduleLine struct {
 	SupplyChainRelationshipID                       *int     `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipStockConfPlantID         *int     `json:"SupplyChainRelationshipStockConfPlantID"`
 	Product                                         *string  `json:"Product"`
-	StockConfirmationBussinessPartner               *int     `json:"StockConfirmationBussinessPartner"`
+	StockConfirmationBusinessPartner                *int     `json:"StockConfirmationBusinessPartner"`
 	StockConfirmationPlant                          *string  `json:"StockConfirmationPlant"`
 	StockConfirmationPlantTimeZone                  *string  `json:"StockConfirmationPlantTimeZone"`
 	StockConfirmationPlantBatch                     *string  `json:"StockConfirmationPlantBatch"`
@@ -385,7 +386,7 @@ func CreateOrdersRequestHeaderBySeller(
 
 func CreateOrdersRequestPartners(
 	requestPram *apiInputReader.Request,
-	ordersPartners *apiInputReader.OrdersPartners,
+	ordersPartners *apiInputReader.OrdersPartner,
 ) OrdersReq {
 	req := OrdersReq{
 		Header: Header{
@@ -398,6 +399,26 @@ func CreateOrdersRequestPartners(
 		},
 		Accepter: []string{
 			"Partners",
+		},
+	}
+	return req
+}
+
+func CreateOrdersRequestAddresses(
+	requestPram *apiInputReader.Request,
+	ordersAddresses *apiInputReader.OrdersAddress,
+) OrdersReq {
+	req := OrdersReq{
+		Header: Header{
+			OrderID: ordersAddresses.OrderID,
+			Address: []Address{
+				{
+					//					IsMarkedForDeletion:           ordersItems.IsMarkedForDeletion,
+				},
+			},
+		},
+		Accepter: []string{
+			"Addresses",
 		},
 	}
 	return req
@@ -596,8 +617,17 @@ func OrdersReads(
 	if accepter == "Partners" {
 		request = CreateOrdersRequestPartners(
 			requestPram,
-			&apiInputReader.OrdersPartners{
-				OrderID: input.OrdersPartners.OrderID,
+			&apiInputReader.OrdersPartner{
+				OrderID: input.OrdersPartner.OrderID,
+			},
+		)
+	}
+	
+	if accepter == "Addresses" {
+		request = CreateOrdersRequestAddresses(
+			requestPram,
+			&apiInputReader.OrdersAddress{
+				OrderID: input.OrdersAddress.OrderID,
 			},
 		)
 	}

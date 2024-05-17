@@ -205,7 +205,7 @@ func (
 ) request(
 	input apiInputReader.ProductStock,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	productStockRes := controller.createProductStockRequestProductStock(
 		controller.UserInfo,

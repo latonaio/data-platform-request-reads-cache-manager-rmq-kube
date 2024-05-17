@@ -77,7 +77,8 @@ func CreatePaymentTermsRequestText(
 			IsMarkedForDeletion: &isMarkedForDeletion,
 			Text: []Text{
 				{
-					Language: "JA", // TODO 暫定で固定値を設定
+					Language:            "JA", // TODO 暫定で固定値を設定
+					IsMarkedForDeletion: &isMarkedForDeletion,
 				},
 			},
 		},
@@ -99,6 +100,7 @@ func CreatePaymentTermsRequestTexts(
 			PaymentTerms: input.PaymentTerms,
 			Text: []Text{
 				{
+					Language:            "JA", // TODO 暫定で固定値を設定
 					IsMarkedForDeletion: &isMarkedForDeletion,
 				},
 			},

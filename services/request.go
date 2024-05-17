@@ -102,14 +102,14 @@ func Request(
 		return nil
 	}
 
-	if response.StatusCode != 200 && response.StatusCode != 201 {
-		HandleError(
-			controller,
-			responseBody,
-			&response.StatusCode,
-		)
-		return nil
-	}
+	//if response.StatusCode != 200 && response.StatusCode != 201 {
+	//	HandleError(
+	//		controller,
+	//		responseBody,
+	//		&response.StatusCode,
+	//	)
+	//	return nil
+	//}
 
 	return responseBody
 }
@@ -185,12 +185,16 @@ func HandleError(
 	l := logger.NewLogger()
 	ctx := controller.Ctx
 
-	responseData := ResponseData{}
+	responseData := ResponseData{
+		Message: fmt.Sprintf("%v", message),
+	}
 
 	if statusCode == nil {
 		ctx.Output.SetStatus(500)
+		responseData.StatusCode = 500
 	} else {
 		ctx.Output.SetStatus(*statusCode)
+		responseData.StatusCode = *statusCode
 	}
 
 	if msg, ok := message.([]byte); ok {
@@ -223,6 +227,12 @@ func HandleError(
 
 	controller.Data["json"] = responseData
 	controller.ServeJSON()
+
+	if statusCode != nil {
+		controller.Abort(fmt.Sprintf("%d", &statusCode))
+	} else {
+		controller.Abort("500")
+	}
 }
 
 func Respond(

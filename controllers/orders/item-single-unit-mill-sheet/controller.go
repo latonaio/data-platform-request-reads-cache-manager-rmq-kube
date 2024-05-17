@@ -2,7 +2,7 @@ package controllersOrdersItemSingleUnitMillSheet
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsMillSheetPdf "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/function-mill-sheet-pdf"
 	apiModuleRuntimesRequestsInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/inspection-lot/inspection-lot"
 	apiModuleRuntimesRequestsOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders"
@@ -492,7 +492,7 @@ func (
 ) request(
 	input apiInputReader.Orders,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	ordersHeaderRes := *controller.createOrdersRequestHeader(
 		controller.UserInfo,

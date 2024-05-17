@@ -43,6 +43,8 @@ func CreateOrdersDocRequestItemDoc(
 	requestPram *apiInputReader.Request,
 	itemDoc apiInputReader.OrdersDocItemDoc,
 ) OrdersDocReq {
+	docIssuerBusinessPartner := 201 // TODO 暫定対応
+
 	req := OrdersDocReq{
 		HeaderDoc: HeaderDoc{
 			OrderID: &itemDoc.OrderID,
@@ -50,7 +52,8 @@ func CreateOrdersDocRequestItemDoc(
 				OrderID:                  &itemDoc.OrderID,
 				OrderItem:                itemDoc.OrderItem,
 				DocType:                  itemDoc.DocType,
-				DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
+				DocIssuerBusinessPartner: &docIssuerBusinessPartner,
+				//DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
 			},
 		},
 		Accepter: []string{

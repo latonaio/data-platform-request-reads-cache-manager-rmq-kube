@@ -2,11 +2,13 @@ package controllersBillOfMaterialDetailList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material"
+	apiModuleRuntimesRequestsBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/bill-of-material/bill-of-material"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
 	apiModuleRuntimesRequestsProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master"
 	apiModuleRuntimesRequestsProductMasterDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/product-master/product-master-doc"
 	apiModuleRuntimesResponsesBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
+	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -34,9 +36,9 @@ func (controller *BillOfMaterialDetailListController) Get() {
 	redisKeyCategory1 := "bill-of-material"
 	redisKeyCategory2 := "detail-list"
 	redisKeyCategory3 := billOfMaterial
-	userType := controller.GetString(":userType")
 
-	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
+	isMarkedForDeletion := false
 
 	billOfMaterialItems := apiInputReader.BillOfMaterial{
 		BillOfMaterialHeader: &apiInputReader.BillOfMaterialHeader{
@@ -54,7 +56,6 @@ func (controller *BillOfMaterialDetailListController) Get() {
 			redisKeyCategory1,
 			redisKeyCategory2,
 			strconv.Itoa(redisKeyCategory3),
-			userType,
 		},
 	)
 
@@ -171,11 +172,12 @@ func (
 	controller *BillOfMaterialDetailListController,
 ) createPlantRequestGenerals(
 	requestPram *apiInputReader.Request,
-	plantRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	billOfMaterialRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 ) *apiModuleRuntimesResponsesPlant.PlantRes {
-	input := make([]apiModuleRuntimesRequestsPlant.General, len(*plantRes.Message.Item))
-	for i, v := range *plantRes.Message.Item {
-		input[i].Plant = v.ProductionPlant
+	input := make([]apiModuleRuntimesRequestsPlant.General, len(*billOfMaterialRes.Message.Header))
+	for i, v := range *billOfMaterialRes.Message.Header {
+		input[i].Plant = v.OwnerProductionPlant
+		input[i].BusinessPartner = v.OwnerProductionPlantBusinessPartner
 	}
 
 	responseJsonData := apiModuleRuntimesResponsesPlant.PlantRes{}
@@ -246,10 +248,57 @@ func (
 
 func (
 	controller *BillOfMaterialDetailListController,
+) createBusinessPartnerRequest(
+	requestPram *apiInputReader.Request,
+	billOfMaterialHeaderRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+	billOfMaterialItemRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
+) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
+	var input []apiModuleRuntimesRequestsBusinessPartner.General
+
+	for _, v := range *billOfMaterialHeaderRes.Message.Header {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Buyer,
+		})
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.Seller,
+		})
+	}
+
+	for _, v := range *billOfMaterialItemRes.Message.Item {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.ComponentProductBuyer,
+		})
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner: v.ComponentProductSeller,
+		})
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("BusinessPartnerGeneralReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *BillOfMaterialDetailListController,
 ) request(
 	input apiInputReader.BillOfMaterial,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := controller.createBillOfMaterialRequestHeader(
 		controller.UserInfo,
@@ -263,12 +312,18 @@ func (
 
 	plantRes := controller.createPlantRequestGenerals(
 		controller.UserInfo,
-		itemRes,
+		headerRes,
 	)
 
 	productDescByBPRes := controller.createProductMasterRequestProductDescByBP(
 		controller.UserInfo,
 		headerRes,
+	)
+
+	businessPartnerRes := *controller.createBusinessPartnerRequest(
+		controller.UserInfo,
+		headerRes,
+		itemRes,
 	)
 
 	productDocRes := controller.createProductMasterDocRequest(
@@ -279,6 +334,7 @@ func (
 		headerRes,
 		itemRes,
 		plantRes,
+		&businessPartnerRes,
 		productDescByBPRes,
 		productDocRes,
 	)
@@ -290,9 +346,13 @@ func (
 	headerRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 	itemRes *apiModuleRuntimesResponsesBillOfMaterial.BillOfMaterialRes,
 	plantRes *apiModuleRuntimesResponsesPlant.PlantRes,
+	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	productDescByBPRes *apiModuleRuntimesResponsesProductMaster.ProductMasterRes,
 	productDocRes *apiModuleRuntimesResponsesProductMaster.ProductMasterDocRes,
 ) {
+	businessPartnerMapper := services.BusinessPartnerNameMapper(
+		businessPartnerRes,
+	)
 
 	plantMapper := services.PlantMapper(
 		plantRes.Message.General,
@@ -312,16 +372,24 @@ func (
 		)
 
 		productDescription := fmt.Sprintf("%s", descriptionMapper[v.Product].ProductDescription)
-		plantName := fmt.Sprintf("%s", plantMapper[v.OwnerProductionPlant].PlantName)
+		plantName := fmt.Sprintf("%s", plantMapper[strconv.Itoa(v.OwnerProductionPlantBusinessPartner)].PlantName)
 
-		data.BillOfMaterialHeaderWithItem = append(data.BillOfMaterialHeaderWithItem,
-			apiOutputFormatter.BillOfMaterialHeaderWithItem{
-				Product:                  v.Product,
-				BillOfMaterial:           v.BillOfMaterial,
-				ProductDescription:       productDescription,
-				OwnerProductionPlant:     v.OwnerProductionPlant,
-				OwnerProductionPlantName: plantName,
-				ValidityStartDate:        v.ValidityStartDate,
+		data.BillOfMaterialHeader = append(data.BillOfMaterialHeader,
+			apiOutputFormatter.BillOfMaterialHeader{
+				BillOfMaterial:                          v.BillOfMaterial,
+				Product:                                 v.Product,
+				ProductDescription:                      &productDescription,
+				Seller:                                  v.Seller,
+				SellerName:                              businessPartnerMapper[v.Seller].BusinessPartnerName,
+				Buyer:                                   v.Buyer,
+				BuyerName:                               businessPartnerMapper[v.Buyer].BusinessPartnerName,
+				OwnerProductionPlant:                    v.OwnerProductionPlant,
+				OwnerProductionPlantName:                plantName,
+				ProductBaseUnit:                         v.ProductBaseUnit,
+				ProductProductionUnit:                   v.ProductProductionUnit,
+				ProductStandardQuantityInBaseUnit:       v.ProductStandardQuantityInBaseUnit,
+				ProductStandardQuantityInProductionUnit: v.ProductStandardQuantityInProductionUnit,
+				ValidityStartDate:                       v.ValidityStartDate,
 				Images: apiOutputFormatter.Images{
 					Product: img,
 				},
@@ -331,18 +399,33 @@ func (
 
 	for _, v := range *itemRes.Message.Item {
 		plantName := fmt.Sprintf("%s", plantMapper[v.StockConfirmationPlant].PlantName)
+		img := services.ReadProductImage(
+			productDocRes,
+			v.ProductionPlantBusinessPartner,
+			v.Product,
+		)
 
 		data.BillOfMaterialItem = append(data.BillOfMaterialItem,
 			apiOutputFormatter.BillOfMaterialItem{
-				ComponentProduct:                           v.ComponentProduct,
-				BillOfMaterialItem:                         v.BillOfMaterialItem,
-				BillOfMaterialItemText:                     *v.BillOfMaterialItemText,
-				StockConfirmationPlant:                     &v.StockConfirmationPlant,
-				StockConfirmationPlantName:                 &plantName,
-				ComponentProductStandardQuantityInBaseUnit: &v.ComponentProductStandardQuantityInBaseUnit,
-				ComponentProductBaseUnit:                   &v.ComponentProductBaseUnit,
-				ValidityStartDate:                          v.ValidityStartDate,
-				IsMarkedForDeletion:                        v.IsMarkedForDeletion,
+				BillOfMaterial:                                 v.BillOfMaterial,
+				BillOfMaterialItem:                             v.BillOfMaterialItem,
+				ComponentProduct:                               v.ComponentProduct,
+				ComponentProductBuyer:                          v.ComponentProductBuyer,
+				ComponentProductBuyerName:                      businessPartnerMapper[v.ComponentProductBuyer].BusinessPartnerName,
+				ComponentProductSeller:                         v.ComponentProductSeller,
+				ComponentProductSellerName:                     businessPartnerMapper[v.ComponentProductSeller].BusinessPartnerName,
+				StockConfirmationPlant:                         v.StockConfirmationPlant,
+				StockConfirmationPlantName:                     plantName,
+				ComponentProductStandardQuantityInBaseUnit:     v.ComponentProductStandardQuantityInBaseUnit,
+				ComponentProductStandardQuantityInDeliveryUnit: v.ComponentProductStandardQuantityInDeliveryUnit,
+				ComponentProductBaseUnit:                       v.ComponentProductBaseUnit,
+				ComponentProductDeliveryUnit:                   v.ComponentProductDeliveryUnit,
+				BillOfMaterialItemText:                         v.BillOfMaterialItemText,
+				ValidityStartDate:                              v.ValidityStartDate,
+				IsMarkedForDeletion:                            v.IsMarkedForDeletion,
+				Images: apiOutputFormatter.Images{
+					Product: img,
+				},
 			},
 		)
 	}

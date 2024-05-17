@@ -325,8 +325,6 @@ func CreateProductMasterRequestGenerals(
 
 	req := ProductMasterReq{
 		General: General{
-			//IsMarkedForDeletion: requestPram.IsMarkedForDeletion,
-			//IsMarkedForDeletion: &isMarkedForDeletion,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
 		Accepter: []string{

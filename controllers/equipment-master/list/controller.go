@@ -132,7 +132,7 @@ func (
 ) request(
 	input apiInputReader.EquipmentMaster,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	gsRes := controller.createEquipmentMasterRequestGenerals(
 		controller.UserInfo,

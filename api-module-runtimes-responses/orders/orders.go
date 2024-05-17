@@ -233,7 +233,7 @@ type ItemScheduleLine struct {
 	SupplyChainRelationshipID                       int      `json:"SupplyChainRelationshipID"`
 	SupplyChainRelationshipStockConfPlantID         int      `json:"SupplyChainRelationshipStockConfPlantID"`
 	Product                                         string   `json:"Product"`
-	StockConfirmationBussinessPartner               int      `json:"StockConfirmationBussinessPartner"`
+	StockConfirmationBusinessPartner                int      `json:"StockConfirmationBusinessPartner"`
 	StockConfirmationPlant                          string   `json:"StockConfirmationPlant"`
 	StockConfirmationPlantTimeZone                  *string  `json:"StockConfirmationPlantTimeZone"`
 	StockConfirmationPlantBatch                     *string  `json:"StockConfirmationPlantBatch"`

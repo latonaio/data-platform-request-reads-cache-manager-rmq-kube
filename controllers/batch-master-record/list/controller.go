@@ -106,7 +106,7 @@ func (
 ) request(
 	input apiInputReader.BatchMasterRecord,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := apiModuleRuntimesResponsesBatchMasterRecord.BatchMasterRecordRes{}
 

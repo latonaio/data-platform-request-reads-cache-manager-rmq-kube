@@ -43,6 +43,8 @@ func CreateDeliveryDocumentDocRequestItemDoc(
 	requestPram *apiInputReader.Request,
 	itemDoc apiInputReader.DeliveryDocumentDocItemDoc,
 ) DeliveryDocumentDocReq {
+	docIssuerBusinessPartner := 201 // TODO 暫定対応
+
 	req := DeliveryDocumentDocReq{
 		HeaderDoc: HeaderDoc{
 			DeliveryDocument: &itemDoc.DeliveryDocument,
@@ -50,7 +52,8 @@ func CreateDeliveryDocumentDocRequestItemDoc(
 				DeliveryDocument:         &itemDoc.DeliveryDocument,
 				DeliveryDocumentItem:     itemDoc.DeliveryDocumentItem,
 				DocType:                  itemDoc.DocType,
-				DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
+				DocIssuerBusinessPartner: &docIssuerBusinessPartner,
+				//DocIssuerBusinessPartner: itemDoc.DocIssuerBusinessPartner,
 			},
 		},
 		Accepter: []string{

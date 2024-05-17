@@ -2,7 +2,7 @@ package controllersOrdersItemScheduleLine
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders"
 	apiModuleRuntimesRequestsOrdersDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/orders/orders-doc"
 	apiModuleRuntimesRequestsPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/plant"
@@ -382,7 +382,7 @@ func (
 ) request(
 	input apiInputReader.Orders,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	ordersHeaderRes := *controller.createOrdersRequestHeader(
 		controller.UserInfo,
@@ -505,8 +505,8 @@ func (
 				RequestedDeliveryTime:               v.RequestedDeliveryTime,
 				ScheduleLineOrderQuantityInBaseUnit: v.ScheduleLineOrderQuantityInBaseUnit,
 				ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit: v.ConfirmedOrderQuantityByPDTAvailCheckInBaseUnit,
-				StockConfirmationBusinessPartner:                v.StockConfirmationBussinessPartner,
-				StockConfirmationBusinessPartnerName:            businessPartnerMapper[v.StockConfirmationBussinessPartner].BusinessPartnerName,
+				StockConfirmationBusinessPartner:                v.StockConfirmationBusinessPartner,
+				StockConfirmationBusinessPartnerName:            businessPartnerMapper[v.StockConfirmationBusinessPartner].BusinessPartnerName,
 				StockConfirmationPlant:                          v.StockConfirmationPlant,
 				StockConfirmationPlantName:                      stockConfirmationPlantName,
 				DeliveredQuantityInBaseUnit:                     v.DeliveredQuantityInBaseUnit,

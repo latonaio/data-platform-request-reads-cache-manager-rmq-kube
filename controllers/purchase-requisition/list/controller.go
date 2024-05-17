@@ -2,7 +2,7 @@ package controllersPurchaseRequisitionList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsPurchaseRequisition "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/purchase-requisition"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesPurchaseRequisition "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/purchase-requisition"
@@ -160,7 +160,7 @@ func (
 ) request(
 	input apiInputReader.PurchaseRequisition,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	headerRes := apiModuleRuntimesResponsesPurchaseRequisition.PurchaseRequisitionRes{}
 

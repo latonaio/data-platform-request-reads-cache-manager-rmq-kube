@@ -2,7 +2,7 @@ package controllersCertificateAuthorityChainWithUsageControlChain
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsCertificateAuthorityChainWithUsageControlChain "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/certificate-authority-chain-with-usage-control-chain/certificate-authority-chain-with-usage-control-chain"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesCertificateAuthorityChainWithUsageControlChain "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/certificate-authority-chain-with-usage-control-chain"
@@ -191,7 +191,7 @@ func (
 ) request(
 	input apiInputReader.CertificateAuthorityChainWithUsageControlChainGlobal,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	certificateAuthorityChainRes := *controller.createCertificateAuthorityChainWithUsageControlChainRequestCertificateAuthorityChain(
 		controller.UserInfo,

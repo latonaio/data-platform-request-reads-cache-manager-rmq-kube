@@ -2,7 +2,7 @@ package controllersInspectionLotList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner"
+	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
 	apiModuleRuntimesRequestsInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/inspection-lot/inspection-lot"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/inspection-lot"
@@ -22,11 +22,6 @@ type InspectionLotListController struct {
 	UserInfo     *apiInputReader.Request
 	CustomLogger *logger.Logger
 }
-
-//const (
-//	buyer  = "buyer"
-//	seller = "seller"
-//)
 
 func (controller *InspectionLotListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
@@ -120,6 +115,33 @@ func (
 
 func (
 	controller *InspectionLotListController,
+) createInspectionLotRequestHeadersExcludeRoleManufacturer(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.InspectionLot,
+) *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes {
+	responseJsonData := apiModuleRuntimesResponsesInspectionLot.InspectionLotRes{}
+	responseBody := apiModuleRuntimesRequestsInspectionLot.InspectionLotReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"HeadersExcludeRoleManufacturer",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("InspectionLotHeaderReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *InspectionLotListController,
 ) createInspectionLotRequestPartners(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.InspectionLot,
@@ -147,11 +169,38 @@ func (
 
 func (
 	controller *InspectionLotListController,
+) createInspectionLotRequestPartnersHeadersExcludeRoleManufacturer(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.InspectionLot,
+) *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes {
+	responseJsonData := apiModuleRuntimesResponsesInspectionLot.InspectionLotRes{}
+	responseBody := apiModuleRuntimesRequestsInspectionLot.InspectionLotReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"PartnersExcludeRoleManufacturer",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("InspectionLotPartnersReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *InspectionLotListController,
 ) createBusinessPartnerRequest(
 	requestPram *apiInputReader.Request,
 	partnersRes *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
-	input := make([]apiModuleRuntimesRequestsBusinessPartner.General, len(*partnersRes.Message.Partner))
+	var input []apiModuleRuntimesRequestsBusinessPartner.General
 
 	for _, v := range *partnersRes.Message.Partner {
 		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
@@ -181,20 +230,80 @@ func (
 
 func (
 	controller *InspectionLotListController,
+) createBusinessPartnerRequestRole(
+	requestPram *apiInputReader.Request,
+) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
+	var input apiModuleRuntimesRequestsBusinessPartner.Role
+
+	input = apiModuleRuntimesRequestsBusinessPartner.Role{
+		BusinessPartner: *requestPram.BusinessPartner,
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsRole(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("BusinessPartnerGeneralReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *InspectionLotListController,
 ) request(
 	input apiInputReader.InspectionLot,
 ) {
-	defer services.Recover(controller.CustomLogger)
+	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
-	headersRes := *controller.createInspectionLotRequestHeaders(
+	var headersRes apiModuleRuntimesResponsesInspectionLot.InspectionLotRes
+	var partnersRes apiModuleRuntimesResponsesInspectionLot.InspectionLotRes
+
+	businessPartnerRoleRes := *controller.createBusinessPartnerRequestRole(
 		controller.UserInfo,
-		input,
 	)
 
-	partnersRes := *controller.createInspectionLotRequestPartners(
-		controller.UserInfo,
-		input,
-	)
+	var isIncludedUserRoleManufacture bool
+
+	for _, v := range *businessPartnerRoleRes.Message.Role {
+		if v.BusinessPartnerRole == "MANUFACTURER" {
+			isIncludedUserRoleManufacture = true
+			break
+		} else {
+			isIncludedUserRoleManufacture = false
+		}
+	}
+
+	// ログインユーザのBPロールがMANUFACTURERを含むなら全件表示され、含まないならMANUFACTURERの行が表示されない
+	if isIncludedUserRoleManufacture {
+		headersRes = *controller.createInspectionLotRequestHeaders(
+			controller.UserInfo,
+			input,
+		)
+		partnersRes = *controller.createInspectionLotRequestPartners(
+			controller.UserInfo,
+			input,
+		)
+	} else {
+		headersRes = *controller.createInspectionLotRequestHeadersExcludeRoleManufacturer(
+			controller.UserInfo,
+			input,
+		)
+		partnersRes = *controller.createInspectionLotRequestPartnersHeadersExcludeRoleManufacturer(
+			controller.UserInfo,
+			input,
+		)
+	}
 
 	businessPartnerRes := *controller.createBusinessPartnerRequest(
 		controller.UserInfo,
@@ -205,6 +314,7 @@ func (
 		&headersRes,
 		&partnersRes,
 		&businessPartnerRes,
+		&businessPartnerRoleRes,
 	)
 }
 
@@ -214,6 +324,7 @@ func (
 	headersRes *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes,
 	partnersRes *apiModuleRuntimesResponsesInspectionLot.InspectionLotRes,
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	businessPartnerRoleRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
 	businessPartnerMapper := services.BusinessPartnerNameMapper(
 		businessPartnerRes,
@@ -227,21 +338,12 @@ func (
 	data := apiOutputFormatter.InspectionLot{}
 
 	for _, v := range *headersRes.Message.Header {
-		//partnerFunction := inspectionLotListMapper[v.InspectionLot].PartnerFunction
-		//businessPartner := inspectionLotListMapper[v.InspectionLot].BusinessPartner
-		//businessPartnerName := inspectionLotListMapper[v.InspectionLot].BusinessPartnerName
 
 		data.InspectionLotHeader = append(data.InspectionLotHeader,
 			apiOutputFormatter.InspectionLotHeader{
 				InspectionLot:     v.InspectionLot,
 				InspectionLotDate: v.InspectionLotDate,
 				Product:           v.Product,
-				//PartnerFunction:     &partnerFunction,
-				//BusinessPartner:     &businessPartner,
-				//BusinessPartnerName: businessPartnerName,
-				//Images: apiOutputFormatter.Images{
-				//	Product: img,
-				//},
 			},
 		)
 	}

@@ -3,8 +3,10 @@ package routers
 import (
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
 	"data-platform-request-reads-cache-manager-rmq-kube/config"
+	controllersAfterLoginUserInfo "data-platform-request-reads-cache-manager-rmq-kube/controllers/after-login/user-info"
 	controllersBatchMasterRecordList "data-platform-request-reads-cache-manager-rmq-kube/controllers/batch-master-record/list"
 	controllersBillOfMaterialDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/detail-list"
+	controllersBillOfMaterialHeaderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/header-single-unit"
 	controllersBillOfMaterialList "data-platform-request-reads-cache-manager-rmq-kube/controllers/bill-of-material/list"
 	controllersBusinessPartnerDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/detail-general"
 	controllersBusinessPartnerList "data-platform-request-reads-cache-manager-rmq-kube/controllers/business-partner/list"
@@ -16,14 +18,20 @@ import (
 	controllersDeliveryDocumentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/delivery-document/list"
 	controllersEquipmentMasterDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/detail-general"
 	controllersEquipmentMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/equipment-master/list"
+	controllersEventCreatesSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/event/creates-single-unit"
+	controllersEventSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/event/single-unit"
 	controllersInspectionLotComponentComposition "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/component-composition"
 	controllersInspectionLotSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/header-single-unit"
+	controllersInspectionLotSingleUnitMillBoxInterface "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/header-single-unit-mill-box-interface"
 	controllersInspectionLotSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/header-single-unit-mill-sheet"
 	controllersInspectionLotInspection "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/inspection"
 	controllersInspectionLotList "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/list"
 	controllersInspectionLotSpecDetail "data-platform-request-reads-cache-manager-rmq-kube/controllers/inspection-lot/spec-detail"
 	controllersInvoiceDocumentDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/invoice-document/detail-list"
 	controllersInvoiceDocumentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/invoice-document/list"
+	controllersContentListForPointUsers "data-platform-request-reads-cache-manager-rmq-kube/controllers/lists-for-point-users/content-list"
+	controllersLoginAuthenticator "data-platform-request-reads-cache-manager-rmq-kube/controllers/login/authenticator"
+	controllersUserInfoCreates "data-platform-request-reads-cache-manager-rmq-kube/controllers/login/user-info-creates"
 	controllersOperationsDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/detail-list"
 	controllersOperationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/operations/list"
 	controllersOrdersDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/detail-list"
@@ -34,8 +42,15 @@ import (
 	controllersOrdersSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit"
 	controllersOrdersItemSingleUnitMillSheet "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/item-single-unit-mill-sheet"
 	controllersOrdersList "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/list"
+	controllersOrdersPartnersWithAddress "data-platform-request-reads-cache-manager-rmq-kube/controllers/orders/partners-with-address"
 	controllersPlantDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/detail-list"
 	controllersPlantList "data-platform-request-reads-cache-manager-rmq-kube/controllers/plant/list"
+	controllersAfterPointAcquisition "data-platform-request-reads-cache-manager-rmq-kube/controllers/point-acquisition/after-point-acquisition"
+	controllersMessageList "data-platform-request-reads-cache-manager-rmq-kube/controllers/message/list"
+	controllersMessageInteractionWithFriend "data-platform-request-reads-cache-manager-rmq-kube/controllers/message/interaction-with-friend"
+	controllersPointBalanceSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/point-balance/single-unit"
+	controllersPointTransactionList "data-platform-request-reads-cache-manager-rmq-kube/controllers/point-transaction/list"
+	controllersPointTransactionSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/point-transaction/single-unit"
 	controllersPriceMasterDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/price-master/detail-list"
 	controllersPriceMasterList "data-platform-request-reads-cache-manager-rmq-kube/controllers/price-master/list"
 	controllersProductMasterDetailBPPlant "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-master/detail-bp-plant"
@@ -51,11 +66,16 @@ import (
 	controllersProductStockSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/product-stock/product-stock-single-unit"
 	controllersProductionOrderConfHeaderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order-conf/header-single-unit"
 	controllersProductionOrderDetailList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/detail-list"
+	controllersProductionOrderHeaderSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/header-single-unit"
+	controllersProductionOrderItemComponentList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-component-list"
 	controllersProductionOrderItemOperationList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-operation-list"
 	controllersProductionOrderItemSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/item-single-unit"
 	controllersProductionOrderList "data-platform-request-reads-cache-manager-rmq-kube/controllers/production-order/list"
 	controllersPurchaseRequisitionList "data-platform-request-reads-cache-manager-rmq-kube/controllers/purchase-requisition/list"
 	controllersQuotationsList "data-platform-request-reads-cache-manager-rmq-kube/controllers/quotations/list"
+	controllersSiteList "data-platform-request-reads-cache-manager-rmq-kube/controllers/site/list"
+	controllersSiteCreatesSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/site/creates-single-unit"
+	controllersSiteSingleUnit "data-platform-request-reads-cache-manager-rmq-kube/controllers/site/single-unit"
 	controllersStorageBinList "data-platform-request-reads-cache-manager-rmq-kube/controllers/storage-bin/list"
 	controllersSupplyChainRelationshipDetailGeneral "data-platform-request-reads-cache-manager-rmq-kube/controllers/supply-chain-relationship/detail-general"
 	controllersSupplyChainRelationshipList "data-platform-request-reads-cache-manager-rmq-kube/controllers/supply-chain-relationship/list"
@@ -77,6 +97,81 @@ func init() {
 	_ = cache.NewCache(conf.REDIS.Address, conf.REDIS.Port, l, 1, &redisTokenCacheKeyPrefix)
 	//redisTokenCache := cache.NewCache(conf.REDIS.Address, conf.REDIS.Port, l, 1)
 
+	loginAuthenticatorController := &controllersLoginAuthenticator.LoginAuthenticatorController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	afterLoginUserInfoController := &controllersAfterLoginUserInfo.AfterLoginUserInfoController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	contentListForPointUsersController := &controllersContentListForPointUsers.ContentListForPointUsersController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	eventSingleUnitController := &controllersEventSingleUnit.EventSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	eventCreatesSingleUnitController := &controllersEventCreatesSingleUnit.EventCreatesSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	siteListController := &controllersSiteList.SiteListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	siteSingleUnitController := &controllersSiteSingleUnit.SiteSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+	
+	siteCreatesSingleUnitController := &controllersSiteCreatesSingleUnit.SiteCreatesSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	pointTransactionListController := &controllersPointTransactionList.PointTransactionListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	pointTransactionSingleUnitController := &controllersPointTransactionSingleUnit.PointTransactionSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	pointBalanceSingleUnitController := &controllersPointBalanceSingleUnit.PointBalanceSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	afterPointAcquisitionController := &controllersAfterPointAcquisition.AfterPointAcquisitionController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	userInfoCreatesController := &controllersUserInfoCreates.UserInfoCreatesController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	messageListController := &controllersMessageList.MessageListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	messageInteractionWithFriendController := &controllersMessageInteractionWithFriend.MessageInteractionWithFriendController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+	
 	quotationsListController := &controllersQuotationsList.QuotationsListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
@@ -127,12 +222,22 @@ func init() {
 		CustomLogger: l,
 	}
 
+	ordersPartnersWithAddressController := &controllersOrdersPartnersWithAddress.OrdersPartnersWithAddressController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	inspectionLotSingleUnitController := &controllersInspectionLotSingleUnit.InspectionLotSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
 
 	inspectionLotSingleUnitMillSheetController := &controllersInspectionLotSingleUnitMillSheet.InspectionLotSingleUnitMillSheetController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	inspectionLotSingleUnitMillBoxInterfaceController := &controllersInspectionLotSingleUnitMillBoxInterface.InspectionLotSingleUnitMillBoxInterfaceController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -198,6 +303,11 @@ func init() {
 	}
 
 	billOfMaterialListController := &controllersBillOfMaterialList.BillOfMaterialListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	billOfMaterialHeaderSingleUnitController := &controllersBillOfMaterialHeaderSingleUnit.BillOfMaterialHeaderSingleUnitController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -332,7 +442,27 @@ func init() {
 		CustomLogger: l,
 	}
 
+	productionOrderListController := &controllersProductionOrderList.ProductionOrderListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
 	productionOrderDetailListController := &controllersProductionOrderDetailList.ProductionOrderDetailListController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productionOrderHeaderSingleUnitController := &controllersProductionOrderHeaderSingleUnit.ProductionOrderHeaderSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productionOrderItemSingleUnitController := &controllersProductionOrderItemSingleUnit.ProductionOrderItemSingleUnitController{
+		RedisCache:   redisCache,
+		CustomLogger: l,
+	}
+
+	productionOrderItemComponentListController := &controllersProductionOrderItemComponentList.ProductionOrderItemComponentListController{
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
@@ -346,16 +476,72 @@ func init() {
 		RedisCache:   redisCache,
 		CustomLogger: l,
 	}
+	
+	loginAuthenticator := beego.NewNamespace(
+		"/login-authenticator",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/login-authenticator", loginAuthenticatorController),
+	)
+	
+	afterLoginUserInfo := beego.NewNamespace(
+		"/after-login-user-info",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/after-login-user-info", afterLoginUserInfoController),
+	)
 
-	productionOrderListController := &controllersProductionOrderList.ProductionOrderListController{
-		RedisCache:   redisCache,
-		CustomLogger: l,
-	}
+	listsForPointUsers := beego.NewNamespace(
+		"/lists-for-point-users",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/content-list-for-point-users", contentListForPointUsersController),
+	)
 
-	productionOrderItemSingleUnitController := &controllersProductionOrderItemSingleUnit.ProductionOrderItemSingleUnitController{
-		RedisCache:   redisCache,
-		CustomLogger: l,
-	}
+	event := beego.NewNamespace(
+		"/event",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/single-unit", eventSingleUnitController),
+		beego.NSRouter("/creates-single-unit", eventCreatesSingleUnitController),
+	)
+
+	site := beego.NewNamespace(
+		"/site",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/list", siteListController),
+		beego.NSRouter("/single-unit", siteSingleUnitController),
+		beego.NSRouter("/creates-single-unit", siteCreatesSingleUnitController),
+	)
+
+	pointTransaction := beego.NewNamespace(
+		"/point-transaction",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/list", pointTransactionListController),
+		beego.NSRouter("/single-unit", pointTransactionSingleUnitController),
+	)
+
+	pointBalance := beego.NewNamespace(
+		"/point-balance",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/single-unit", pointBalanceSingleUnitController),
+	)
+
+	pointAcquisition := beego.NewNamespace(
+		"/point-acquisition",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/after-point-acquisition", afterPointAcquisitionController),
+	)
+
+	userInfo := beego.NewNamespace(
+		"/user-info",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/user-info-creates", userInfoCreatesController),
+	)
+
+	message := beego.NewNamespace(
+		"/message",
+		beego.NSCond(func(ctx *context.Context) bool { return true }),
+		beego.NSRouter("/list", messageListController),
+		beego.NSRouter("/interaction-with-friend", messageInteractionWithFriendController),
+//		beego.NSRouter("/single-unit", messageSingleUnitController),
+	)
 
 	quotations := beego.NewNamespace(
 		"/quotations",
@@ -375,6 +561,7 @@ func init() {
 		beego.NSRouter("/list/:userType", ordersListController),
 		beego.NSRouter("/detail/list/:userType", ordersDetailListController),
 		beego.NSRouter("/detail/list-for-an-order-document", ordersDetailListForAnOrderDocumentController),
+		beego.NSRouter("/partners-with-address", ordersPartnersWithAddressController),
 		beego.NSRouter("/item-single-unit/:userType", ordersSingleUnit),
 		beego.NSRouter("/item-single-unit-mill-sheet/:userType", ordersItemSingleUnitMillSheet),
 		beego.NSRouter("/item-schedule-line/:userType", ordersItemScheduleLineController),
@@ -387,6 +574,7 @@ func init() {
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/header-single-unit", inspectionLotSingleUnitController),
 		beego.NSRouter("/header-single-unit-mill-sheet", inspectionLotSingleUnitMillSheetController),
+		beego.NSRouter("/header-single-unit-mill-box-interface", inspectionLotSingleUnitMillBoxInterfaceController),
 		beego.NSRouter("/list", inspectionLotListController),
 		beego.NSRouter("/spec-detail", inspectionLotSpecDetailController),
 		beego.NSRouter("/component-composition", inspectionLotComponentCompositionController),
@@ -420,7 +608,8 @@ func init() {
 		"/bill-of-material",
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", billOfMaterialListController),
-		beego.NSRouter("/detail/list/:userType", billOfMaterialDetailListController),
+		beego.NSRouter("/header-single-unit", billOfMaterialHeaderSingleUnitController),
+		beego.NSRouter("/detail/list", billOfMaterialDetailListController),
 	)
 
 	operations := beego.NewNamespace(
@@ -502,8 +691,10 @@ func init() {
 		"/production-order",
 		beego.NSCond(func(ctx *context.Context) bool { return true }),
 		beego.NSRouter("/list/:userType", productionOrderListController),
-		beego.NSRouter("/item-single-unit/:userType", productionOrderItemSingleUnitController),
 		beego.NSRouter("/detail/list/:userType", productionOrderDetailListController),
+		beego.NSRouter("/header-single-unit/:userType", productionOrderHeaderSingleUnitController),
+		beego.NSRouter("/item-single-unit/:userType", productionOrderItemSingleUnitController),
+		beego.NSRouter("/item-component/list", productionOrderItemComponentListController),
 		beego.NSRouter("/item-operation/list", productionOrderItemOperationListController),
 	)
 
@@ -514,6 +705,16 @@ func init() {
 	)
 
 	beego.AddNamespace(
+		loginAuthenticator,
+		afterLoginUserInfo,
+		listsForPointUsers,
+		event,
+		site,
+		pointTransaction,
+		pointBalance,
+		pointAcquisition,
+		userInfo,
+		message,
 		businessPartner,
 		productMaster,
 		quotations,

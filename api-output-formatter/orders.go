@@ -4,6 +4,8 @@ type Orders struct {
 	OrdersHeader                                       []OrdersHeader                                       `json:"Header"`
 	OrdersHeaderWithItem                               []OrdersHeaderWithItem                               `json:"HeaderWithItem"`
 	OrdersPartner                                      []OrdersPartner                                      `json:"Partner"`
+	OrdersAddress                                      []OrdersAddress                                      `json:"Address"`
+	OrdersPartnerWithAddress                           []OrdersPartnerWithAddress                           `json:"PartnerWithAddress"`
 	OrdersItem                                         []OrdersItem                                         `json:"Item"`
 	OrdersSingleUnit                                   []OrdersSingleUnit                                   `json:"SingleUnit"`
 	OrdersItemScheduleLine                             []OrdersItemScheduleLine                             `json:"ItemScheduleLine"`
@@ -43,6 +45,43 @@ type OrdersPartner struct {
 	ExternalDocumentID      *string `json:"ExternalDocumentID"`
 	AddressID               *int    `json:"AddressID"`
 	EmailAddress            *string `json:"EmailAddress"`
+	CityName                *string `json:"CityName"`
+	StreetName              *string `json:"StreetName"`
+	PostalCode              *string `json:"PostalCode"`
+	AddressIdentifier       *string `json:"AddressIdentifier"`
+	LocalRegionName         *string `json:"LocalRegionName"`
+}
+
+type OrdersAddress struct {
+	OrderID         int     `json:"OrderID"`
+	AddressID       *int    `json:"AddressID"`
+	PostalCode      *string `json:"PostalCode"`
+	LocalRegion     *string `json:"LocalRegion"`
+	LocalRegionName *string `json:"LocalRegionName"`
+	Country         *string `json:"Country"`
+	StreetName      *string `json:"StreetName"`
+	CityName        *string `json:"CityName"`
+	Building        *string `json:"Building"`
+	Floor           *int    `json:"Floor"`
+	Room            *int    `json:"Room"`
+}
+
+type OrdersPartnerWithAddress struct {
+	OrderID                 int     `json:"OrderID"`
+	PartnerFunction         string  `json:"PartnerFunction"`
+	BusinessPartner         int     `json:"BusinessPartner"`
+	BusinessPartnerFullName *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName     *string `json:"BusinessPartnerName"`
+	AddressID               *int    `json:"AddressID"`
+	PostalCode              *string `json:"PostalCode"`
+	LocalRegion             *string `json:"LocalRegion"`
+	LocalRegionName         *string `json:"LocalRegionName"`
+	Country                 *string `json:"Country"`
+	StreetName              *string `json:"StreetName"`
+	CityName                *string `json:"CityName"`
+	Building                *string `json:"Building"`
+	Floor                   *int    `json:"Floor"`
+	Room                    *int    `json:"Room"`
 }
 
 type OrdersHeaderWithItem struct {
@@ -70,7 +109,7 @@ type OrdersHeaderWithItem struct {
 	PaymentTermsName                string  `json:"PaymentTermsName"`
 	PaymentMethod                   string  `json:"PaymentMethod"`
 	TransactionCurrency             string  `json:"TransactionCurrency"`
-	HeaderText						*string	`json:"HeaderText"`
+	HeaderText                      *string `json:"HeaderText"`
 }
 
 type OrdersItem struct {
@@ -82,11 +121,11 @@ type OrdersItem struct {
 	BuyerName                   string   `json:"BuyerName"`
 	Seller                      int      `json:"Seller"`
 	SellerName                  string   `json:"SellerName"`
-	DeliverToParty              int		 `json:"DeliverToParty"`
+	DeliverToParty              int      `json:"DeliverToParty"`
 	DeliverToPartyName          string   `json:"DeliverToPartyName"`
 	DeliverToPlant              string   `json:"DeliverToPlant"`
 	DeliverToPlantName          string   `json:"DeliverToPlantName"`
-	DeliverFromParty            int		 `json:"DeliverFromParty"`
+	DeliverFromParty            int      `json:"DeliverFromParty"`
 	DeliverFromPartyName        string   `json:"DeliverFromPartyName"`
 	DeliverFromPlant            string   `json:"DeliverFromPlant"`
 	DeliverFromPlantName        string   `json:"DeliverFromPlantName"`
@@ -106,6 +145,7 @@ type OrdersItem struct {
 	TaxAmount                   float32  `json:"TaxAmount"`
 	GrossAmount                 float32  `json:"GrossAmount"`
 	ProductNetWeight            *float32 `json:"ProductNetWeight"`
+	ExternalReferenceDocument   *string  `json:"ExternalReferenceDocument"`
 	IsCancelled                 *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion         *bool    `json:"IsMarkedForDeletion"`
 	Images                      Images   `json:"Images"`
