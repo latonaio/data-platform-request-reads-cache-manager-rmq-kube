@@ -4,6 +4,7 @@ type Site struct {
 	SiteHeader              *SiteHeader
 	SitePartner             *SitePartner
 	SiteAddress             *SiteAddress
+	SiteCounter       		*SiteCounter
 	SiteDocHeaderDoc        *SiteDocHeaderDoc
 }
 
@@ -24,6 +25,10 @@ type SiteAddress struct {
 	AddressID		int		`json:"AddressID"`
 	LocalSubRegion 	*string `json:"LocalSubRegion"`
 	LocalRegion 	*string `json:"LocalRegion"`
+}
+
+type SiteCounter struct {
+	Site                  int     `json:"Site"`
 }
 
 type SiteDocHeaderDoc struct {

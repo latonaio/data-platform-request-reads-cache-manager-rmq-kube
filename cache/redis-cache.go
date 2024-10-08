@@ -47,7 +47,12 @@ func (c *Cache) CreateKey(
 	controller *beego.Controller,
 	categories []string,
 ) string {
-	userInfo := services.UserRequestParams(controller)
+	userInfo := services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   controller,
+			CustomLogger: nil,
+		},
+	)
 
 	category := strings.Join(categories, "/")
 

@@ -33,7 +33,12 @@ type ProductionOrderItemSingleUnitController struct {
 const ()
 
 func (controller *ProductionOrderItemSingleUnitController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "productionOrder"
 	redisKeyCategory2 := "item-single-unit"
 	productionOrder, _ := controller.GetInt("productionOrder")

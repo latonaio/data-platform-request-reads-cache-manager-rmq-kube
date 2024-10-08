@@ -34,7 +34,12 @@ type InspectionLotSpecDetailController struct {
 //)
 
 func (controller *InspectionLotSpecDetailController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "inspection-lot"
 	redisKeyCategory2 := "inspection-lot-spec-detail"
 	inspectionLot, _ := controller.GetInt("inspectionLot")

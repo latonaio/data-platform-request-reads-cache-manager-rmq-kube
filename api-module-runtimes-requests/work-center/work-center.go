@@ -122,11 +122,12 @@ func WorkCenterReads(
 		)
 	}
 
-	responseBody := services.Request(
+responseBody := services.Request(
 		aPIServiceName,
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

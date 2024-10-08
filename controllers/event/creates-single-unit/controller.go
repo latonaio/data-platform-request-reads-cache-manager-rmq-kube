@@ -7,6 +7,8 @@ import (
 	apiModuleRuntimesRequestsDistributionProfile "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/distribution-profile"
 	apiModuleRuntimesRequestsEventType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/event-type"
 	apiModuleRuntimesRequestsPointConditionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/point-condition-type"
+	apiModuleRuntimesRequestsShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/shop/shop"
+	apiModuleRuntimesRequestsShopDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/shop/shop-doc"
 	apiModuleRuntimesRequestsSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site"
 	apiModuleRuntimesRequestsSiteDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
@@ -14,6 +16,7 @@ import (
 	apiModuleRuntimesResponsesDistributionProfile "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/distribution-profile"
 	apiModuleRuntimesResponsesEventType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/event-type"
 	apiModuleRuntimesResponsesPointConditionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-condition-type"
+	apiModuleRuntimesResponsesShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop"
 	apiModuleRuntimesResponsesSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
@@ -22,6 +25,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 	"strconv"
+	"sync"
 )
 
 type EventCreatesSingleUnitController struct {
@@ -33,23 +37,27 @@ type EventCreatesSingleUnitController struct {
 }
 
 type EventCreatesSingleUnit struct {
-	BusinessPartnerGeneral  []apiOutputFormatter.BusinessPartnerGeneral  `json:"BusinessPartnerGeneral"`
-	BusinessPartnerRoleText []apiOutputFormatter.BusinessPartnerRoleText `json:"BusinessPartnerRoleText"`
-	EventTypeText           []apiOutputFormatter.EventTypeText           `json:"EventTypeText"`
-	DistributionProfileText []apiOutputFormatter.DistributionProfileText `json:"DistributionProfileText"`
-	PointConditionTypeText  []apiOutputFormatter.PointConditionTypeText  `json:"PointConditionTypeText"`
-	SiteAddress             []apiOutputFormatter.SiteAddress             `json:"SiteAddress"`
-	SiteHeader              []apiOutputFormatter.SiteHeader              `json:"SiteHeader"`
-	SiteAddressWithHeader   []apiOutputFormatter.SiteAddressWithHeader   `json:"SiteAddressWithHeader"`
+	BusinessPartnerGeneral            []apiOutputFormatter.BusinessPartnerGeneral            `json:"BusinessPartnerGeneral"`
+	BusinessPartnerPersonOrganization []apiOutputFormatter.BusinessPartnerPersonOrganization `json:"BusinessPartnerPersonOrganization"`
+	BusinessPartnerRoleText           []apiOutputFormatter.BusinessPartnerRoleText           `json:"BusinessPartnerRoleText"`
+	EventTypeText                     []apiOutputFormatter.EventTypeText                     `json:"EventTypeText"`
+	DistributionProfileText           []apiOutputFormatter.DistributionProfileText           `json:"DistributionProfileText"`
+	PointConditionTypeText            []apiOutputFormatter.PointConditionTypeText            `json:"PointConditionTypeText"`
+	SiteAddress                       []apiOutputFormatter.SiteAddress                       `json:"SiteAddress"`
+	SiteHeader                        []apiOutputFormatter.SiteHeader                        `json:"SiteHeader"`
+	SiteAddressWithHeader             []apiOutputFormatter.SiteAddressWithHeader             `json:"SiteAddressWithHeader"`
+	ShopHeader                        []apiOutputFormatter.ShopHeader                        `json:"ShopHeader"`
 }
 
 func (controller *EventCreatesSingleUnitController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "businessPartner"
-	redisKeyCategory2 := "businessPartnerRole"
-	redisKeyCategory3 := "event-creates-single-unit"
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 
 	businessPartner, _ := controller.GetInt("businessPartner")
 
@@ -57,19 +65,30 @@ func (controller *EventCreatesSingleUnitController) Get() {
 
 	localSubRegion := controller.GetString("localSubRegion")
 
+	redisKeyCategory1 := "event"
+	redisKeyCategory2 := "creates-single-unit"
+	redisKeyCategory3 := localSubRegion
+	redisKeyCategory4 := businessPartner
+	redisKeyCategory5 := businessPartnerRole
+	//redisKeyCategory1 := "businessPartner"
+	//redisKeyCategory2 := "businessPartnerRole"
+	//redisKeyCategory3 := "event-creates-single-unit"
+
 	EventCreatesSingleUnitBP := apiInputReader.BusinessPartner{}
 	EventCreatesSingleUnitEventType := apiInputReader.EventTypeGlobal{}
 	EventCreatesSingleUnitDistributionProfile := apiInputReader.DistributionProfileGlobal{}
 	EventCreatesSingleUnitPointConditionType := apiInputReader.PointConditionTypeGlobal{}
 	EventCreatesSingleUnitSiteAddress := apiInputReader.Site{}
 
-	isReleased := false
+	isReleased := true
 	isMarkedForDeletion := false
-
-	//docType := "QRCODE"
 
 	EventCreatesSingleUnitBP = apiInputReader.BusinessPartner{
 		BusinessPartnerGeneral: &apiInputReader.BusinessPartnerGeneral{
+			BusinessPartner:     businessPartner,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
+		BusinessPartnerPersonOrganization: &apiInputReader.BusinessPartnerPersonOrganization{
 			BusinessPartner:     businessPartner,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
@@ -109,6 +128,8 @@ func (controller *EventCreatesSingleUnitController) Get() {
 			redisKeyCategory1,
 			redisKeyCategory2,
 			redisKeyCategory3,
+			strconv.Itoa(redisKeyCategory4),
+			redisKeyCategory5,
 		},
 	)
 
@@ -169,7 +190,8 @@ func (
 	var input []apiModuleRuntimesRequestsBusinessPartner.General
 
 	input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
-		BusinessPartner: inputEventCreatesSingleUnitBP.BusinessPartnerGeneral.BusinessPartner,
+		BusinessPartner:     inputEventCreatesSingleUnitBP.BusinessPartnerGeneral.BusinessPartner,
+		IsMarkedForDeletion: inputEventCreatesSingleUnitBP.BusinessPartnerPersonOrganization.IsMarkedForDeletion,
 	})
 
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
@@ -187,6 +209,74 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("BusinessPartnerGeneralReads Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventCreatesSingleUnitController,
+) createBusinessPartnerRequestPersonOrganization(
+	requestPram *apiInputReader.Request,
+	inputEventCreatesSingleUnitBP apiInputReader.BusinessPartner,
+) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
+	var input = apiModuleRuntimesRequestsBusinessPartner.PersonOrganization{}
+
+	input = apiModuleRuntimesRequestsBusinessPartner.PersonOrganization{
+		BusinessPartner: inputEventCreatesSingleUnitBP.BusinessPartnerPersonOrganization.BusinessPartner,
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsPersonOrganization(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createBusinessPartnerRequestPersonOrganization Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventCreatesSingleUnitController,
+) createBusinessPartnerRequestGeneralOrganizationBP(
+	requestPram *apiInputReader.Request,
+	businessPartnerPersonOrganizationRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	isMarkedForDeletion bool,
+) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes {
+	var input []apiModuleRuntimesRequestsBusinessPartner.General
+
+	for _, v := range *businessPartnerPersonOrganizationRes.Message.PersonOrganization {
+		input = append(input, apiModuleRuntimesRequestsBusinessPartner.General{
+			BusinessPartner:     v.OrganizationBusinessPartner,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		})
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes{}
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsGeneralsByBusinessPartners(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createBusinessPartnerRequestGeneralOrganizationBP Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -445,8 +535,95 @@ func (
 
 func (
 	controller *EventCreatesSingleUnitController,
+) createShopRequestHeadersByShopOwner(
+	requestPram *apiInputReader.Request,
+	businessPartnerPersonOrganizationRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	isReleased bool,
+	isMarkedForDeletion bool,
+) *apiModuleRuntimesResponsesShop.ShopRes {
+	var input apiModuleRuntimesRequestsShop.Header
+
+	for _, v := range *businessPartnerPersonOrganizationRes.Message.PersonOrganization {
+		shopOwner := v.OrganizationBusinessPartner
+
+		input = apiModuleRuntimesRequestsShop.Header{
+			ShopOwner:           &shopOwner,
+			IsReleased:          &isReleased,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		}
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesShop.ShopRes{}
+	responseBody := apiModuleRuntimesRequestsShop.ShopReadsHeadersByShopOwner(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	if len(*responseJsonData.Message.Header) == 0 {
+		status := 500
+		services.HandleError(
+			&controller.Controller,
+			"OrganizationBusinessPartnerに対して有効な店舗が見つかりませんでした",
+			&status,
+		)
+		return nil
+	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createShopRequestHeadersByShopOwner Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventCreatesSingleUnitController,
+) createShopDocRequest(
+	requestPram *apiInputReader.Request,
+	shopHeaderRes apiModuleRuntimesResponsesShop.ShopRes,
+) *apiModuleRuntimesResponsesShop.ShopDocRes {
+	var input = apiInputReader.Shop{}
+
+	for _, v := range *shopHeaderRes.Message.Header {
+		input = apiInputReader.Shop{
+			ShopDocHeaderDoc: &apiInputReader.ShopDocHeaderDoc{
+				Shop: v.Shop,
+			},
+		}
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesShop.ShopDocRes{}
+	responseBody := apiModuleRuntimesRequestsShopDoc.ShopDocReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"HeaderDoc",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createShopDocRequest Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventCreatesSingleUnitController,
 ) request(
-	//	input apiInputReader.Event,
 	inputEventCreatesSingleUnitBP apiInputReader.BusinessPartner,
 	inputEventCreatesSingleUnitEventType apiInputReader.EventTypeGlobal,
 	inputEventCreatesSingleUnitDistributionProfile apiInputReader.DistributionProfileGlobal,
@@ -458,57 +635,124 @@ func (
 ) {
 	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
-	businessPartnerGeneralRes := *controller.createBusinessPartnerRequestGeneral(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitBP,
-	)
+	var wg sync.WaitGroup
+	wg.Add(7)
 
-	businessPartnerRoleTextRes := controller.CreateBusinessPartnerRoleRequestText(
-		controller.UserInfo,
-		businessPartnerRole,
-	)
+	var businessPartnerGeneralRes apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes
+	var businessPartnerPersonOrganizationRes apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes
+	var businessPartnerGeneralOrganizationBPRes apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes
+	var businessPartnerRoleTextRes *apiModuleRuntimesResponsesBusinessPartnerRole.BusinessPartnerRoleRes
 
-	eventTypeTextRes := *controller.CreateEventTypeRequestTexts(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitEventType,
-	)
+	var eventTypeTextRes *apiModuleRuntimesResponsesEventType.EventTypeRes
 
-	distributionProfileTextRes := controller.CreateDistributionProfileRequestTexts(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitDistributionProfile,
-	)
+	var distributionProfileTextRes *apiModuleRuntimesResponsesDistributionProfile.DistributionProfileRes
 
-	pointConditionTypeTextRes := controller.CreatePointConditionTypeRequestTexts(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitPointConditionType,
-	)
+	var pointConditionTypeTextRes *apiModuleRuntimesResponsesPointConditionType.PointConditionTypeRes
 
-	siteAddressRes := *controller.createSiteRequestAddressesByLocalSubRegion(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitSiteAddress,
-	)
+	var siteAddressRes *apiModuleRuntimesResponsesSite.SiteRes
 
-	siteHeaderRes := *controller.createSiteRequestHeadersBySites(
-		controller.UserInfo,
-		&siteAddressRes,
-		isReleased,
-		isMarkedForDeletion,
-	)
+	var siteHeaderRes apiModuleRuntimesResponsesSite.SiteRes
+	var shopHeaderRes apiModuleRuntimesResponsesShop.ShopRes
 
-	siteHeaderDocRes := controller.createSiteDocRequest(
-		controller.UserInfo,
-		inputEventCreatesSingleUnitSiteAddress,
-	)
+	var siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes
+	var shopHeaderDocRes *apiModuleRuntimesResponsesShop.ShopDocRes
+
+	go func() {
+		defer wg.Done()
+		businessPartnerGeneralRes = *controller.createBusinessPartnerRequestGeneral(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitBP,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		businessPartnerPersonOrganizationRes = *controller.createBusinessPartnerRequestPersonOrganization(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitBP,
+		)
+		businessPartnerGeneralOrganizationBPRes = *controller.createBusinessPartnerRequestGeneralOrganizationBP(
+			controller.UserInfo,
+			&businessPartnerPersonOrganizationRes,
+			isMarkedForDeletion,
+		)
+		shopHeaderRes = *controller.createShopRequestHeadersByShopOwner(
+			controller.UserInfo,
+			&businessPartnerPersonOrganizationRes,
+			isReleased,
+			isMarkedForDeletion,
+		)
+		shopHeaderDocRes = controller.createShopDocRequest(
+			controller.UserInfo,
+			shopHeaderRes,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		businessPartnerRoleTextRes = controller.CreateBusinessPartnerRoleRequestText(
+			controller.UserInfo,
+			businessPartnerRole,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		eventTypeTextRes = controller.CreateEventTypeRequestTexts(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitEventType,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		distributionProfileTextRes = controller.CreateDistributionProfileRequestTexts(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitDistributionProfile,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		pointConditionTypeTextRes = controller.CreatePointConditionTypeRequestTexts(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitPointConditionType,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		siteAddressRes = controller.createSiteRequestAddressesByLocalSubRegion(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitSiteAddress,
+		)
+		siteHeaderRes = *controller.createSiteRequestHeadersBySites(
+			controller.UserInfo,
+			siteAddressRes,
+			isReleased,
+			isMarkedForDeletion,
+		)
+		siteHeaderDocRes = controller.createSiteDocRequest(
+			controller.UserInfo,
+			inputEventCreatesSingleUnitSiteAddress,
+		)
+	}()
+
+	wg.Wait()
 
 	controller.fin(
 		&businessPartnerGeneralRes,
+		&businessPartnerPersonOrganizationRes,
+		&businessPartnerGeneralOrganizationBPRes,
 		businessPartnerRoleTextRes,
-		&eventTypeTextRes,
+		eventTypeTextRes,
 		distributionProfileTextRes,
 		pointConditionTypeTextRes,
-		&siteAddressRes,
+		siteAddressRes,
 		&siteHeaderRes,
 		siteHeaderDocRes,
+		&shopHeaderRes,
+		shopHeaderDocRes,
 	)
 }
 
@@ -516,6 +760,8 @@ func (
 	controller *EventCreatesSingleUnitController,
 ) fin(
 	businessPartnerGeneralRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	businessPartnerPersonOrganizationRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
+	businessPartnerGeneralOrganizationBPRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	businessPartnerRoleTextRes *apiModuleRuntimesResponsesBusinessPartnerRole.BusinessPartnerRoleRes,
 	eventTypeTextRes *apiModuleRuntimesResponsesEventType.EventTypeRes,
 	distributionProfileTextRes *apiModuleRuntimesResponsesDistributionProfile.DistributionProfileRes,
@@ -523,9 +769,15 @@ func (
 	siteAddressRes *apiModuleRuntimesResponsesSite.SiteRes,
 	siteHeaderRes *apiModuleRuntimesResponsesSite.SiteRes,
 	siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
+	shopHeaderRes *apiModuleRuntimesResponsesShop.ShopRes,
+	shopHeaderDocRes *apiModuleRuntimesResponsesShop.ShopDocRes,
 ) {
 	businessPartnerNameMapper := services.BusinessPartnerNameMapper(
 		businessPartnerGeneralRes,
+	)
+
+	businessPartnerNameMapperOrganizationBP := services.BusinessPartnerNameMapper(
+		businessPartnerGeneralOrganizationBPRes,
 	)
 
 	businessPartnerRoleTextMapper := services.BusinessPartnerRoleTextMapper(
@@ -555,6 +807,16 @@ func (
 			apiOutputFormatter.BusinessPartnerGeneral{
 				BusinessPartner:     v.BusinessPartner,
 				BusinessPartnerName: businessPartnerNameMapper[v.BusinessPartner].BusinessPartnerName,
+			},
+		)
+	}
+
+	for _, v := range *businessPartnerPersonOrganizationRes.Message.PersonOrganization {
+		data.BusinessPartnerPersonOrganization = append(data.BusinessPartnerPersonOrganization,
+			apiOutputFormatter.BusinessPartnerPersonOrganization{
+				BusinessPartner:                 v.BusinessPartner,
+				OrganizationBusinessPartner:     v.OrganizationBusinessPartner,
+				OrganizationBusinessPartnerName: businessPartnerNameMapperOrganizationBP[v.OrganizationBusinessPartner].BusinessPartnerName,
 			},
 		)
 	}
@@ -657,6 +919,23 @@ func (
 				ZCoordinate:       v.ZCoordinate,
 				Images: apiOutputFormatter.Images{
 					Site: img,
+				},
+			},
+		)
+	}
+
+	for _, v := range *shopHeaderRes.Message.Header {
+		img := services.ReadShopImage(
+			shopHeaderDocRes,
+			v.Shop,
+		)
+
+		data.ShopHeader = append(data.ShopHeader,
+			apiOutputFormatter.ShopHeader{
+				Shop:        v.Shop,
+				Description: v.Description,
+				Images: apiOutputFormatter.Images{
+					Shop: img,
 				},
 			},
 		)

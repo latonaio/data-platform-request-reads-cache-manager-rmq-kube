@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type PointTransactionListController struct {
@@ -32,18 +33,25 @@ func (controller *PointTransactionListController) Get() {
 	//	sender, _ := controller.GetInt("sender")
 	//	receiver, _ := controller.GetInt("receiver")
 	//	pointTransactionType := controller.GetString("pointTransactionType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "businessPartner"
-	//	redisKeyCategory2 := "pointTransactionType"
-
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
+	redisKeyCategory1 := "point-transaction"
+	redisKeyCategory2 := "list"
+	redisKeyCategory3 := *controller.UserInfo.BusinessPartner
 	//	isCancelled := false
+
+	objectType := "BUSINESS_PARTNER"
 
 	PointTransactionHeader := apiInputReader.PointTransaction{
 		PointTransactionHeader: &apiInputReader.PointTransactionHeader{
-			SenderObjectType:   	"BUSINESS_PARTNER",
-			SenderObject:   		controller.UserInfo.BusinessPartner,
-			ReceiverObjectType:   	"BUSINESS_PARTNER",
-			ReceiverObject: 		controller.UserInfo.BusinessPartner,
+			SenderObjectType:   &objectType,
+			SenderObject:       controller.UserInfo.BusinessPartner,
+			ReceiverObjectType: &objectType,
+			ReceiverObject:     controller.UserInfo.BusinessPartner,
 			//PointTransactionType: &pointTransactionType,
 			//IsCancelled:          &isCancelled,
 		},
@@ -53,7 +61,8 @@ func (controller *PointTransactionListController) Get() {
 		&controller.Controller,
 		[]string{
 			redisKeyCategory1,
-			//			redisKeyCategory2,
+			redisKeyCategory2,
+			strconv.Itoa(redisKeyCategory3),
 		},
 	)
 
@@ -102,15 +111,15 @@ func (
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
 
-	if len(*responseJsonData.Message.Header) == 0 {
-		status := 500
-		services.HandleError(
-			&controller.Controller,
-			"レシーバに対してのポイント取引ヘッダが見つかりませんでした",
-			&status,
-		)
-		return nil
-	}
+	//if len(*responseJsonData.Message.Header) == 0 {
+	//	status := 500
+	//	services.HandleError(
+	//		&controller.Controller,
+	//		"レシーバに対してのポイント取引ヘッダが見つかりませんでした",
+	//		&status,
+	//	)
+	//	return nil
+	//}
 
 	if err != nil {
 		services.HandleError(
@@ -139,15 +148,15 @@ func (
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
 
-	if len(*responseJsonData.Message.Header) == 0 {
-		status := 500
-		services.HandleError(
-			&controller.Controller,
-			"センダに対してのポイント取引ヘッダが見つかりませんでした",
-			&status,
-		)
-		return nil
-	}
+	//if len(*responseJsonData.Message.Header) == 0 {
+	//	status := 500
+	//	services.HandleError(
+	//		&controller.Controller,
+	//		"センダに対してのポイント取引ヘッダが見つかりませんでした",
+	//		&status,
+	//	)
+	//	return nil
+	//}
 
 	if err != nil {
 		services.HandleError(
@@ -207,6 +216,9 @@ func (
 ) {
 	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
+	var pointTransactionTypeTextByReceiverRes *apiModuleRuntimesResponsesPointTransactionType.PointTransactionTypeRes
+	var pointTransactionTypeTextBySenderRes *apiModuleRuntimesResponsesPointTransactionType.PointTransactionTypeRes
+
 	headersByReceiverRes := *controller.createPointTransactionRequestHeadersByReceiver(
 		controller.UserInfo,
 		input,
@@ -217,15 +229,19 @@ func (
 		input,
 	)
 
-	pointTransactionTypeTextByReceiverRes := controller.CreatePointTransactionTypeRequestText(
-		controller.UserInfo,
-		&headersByReceiverRes,
-	)
+	if headersByReceiverRes.Message.Header != nil && len(*headersByReceiverRes.Message.Header) != 0 {
+		pointTransactionTypeTextByReceiverRes = controller.CreatePointTransactionTypeRequestText(
+			controller.UserInfo,
+			&headersByReceiverRes,
+		)
+	}
 
-	pointTransactionTypeTextBySenderRes := controller.CreatePointTransactionTypeRequestText(
-		controller.UserInfo,
-		&headersBySenderRes,
-	)
+	if headersBySenderRes.Message.Header != nil && len(*headersBySenderRes.Message.Header) != 0 {
+		pointTransactionTypeTextBySenderRes = controller.CreatePointTransactionTypeRequestText(
+			controller.UserInfo,
+			&headersBySenderRes,
+		)
+	}
 
 	controller.fin(
 		&headersByReceiverRes,
@@ -249,13 +265,20 @@ func (
 	//		headersBySenderRes,
 	//	)
 
-	pointConditionTypeTextMapperByReceiver := services.PointTransactionTypeTextMapper(
-		pointTransactionTypeTextByReceiverRes.Message.Text,
-	)
+	var pointConditionTypeTextMapperByReceiver map[string]apiModuleRuntimesResponsesPointTransactionType.Text
+	var pointConditionTypeTextMapperBySender map[string]apiModuleRuntimesResponsesPointTransactionType.Text
 
-	pointConditionTypeTextMapperBySender := services.PointTransactionTypeTextMapper(
-		pointTransactionTypeTextBySenderRes.Message.Text,
-	)
+	if headersByReceiverRes.Message.Header != nil && len(*headersByReceiverRes.Message.Header) != 0 {
+		pointConditionTypeTextMapperByReceiver = services.PointTransactionTypeTextMapper(
+			pointTransactionTypeTextByReceiverRes.Message.Text,
+		)
+	}
+
+	if headersBySenderRes.Message.Header != nil && len(*headersBySenderRes.Message.Header) != 0 {
+		pointConditionTypeTextMapperBySender = services.PointTransactionTypeTextMapper(
+			pointTransactionTypeTextBySenderRes.Message.Text,
+		)
+	}
 
 	data := PointTransactionList{}
 
@@ -272,6 +295,8 @@ func (
 				PointTransactionAmount:               v.PointTransactionAmount,
 				SenderPointBalanceAfterTransaction:   v.SenderPointBalanceAfterTransaction,
 				ReceiverPointBalanceAfterTransaction: v.ReceiverPointBalanceAfterTransaction,
+				ValidityStartDate:                    v.ValidityStartDate,
+				ValidityEndDate:                      v.ValidityEndDate,
 				IsCancelled:                          v.IsCancelled,
 			},
 		)
@@ -290,6 +315,8 @@ func (
 				PointTransactionAmount:               v.PointTransactionAmount,
 				SenderPointBalanceAfterTransaction:   v.SenderPointBalanceAfterTransaction,
 				ReceiverPointBalanceAfterTransaction: v.ReceiverPointBalanceAfterTransaction,
+				ValidityStartDate:                    v.ValidityStartDate,
+				ValidityEndDate:                      v.ValidityEndDate,
 				IsCancelled:                          v.IsCancelled,
 			},
 		)

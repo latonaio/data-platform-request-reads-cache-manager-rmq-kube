@@ -31,7 +31,12 @@ type ProductionOrderDetailListController struct {
 
 func (controller *ProductionOrderDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	productionOrder, _ := controller.GetInt("productionOrder")
 	redisKeyCategory1 := "production-order"
 	redisKeyCategory2 := "detail-list"

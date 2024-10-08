@@ -10,10 +10,10 @@ import (
 )
 
 type EquipmentMasterReq struct {
-	BusinessPartnerID *int     	`json:"business_partner"`
-	General           General  	`json:"EquipmentMaster"`
+	BusinessPartnerID *int      `json:"business_partner"`
+	General           General   `json:"EquipmentMaster"`
 	Generals          []General `json:"EquipmentMasters"`
-	Accepter          []string 	`json:"accepter"`
+	Accepter          []string  `json:"accepter"`
 }
 
 type General struct {
@@ -156,6 +156,7 @@ func EquipmentMasterReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -190,6 +191,7 @@ func EquipmentMasterReadsGenerals(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

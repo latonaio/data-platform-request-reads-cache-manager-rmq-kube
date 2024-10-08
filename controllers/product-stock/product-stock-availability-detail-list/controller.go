@@ -30,7 +30,12 @@ type ProductStockAvailabilityDetailListController struct {
 
 func (controller *ProductStockAvailabilityDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "product-stock-availability"
 	redisKeyCategory2 := "detail-list"
 	redisKeyCategory3 := controller.GetString("availableProductStock")

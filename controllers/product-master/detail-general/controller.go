@@ -24,7 +24,12 @@ type ProductMasterDetailGeneralController struct {
 
 func (controller *ProductMasterDetailGeneralController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	product := controller.GetString("product")
 	redisKeyCategory1 := "product-master"
 	redisKeyCategory2 := "detail-general"

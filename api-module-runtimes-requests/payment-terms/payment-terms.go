@@ -141,6 +141,7 @@ func PaymentTermsReadsPaymentTermses(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func PaymentTermsReadsPaymentTermsesByPaymentTermses(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func PaymentTermsReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func PaymentTermsReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

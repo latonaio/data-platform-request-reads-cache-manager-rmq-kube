@@ -13,9 +13,12 @@ type Shop struct {
 type ShopHeader struct {
 	Shop							int		`json:"Shop"`
 	ShopType						string	`json:"ShopType"`
+	ShopTypeName                    string  `json:"ShopTypeName"`
 	ShopOwner						int		`json:"ShopOwner"`
+	ShopOwnerName                   string  `json:"ShopOwnerName"`
 	ShopOwnerBusinessPartnerRole	string	`json:"ShopOwnerBusinessPartnerRole"`
 	Brand							*int	`json:"Brand"`
+	BrandDescription				*string `json:"BrandDescription"`
 	PersonResponsible				string	`json:"PersonResponsible"`
 	URL								*string	`json:"URL"`
 	ValidityStartDate				string	`json:"ValidityStartDate"`
@@ -44,7 +47,11 @@ type ShopHeader struct {
 	LastChangeDate					string	`json:"LastChangeDate"`
 	LastChangeTime					string	`json:"LastChangeTime"`
 	CreateUser						int		`json:"CreateUser"`
+	CreateUserFullName				*string `json:"CreateUserFullName"`
+	CreateUserNickName				*string `json:"CreateUserNickName"`
 	LastChangeUser					int		`json:"LastChangeUser"`
+	LastChangeUserFullName			*string `json:"LastChangeUserFullName"`
+	LastChangeUserNickName			*string `json:"LastChangeUserNickName"`
 	IsReleased						*bool	`json:"IsReleased"`
 	IsMarkedForDeletion				*bool	`json:"IsMarkedForDeletion"`
 	Images                           Images  `json:"Images"`
@@ -112,6 +119,8 @@ type ShopAddressWithHeader struct {
 	Tag2              *string `json:"Tag2"`
 	Tag3              *string `json:"Tag3"`
 	Tag4              *string `json:"Tag4"`
+	LastChangeDate	  string  `json:"LastChangeDate"`
+	LastChangeTime	  string  `json:"LastChangeTime"`
 	PostalCode  	  string  `json:"PostalCode"`
 	Country     	  string  `json:"Country"`
 	GlobalRegion   	  string  `json:"GlobalRegion"`

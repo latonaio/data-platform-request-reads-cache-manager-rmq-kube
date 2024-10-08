@@ -32,7 +32,12 @@ type DeliveryDocumentDetailListForADeliveryInstructionController struct {
 func (controller *DeliveryDocumentDetailListForADeliveryInstructionController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "detail-list-for-a-delivery-instruction"
 
@@ -280,6 +285,7 @@ func functionDeliveryInstructionPdfGenerates(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		nil,
 	)
 
 	return responseBody

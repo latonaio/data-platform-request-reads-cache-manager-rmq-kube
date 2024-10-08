@@ -10,9 +10,9 @@ import (
 )
 
 type ActPurposeReq struct {
-	ActPurpose   ActPurpose    `json:"ActPurpose"`
-	ActPurposes  []ActPurpose  `json:"ActPurposes"`
-	Accepter     []string      `json:"accepter"`
+	ActPurpose  ActPurpose   `json:"ActPurpose"`
+	ActPurposes []ActPurpose `json:"ActPurposes"`
+	Accepter    []string     `json:"accepter"`
 }
 
 type ActPurpose struct {
@@ -141,6 +141,7 @@ func ActPurposeReadsActPurposes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func ActPurposeReadsActPurposesByActPurposes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func ActPurposeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func ActPurposeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

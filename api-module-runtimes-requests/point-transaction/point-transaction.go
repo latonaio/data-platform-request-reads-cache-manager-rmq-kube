@@ -19,10 +19,10 @@ type Header struct {
 	PointTransactionType                  *string  `json:"PointTransactionType"`
 	PointTransactionDate                  *string  `json:"PointTransactionDate"`
 	PointTransactionTime                  *string  `json:"PointTransactionTime"`
-	SenderObjectType					  *string  `json:"SenderObjectType"`
-	SenderObject						  *int	   `json:"SenderObject"`
-	ReceiverObjectType					  *string  `json:"ReceiverObjectType"`
-	ReceiverObject						  *int	   `json:"ReceiverObject"`
+	SenderObjectType                      *string  `json:"SenderObjectType"`
+	SenderObject                          *int     `json:"SenderObject"`
+	ReceiverObjectType                    *string  `json:"ReceiverObjectType"`
+	ReceiverObject                        *int     `json:"ReceiverObject"`
 	PointSymbol                           *string  `json:"PointSymbol"`
 	PlusMinus                             *string  `json:"PlusMinus"`
 	PointTransactionAmount                *float32 `json:"PointTransactionAmount"`
@@ -32,8 +32,11 @@ type Header struct {
 	SenderPointBalanceAfterTransaction    *float32 `json:"SenderPointBalanceAfterTransaction"`
 	ReceiverPointBalanceBeforeTransaction *float32 `json:"ReceiverPointBalanceBeforeTransaction"`
 	ReceiverPointBalanceAfterTransaction  *float32 `json:"ReceiverPointBalanceAfterTransaction"`
-	Attendance							  *int	   `json:"Attendance"`
-	Participation						  *int	   `json:"Participation"`
+	Attendance                            *int     `json:"Attendance"`
+	Participation                         *int     `json:"Participation"`
+	Invitation							  *int	   `json:"Invitation"`
+	ValidityStartDate                     *string  `json:"ValidityStartDate"`
+	ValidityEndDate                       *string  `json:"ValidityEndDate"`
 	CreationDate                          *string  `json:"CreationDate"`
 	CreationTime                          *string  `json:"CreationTime"`
 	IsCancelled                           *bool    `json:"IsCancelled"`
@@ -61,9 +64,9 @@ func CreatePointTransactionRequestHeadersByReceiver(
 ) PointTransactionReq {
 	req := PointTransactionReq{
 		Header: Header{
-			ReceiverObjectType:		pointTransactionHeader.ReceiverObjectType,
-			ReceiverObject:			pointTransactionHeader.ReceiverObject,
-			IsCancelled: 			pointTransactionHeader.IsCancelled,
+			ReceiverObjectType: pointTransactionHeader.ReceiverObjectType,
+			ReceiverObject:     pointTransactionHeader.ReceiverObject,
+			IsCancelled:        pointTransactionHeader.IsCancelled,
 		},
 		Accepter: []string{
 			"HeadersByReceiver",
@@ -78,9 +81,9 @@ func CreatePointTransactionRequestHeadersBySender(
 ) PointTransactionReq {
 	req := PointTransactionReq{
 		Header: Header{
-			SenderObjectType:		pointTransactionHeader.SenderObjectType,
-			SenderObject:			pointTransactionHeader.SenderObject,
-			IsCancelled: 			pointTransactionHeader.IsCancelled,
+			SenderObjectType: pointTransactionHeader.SenderObjectType,
+			SenderObject:     pointTransactionHeader.SenderObject,
+			IsCancelled:      pointTransactionHeader.IsCancelled,
 		},
 		Accepter: []string{
 			"HeadersBySender",
@@ -121,6 +124,7 @@ func PointTransactionReadsHeader(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -139,9 +143,9 @@ func PointTransactionReadsHeadersByReceiver(
 	request = CreatePointTransactionRequestHeadersByReceiver(
 		requestPram,
 		&apiInputReader.PointTransactionHeader{
-			ReceiverObjectType:		input.PointTransactionHeader.ReceiverObjectType,
-			ReceiverObject:			input.PointTransactionHeader.ReceiverObject,
-			IsCancelled:			input.PointTransactionHeader.IsCancelled,
+			ReceiverObjectType: input.PointTransactionHeader.ReceiverObjectType,
+			ReceiverObject:     input.PointTransactionHeader.ReceiverObject,
+			IsCancelled:        input.PointTransactionHeader.IsCancelled,
 		},
 	)
 
@@ -159,6 +163,7 @@ func PointTransactionReadsHeadersByReceiver(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -177,9 +182,9 @@ func PointTransactionReadsHeadersBySender(
 	request = CreatePointTransactionRequestHeadersBySender(
 		requestPram,
 		&apiInputReader.PointTransactionHeader{
-			SenderObjectType:		input.PointTransactionHeader.SenderObjectType,
-			SenderObject:			input.PointTransactionHeader.SenderObject,
-			IsCancelled:			input.PointTransactionHeader.IsCancelled,
+			SenderObjectType: input.PointTransactionHeader.SenderObjectType,
+			SenderObject:     input.PointTransactionHeader.SenderObject,
+			IsCancelled:      input.PointTransactionHeader.IsCancelled,
 		},
 	)
 
@@ -197,6 +202,7 @@ func PointTransactionReadsHeadersBySender(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

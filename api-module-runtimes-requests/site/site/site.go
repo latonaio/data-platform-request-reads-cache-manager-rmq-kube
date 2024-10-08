@@ -21,21 +21,21 @@ type Header struct {
 	SiteType                     *string   `json:"SiteType"`
 	SiteOwner                    *int      `json:"SiteOwner"`
 	SiteOwnerBusinessPartnerRole *string   `json:"SiteOwnerBusinessPartnerRole"`
-	Brand						 *int	   `json:"Brand"`
+	Brand                        *int      `json:"Brand"`
 	PersonResponsible            *string   `json:"PersonResponsible"`
-	URL				             *string   `json:"URL"`
+	URL                          *string   `json:"URL"`
 	ValidityStartDate            *string   `json:"ValidityStartDate"`
 	ValidityStartTime            *string   `json:"ValidityStartTime"`
 	ValidityEndDate              *string   `json:"ValidityEndDate"`
 	ValidityEndTime              *string   `json:"ValidityEndTime"`
-	DailyOperationStartTime		 *string   `json:"DailyOperationStartTime"`
-	DailyOperationEndTime		 *string   `json:"DailyOperationEndTime"`
+	DailyOperationStartTime      *string   `json:"DailyOperationStartTime"`
+	DailyOperationEndTime        *string   `json:"DailyOperationEndTime"`
 	Description                  *string   `json:"Description"`
 	LongText                     *string   `json:"LongText"`
 	Introduction                 *string   `json:"Introduction"`
-	OperationRemarks			 *string   `json:"OperationRemarks"`
-	PhoneNumber					 *string   `json:"PhoneNumber"`
-	SuperiorSite				 *int	   `json:"SuperiorSite"`
+	OperationRemarks             *string   `json:"OperationRemarks"`
+	PhoneNumber                  *string   `json:"PhoneNumber"`
+	SuperiorSite                 *int      `json:"SuperiorSite"`
 	Project                      *int      `json:"Project"`
 	WBSElement                   *int      `json:"WBSElement"`
 	Tag1                         *string   `json:"Tag1"`
@@ -46,12 +46,13 @@ type Header struct {
 	CreationTime                 *string   `json:"CreationTime"`
 	LastChangeDate               *string   `json:"LastChangeDate"`
 	LastChangeTime               *string   `json:"LastChangeTime"`
-	CreateUser					 *int	   `json:"CreateUser"`
-	LastChangeUser				 *int	   `json:"LastChangeUser"`
-	IsReleased					 *bool	   `json:"IsReleased"`
+	CreateUser                   *int      `json:"CreateUser"`
+	LastChangeUser               *int      `json:"LastChangeUser"`
+	IsReleased                   *bool     `json:"IsReleased"`
 	IsMarkedForDeletion          *bool     `json:"IsMarkedForDeletion"`
 	Partner                      []Partner `json:"Partner"`
 	Address                      []Address `json:"Address"`
+	Counter                      []Counter `json:"Counter"`
 }
 
 type Partner struct {
@@ -89,6 +90,15 @@ type Address struct {
 	ZCoordinate    *float32 `json:"ZCoordinate"`
 }
 
+type Counter struct {
+	Site           int     `json:"Site"`
+	NumberOfLikes  *int    `json:"NumberOfLikes"`
+	CreationDate   *string `json:"CreationDate"`
+	CreationTime   *string `json:"CreationTime"`
+	LastChangeDate *string `json:"LastChangeDate"`
+	LastChangeTime *string `json:"LastChangeTime"`
+}
+
 func CreateSiteRequestHeader(
 	requestPram *apiInputReader.Request,
 	siteHeader *apiInputReader.SiteHeader,
@@ -96,7 +106,7 @@ func CreateSiteRequestHeader(
 	req := SiteReq{
 		Header: Header{
 			Site:                siteHeader.Site,
-			IsReleased:			 siteHeader.IsReleased,
+			IsReleased:          siteHeader.IsReleased,
 			IsMarkedForDeletion: siteHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
@@ -112,8 +122,8 @@ func CreateSiteRequestHeaders(
 ) SiteReq {
 	req := SiteReq{
 		Header: Header{
-			IsReleased:				siteHeaders.IsReleased,
-			IsMarkedForDeletion:	siteHeaders.IsMarkedForDeletion,
+			IsReleased:          siteHeaders.IsReleased,
+			IsMarkedForDeletion: siteHeaders.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"Headers",
@@ -321,9 +331,41 @@ func SiteReadsHeadersBySites(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
+}
+
+func CreateSiteRequestCounter(
+	requestPram *apiInputReader.Request,
+	siteCounter *apiInputReader.SiteCounter,
+) SiteReq {
+	req := SiteReq{
+		Header: Header{
+			Site: siteCounter.Site,
+			Counter: []Counter{
+				{},
+			},
+		},
+		Accepter: []string{
+			"Counter",
+		},
+	}
+	return req
+}
+
+func CreateSiteRequestCountersBySites(
+	requestPram *apiInputReader.Request,
+	siteHeaders []Header,
+) SiteReq {
+	req := SiteReq{
+		Headers: siteHeaders,
+		Accepter: []string{
+			"CountersBySites",
+		},
+	}
+	return req
 }
 
 func SiteReads(
@@ -433,6 +475,15 @@ func SiteReads(
 		)
 	}
 
+	if accepter == "Counter" {
+		request = CreateSiteRequestCounter(
+			requestPram,
+			&apiInputReader.SiteCounter{
+				Site: input.SiteCounter.Site,
+			},
+		)
+	}
+
 	marshaledRequest, err := json.Marshal(request)
 	if err != nil {
 		services.HandleError(
@@ -447,6 +498,40 @@ func SiteReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func SiteReadsCountersByEvents(
+	requestPram *apiInputReader.Request,
+	input []Header,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_SITE_SRV"
+	aPIType := "reads"
+
+	request := CreateSiteRequestCountersBySites(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody

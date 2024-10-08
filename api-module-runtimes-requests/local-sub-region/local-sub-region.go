@@ -151,6 +151,7 @@ func LocalSubRegionReadsLocalSubRegions(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -185,6 +186,7 @@ func LocalSubRegionReadsLocalSubRegionsByLocalSubRegions(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -219,6 +221,7 @@ func LocalSubRegionReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -253,6 +256,7 @@ func LocalSubRegionReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

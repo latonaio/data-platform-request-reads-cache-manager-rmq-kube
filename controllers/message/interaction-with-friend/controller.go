@@ -7,7 +7,7 @@ import (
 	apiModuleRuntimesRequestsFriend "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/friend"
 	apiModuleRuntimesRequestsLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-region"
 	apiModuleRuntimesRequestsLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-sub-region"
-	apiModuleRuntimesRequestsMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/message"
+	apiModuleRuntimesRequestsMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/message/message"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesFriend "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/friend"
 	apiModuleRuntimesResponsesLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-region"
@@ -42,7 +42,12 @@ type MessageInteractionWithFriend struct {
 func (controller *MessageInteractionWithFriendController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	friend, _ := controller.GetInt("friend")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	messageType := controller.GetString("messageType")
 	redisKeyCategory1 := "sender"
 	redisKeyCategory2 := "friend"
@@ -76,10 +81,16 @@ func (controller *MessageInteractionWithFriendController) Get() {
 		},
 	}
 
+	docType := "IMAGE"
+
 	BusinessPartnerPersonMe = apiInputReader.BusinessPartner{
 		BusinessPartnerPerson: &apiInputReader.BusinessPartnerPerson{
 			BusinessPartner:     *controller.UserInfo.BusinessPartner,
 			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
+		BusinessPartnerDocGeneralDoc: &apiInputReader.BusinessPartnerDocGeneralDoc{
+			BusinessPartner: *controller.UserInfo.BusinessPartner,
+			DocType:         &docType,
 		},
 	}
 
@@ -237,9 +248,21 @@ func (
 ) createBusinessPartnerDocRequestMe(
 	requestPram *apiInputReader.Request,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes {
+	var input apiInputReader.BusinessPartner
+
+	docType := "IMAGE"
+
+	input = apiInputReader.BusinessPartner{
+		BusinessPartnerDocGeneralDoc: &apiInputReader.BusinessPartnerDocGeneralDoc{
+			BusinessPartner: *controller.UserInfo.BusinessPartner,
+			DocType:         &docType,
+		},
+	}
+
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes{}
 	responseBody := apiModuleRuntimesRequestsBusinessPartnerDoc.BusinessPartnerDocReads(
 		requestPram,
+		input,
 		&controller.Controller,
 		"GeneralDoc",
 	)
@@ -302,12 +325,17 @@ func (
 	controller *MessageInteractionWithFriendController,
 ) createBusinessPartnerDocRequestFriend(
 	requestPram *apiInputReader.Request,
+	inputBusinessPartnerPersonFriend apiInputReader.BusinessPartner,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes {
+	var input = apiModuleRuntimesRequestsBusinessPartner.Person{
+		BusinessPartner: inputBusinessPartnerPersonFriend.BusinessPartnerPerson.BusinessPartner,
+	}
+
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes{}
-	responseBody := apiModuleRuntimesRequestsBusinessPartnerDoc.BusinessPartnerDocReads(
+	responseBody := apiModuleRuntimesRequestsBusinessPartner.BusinessPartnerReadsPerson(
 		requestPram,
+		input,
 		&controller.Controller,
-		"GeneralDoc",
 	)
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
@@ -545,6 +573,7 @@ func (
 
 	businessPartnerGeneralDocResFriend := controller.createBusinessPartnerDocRequestFriend(
 		controller.UserInfo,
+		inputBusinessPartnerPersonFriend,
 	)
 
 	businessPartnerPersonResFriend := controller.createBusinessPartnerRequestPersonFriend(
@@ -616,10 +645,12 @@ func (
 			apiOutputFormatter.MessageHeader{
 				Message:        v.Message,
 				LongText:       v.LongText,
+				MessageIsRead:  v.MessageIsRead,
 				CreationDate:   v.CreationDate,
 				CreationTime:   v.CreationTime,
 				LastChangeDate: v.LastChangeDate,
 				LastChangeTime: v.LastChangeTime,
+				IsCancelled:    v.IsCancelled,
 			},
 		)
 	}
@@ -629,10 +660,12 @@ func (
 			apiOutputFormatter.MessageHeader{
 				Message:        v.Message,
 				LongText:       v.LongText,
+				MessageIsRead:  v.MessageIsRead,
 				CreationDate:   v.CreationDate,
 				CreationTime:   v.CreationTime,
 				LastChangeDate: v.LastChangeDate,
 				LastChangeTime: v.LastChangeTime,
+				IsCancelled:    v.IsCancelled,
 			},
 		)
 	}

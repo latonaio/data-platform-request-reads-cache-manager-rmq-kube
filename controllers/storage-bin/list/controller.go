@@ -32,7 +32,12 @@ type StorageBinListController struct {
 func (controller *StorageBinListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "storage-bin"
 	redisKeyCategory2 := "list"
 	//userType :=

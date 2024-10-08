@@ -4,9 +4,12 @@ type Event struct {
 	EventHeader             	[]EventHeader             		`json:"EventHeader"`
 	EventPartner            	[]EventPartner            		`json:"EventPartner"`
 	EventAddress            	[]EventAddress            		`json:"EventAddress"`
+	EventParticipation			[]EventParticipation			`json:"EventParticipation"`
+	EventAttendance				[]EventAttendance				`json:"EventAttendance"`
 	EventPointConditionElement	[]EventPointConditionElement	`json:"EventPointConditionElement"`
 	EventAddressWithHeader  	[]EventAddressWithHeader  		`json:"EventAddressWithHeader"`
 	EventPartnerWithAddress 	[]EventPartnerWithAddress 		`json:"EventPartnerWithAddress"`
+	EventCounter				[]EventCounter					`json:"EventCounter"`
 	MountPath               	*string                   		`json:"mount_path"`
 	Accepter                	[]string                  		`json:"Accepter"`
 }
@@ -20,6 +23,7 @@ type EventHeader struct {
 	EventOwnerBusinessPartnerRole		string	`json:"EventOwnerBusinessPartnerRole"`
 	EventOwnerBusinessPartnerRoleName	string	`json:"EventOwnerBusinessPartnerRoleName"`
 	PersonResponsible       			string  `json:"PersonResponsible"`
+	URL									*string	`json:"URL"`
 	ValidityStartDate       			string  `json:"ValidityStartDate"`
 	ValidityStartTime       			string  `json:"ValidityStartTime"`
 	ValidityEndDate         			string  `json:"ValidityEndDate"`
@@ -33,6 +37,9 @@ type EventHeader struct {
 	Introduction            			*string `json:"Introduction"`
 	Site                    			int     `json:"Site"`
 	SiteDescription            			string  `json:"SiteDescription"`
+	Capacity							int		`json:"Capacity"`
+	Shop                    			*int    `json:"Shop"`
+	ShopDescription            			*string `json:"ShopDescription"`
 	Tag1                    			*string `json:"Tag1"`
 	Tag2                    			*string `json:"Tag2"`
 	Tag3                    			*string `json:"Tag3"`
@@ -45,12 +52,17 @@ type EventHeader struct {
 	QuestionnaireTypeName				*string `json:"QuestionnaireTypeName"`
 	QuestionnaireTemplate				*string `json:"QuestionnaireTemplate"`
 	QuestionnaireTemplateName			*string `json:"QuestionnaireTemplateName"`
+	LastChangeDate                		string  `json:"LastChangeDate"`
+	LastChangeTime                		string  `json:"LastChangeTime"`
 	CreateUser						 	int	 	`json:"CreateUser"`
 	CreateUserFullName				 	*string `json:"CreateUserFullName"`
 	CreateUserNickName				 	*string `json:"CreateUserNickName"`
 	LastChangeUser					 	int 	`json:"LastChangeUser"`
 	LastChangeUserFullName			 	*string `json:"LastChangeUserFullName"`
 	LastChangeUserNickName			 	*string `json:"LastChangeUserNickName"`
+	NumberOfLikes						*int	`json:"NumberOfLikes"`
+	NumberOfParticipations				*int	`json:"NumberOfParticipations"`
+	NumberOfAttendances					*int	`json:"NumberOfAttendances"`
 	Images                  			Images  `json:"Images"`
 }
 
@@ -90,6 +102,21 @@ type EventAddress struct {
 	Room               *int    `json:"Room"`
 }
 
+type EventParticipation struct {
+	Event							int		`json:"Event"`
+	Participator					int		`json:"Participator"`
+	Participation					int		`json:"Participation"`
+	IsCancelled						*bool	`json:"IsCancelled"`
+}
+
+type EventAttendance struct {
+	Event							int		`json:"Event"`
+	Attender						int		`json:"Attender"`
+	Attendance						int		`json:"Attendance"`
+	Participation					int		`json:"Participation"`
+	IsCancelled						*bool	`json:"IsCancelled"`
+}
+
 type EventPointConditionElement struct {
 	Event							int		`json:"Event"`
 	PointConditionRecord			int		`json:"PointConditionRecord"`
@@ -103,27 +130,40 @@ type EventPointConditionElement struct {
 	PlusMinus						string	`json:"PlusMinus"`
 }
 
+type EventCounter struct {
+	Event					int		`json:"Event"`
+	NumberOfLikes			int		`json:"NumberOfLikes"`
+	NumberOfParticipations	int		`json:"NumberOfParticipations"`
+	NumberOfAttendances		int		`json:"NumberOfAttendances"`
+}
+
 type EventAddressWithHeader struct {
-	Event             int     `json:"Event"`
-	AddressID         int     `json:"AddressID"`
-	LocalSubRegion    string  `json:"LocalSubRegion"`
-	LocalRegion       string  `json:"LocalRegion"`
-	EventType         string  `json:"EventType"`
-	EventOwner        int     `json:"EventOwner"`
-	EventOwnerName    string  `json:"EventOwnerName"`
-	ValidityStartDate string  `json:"ValidityStartDate"`
-	ValidityStartTime string  `json:"ValidityStartTime"`
-	ValidityEndDate   string  `json:"ValidityEndDate"`
-	ValidityEndTime   string  `json:"ValidityEndTime"`
-	Description       string  `json:"Description"`
-	LongText          string  `json:"LongText"`
-	Introduction      *string `json:"Introduction"`
-	Site              int     `json:"Site"`
-	Tag1              *string `json:"Tag1"`
-	Tag2              *string `json:"Tag2"`
-	Tag3              *string `json:"Tag3"`
-	Tag4              *string `json:"Tag4"`
-	Images            Images  `json:"Images"`
+	Event             		int     `json:"Event"`
+	AddressID         		int     `json:"AddressID"`
+	LocalSubRegion    		string  `json:"LocalSubRegion"`
+	LocalRegion       		string  `json:"LocalRegion"`
+	EventType         		string  `json:"EventType"`
+	EventOwner        		int     `json:"EventOwner"`
+	EventOwnerName    		string  `json:"EventOwnerName"`
+	ValidityStartDate 		string  `json:"ValidityStartDate"`
+	ValidityStartTime 		string  `json:"ValidityStartTime"`
+	ValidityEndDate   		string  `json:"ValidityEndDate"`
+	ValidityEndTime   		string  `json:"ValidityEndTime"`
+	Description       		string  `json:"Description"`
+	LongText          		string  `json:"LongText"`
+	Introduction      		*string `json:"Introduction"`
+	Site              		int     `json:"Site"`
+	Capacity		  		int		`json:"Capacity"`
+	Tag1              		*string `json:"Tag1"`
+	Tag2              		*string `json:"Tag2"`
+	Tag3              		*string `json:"Tag3"`
+	Tag4              		*string `json:"Tag4"`
+	LastChangeDate          string  `json:"LastChangeDate"`
+	LastChangeTime          string  `json:"LastChangeTime"`
+	NumberOfLikes			*int	`json:"NumberOfLikes"`
+	NumberOfParticipations	*int	`json:"NumberOfParticipations"`
+	NumberOfAttendances		*int	`json:"NumberOfAttendances"`
+	Images            		Images  `json:"Images"`
 }
 
 type EventPartnerWithAddress struct {

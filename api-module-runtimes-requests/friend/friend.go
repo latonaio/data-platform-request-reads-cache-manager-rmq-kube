@@ -1,4 +1,4 @@
-package friend
+package apiModuleRuntimesRequestsFriend
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
@@ -55,7 +55,7 @@ func CreateFriendRequestGenerals(
 ) FriendReq {
 	req := FriendReq{
 		General: General{
-			BusinessPartner:     friendGenerals.Friend,
+			BusinessPartner:     friendGenerals.BusinessPartner,
 			FriendIsBlocked:     &friendGenerals.FriendIsBlocked,
 			IsMarkedForDeletion: friendGenerals.IsMarkedForDeletion,
 		},
@@ -114,6 +114,7 @@ func FriendReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

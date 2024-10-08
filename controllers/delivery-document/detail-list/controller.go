@@ -34,7 +34,12 @@ const (
 func (controller *DeliveryDocumentDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "detail-list"
 	userType := controller.GetString(":userType") // deliverToParty or deliverFromParty

@@ -14,10 +14,12 @@ type PointTransactionHeader struct {
 	PointTransactionTime                  string  `json:"PointTransactionTime"`
 	SenderObjectType					  string  `json:"SenderObjectType"`
 	SenderObject						  int	  `json:"SenderObject"`
-//	SenderName                            string  `json:"SenderName"`
+	SenderObjectBusinessPartnerName		  string  `json:"SenderObjectBusinessPartnerName"`
+	SenderObjectBusinessPartnerRoleName	  string  `json:"SenderObjectBusinessPartnerRoleName"`
 	ReceiverObjectType				      string  `json:"ReceiverObjectType"`
 	ReceiverObject						  int	  `json:"ReceiverObject"`
-//	ReceiverName                          string  `json:"ReceiverName"`
+	ReceiverObjectBusinessPartnerName	  string  `json:"ReceiverObjectBusinessPartnerName"`
+	ReceiverObjectBusinessPartnerRoleName string  `json:"ReceiverObjectBusinessPartnerRoleName"`
 	PointSymbol                           string  `json:"PointSymbol"`
 	PlusMinus                             string  `json:"PlusMinus"`
 	PointTransactionAmount                float32 `json:"PointTransactionAmount"`
@@ -30,6 +32,9 @@ type PointTransactionHeader struct {
 	ReceiverPointBalanceAfterTransaction  float32 `json:"ReceiverPointBalanceAfterTransaction"`
 	Attendance							  *int	  `json:"Attendance"`
 	Participation						  *int	  `json:"Participation"`
+	Invitation							  *int	  `json:"Invitation"`
+	ValidityStartDate					  string  `json:"ValidityStartDate"`
+	ValidityEndDate						  string  `json:"ValidityEndDate"`
 	CreationDate                          string  `json:"CreationDate"`
 	CreationTime                          string  `json:"CreationTime"`
 	IsCancelled                           *bool   `json:"IsCancelled"`

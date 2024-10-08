@@ -8,6 +8,7 @@ type Request struct {
 	UserType            *string `json:"UserType"`
 	IsCancelled         *bool   `json:"IsCancelled"`
 	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+	RuntimeSessionID    *string `json:"RuntimeSessionId"`
 }
 
 type RedisCacheApiName map[string]map[string]interface{}

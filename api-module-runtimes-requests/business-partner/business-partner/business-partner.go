@@ -17,46 +17,50 @@ type BusinessPartnerReq struct {
 }
 
 type General struct {
-	BusinessPartner               int          `json:"BusinessPartner"`
-	BusinessPartnerType           *string      `json:"BusinessPartnerType"`
-	BusinessPartnerFullName       *string      `json:"BusinessPartnerFullName"`
-	BusinessPartnerName           *string      `json:"BusinessPartnerName"`
-	Industry                      *string      `json:"Industry"`
-	LegalEntityRegistration       *string      `json:"LegalEntityRegistration"`
-	Country                       *string      `json:"Country"`
-	Language                      *string      `json:"Language"`
-	Currency                      *string      `json:"Currency"`
-	Representative           	  *string 	   `json:"Representative"`
-	PhoneNumber           		  *string 	   `json:"PhoneNumber"`
-	OrganizationBPName1           *string      `json:"OrganizationBPName1"`
-	OrganizationBPName2           *string      `json:"OrganizationBPName2"`
-	OrganizationBPName3           *string      `json:"OrganizationBPName3"`
-	OrganizationBPName4           *string      `json:"OrganizationBPName4"`
-	BPTag1                        *string      `json:"BPTag1"`
-	BPTag2                        *string      `json:"BPTag2"`
-	BPTag3                        *string      `json:"BPTag3"`
-	BPTag4                        *string      `json:"BPTag4"`
-	OrganizationFoundationDate    *string      `json:"OrganizationFoundationDate"`
-	OrganizationLiquidationDate   *string      `json:"OrganizationLiquidationDate"`
-	BusinessPartnerBirthplaceName *string      `json:"BusinessPartnerBirthplaceName"`
-	BusinessPartnerDeathDate      *string      `json:"BusinessPartnerDeathDate"`
-	GroupBusinessPartnerName1     *string      `json:"GroupBusinessPartnerName1"`
-	GroupBusinessPartnerName2     *string      `json:"GroupBusinessPartnerName2"`
-	AddressID                     *int         `json:"AddressID"`
-	BusinessPartnerIDByExtSystem  *string      `json:"BusinessPartnerIDByExtSystem"`
-	BusinessPartnerIsBlocked      *bool        `json:"BusinessPartnerIsBlocked"`
-	CertificateAuthorityChain     *string      `json:"CertificateAuthorityChain"`
-	UsageControlChain             *string      `json:"UsageControlChain"`
-	CreationDate                  *string      `json:"CreationDate"`
-	LastChangeDate                *string      `json:"LastChangeDate"`
-	IsMarkedForDeletion           *bool        `json:"IsMarkedForDeletion"`
-	Role                          []Role       `json:"Role"`
-	Person                        []Person     `json:"Person"`
-	Address                       []Address    `json:"Address"`
-	GPS                           []GPS    	   `json:"GPS"`
-	Rank                       	  []Rank       `json:"Rank"`
-	FinInst                       []FinInst    `json:"FinInst"`
-	Accounting                    []Accounting `json:"Accounting"`
+	BusinessPartner               int                  `json:"BusinessPartner"`
+	BusinessPartnerType           *string              `json:"BusinessPartnerType"`
+	BusinessPartnerFullName       *string              `json:"BusinessPartnerFullName"`
+	BusinessPartnerName           *string              `json:"BusinessPartnerName"`
+	Industry                      *string              `json:"Industry"`
+	LegalEntityRegistration       *string              `json:"LegalEntityRegistration"`
+	Country                       *string              `json:"Country"`
+	Language                      *string              `json:"Language"`
+	Currency                      *string              `json:"Currency"`
+	Representative                *string              `json:"Representative"`
+	PhoneNumber                   *string              `json:"PhoneNumber"`
+	OrganizationBPName1           *string              `json:"OrganizationBPName1"`
+	OrganizationBPName2           *string              `json:"OrganizationBPName2"`
+	OrganizationBPName3           *string              `json:"OrganizationBPName3"`
+	OrganizationBPName4           *string              `json:"OrganizationBPName4"`
+	BPTag1                        *string              `json:"BPTag1"`
+	BPTag2                        *string              `json:"BPTag2"`
+	BPTag3                        *string              `json:"BPTag3"`
+	BPTag4                        *string              `json:"BPTag4"`
+	OrganizationFoundationDate    *string              `json:"OrganizationFoundationDate"`
+	OrganizationLiquidationDate   *string              `json:"OrganizationLiquidationDate"`
+	BusinessPartnerBirthplaceName *string              `json:"BusinessPartnerBirthplaceName"`
+	BusinessPartnerDeathDate      *string              `json:"BusinessPartnerDeathDate"`
+	GroupBusinessPartnerName1     *string              `json:"GroupBusinessPartnerName1"`
+	GroupBusinessPartnerName2     *string              `json:"GroupBusinessPartnerName2"`
+	AddressID                     *int                 `json:"AddressID"`
+	BusinessPartnerIDByExtSystem  *string              `json:"BusinessPartnerIDByExtSystem"`
+	BusinessPartnerIsBlocked      *bool                `json:"BusinessPartnerIsBlocked"`
+	CertificateAuthorityChain     *string              `json:"CertificateAuthorityChain"`
+	UsageControlChain             *string              `json:"UsageControlChain"`
+	Withdrawal           		  *bool				   `json:"Withdrawal"`
+	CreationDate                  *string              `json:"CreationDate"`
+	LastChangeDate                *string              `json:"LastChangeDate"`
+	IsReleased           		  *bool   			   `json:"IsReleased"`
+	IsMarkedForDeletion           *bool                `json:"IsMarkedForDeletion"`
+	Role                          []Role               `json:"Role"`
+	Person                        []Person             `json:"Person"`
+	Address                       []Address            `json:"Address"`
+	SNS                           []SNS                `json:"SNS"`
+	GPS                           []GPS                `json:"GPS"`
+	Rank                          []Rank               `json:"Rank"`
+	PersonOrganization            []PersonOrganization `json:"PersonOrganization"`
+	FinInst                       []FinInst            `json:"FinInst"`
+	Accounting                    []Accounting         `json:"Accounting"`
 }
 
 type Role struct {
@@ -70,28 +74,29 @@ type Role struct {
 }
 
 type Person struct {
-	BusinessPartner				int		`json:"BusinessPartner"`
-	BusinessPartnerType			*string	`json:"BusinessPartnerType"`
-	FirstName					*string	`json:"FirstName"`
-	LastName					*string	`json:"LastName"`
-	FullName					*string	`json:"FullName"`
-	MiddleName					*string	`json:"MiddleName"`
-	NickName					*string	`json:"NickName"`
-	Gender						*string	`json:"Gender"`
-	Language					*string	`json:"Language"`
-	CorrespondenceLanguage		*string	`json:"CorrespondenceLanguage"`
-	BirthDate					*string	`json:"BirthDate"`
-	Nationality					*string	`json:"Nationality"`
-	EmailAddress				*string	`json:"EmailAddress"`
-	MobilePhoneNumber			*string	`json:"MobilePhoneNumber"`
-	ProfileComment				*string	`json:"ProfileComment"`
-	PreferableLocalSubRegion	*string `json:"PreferableLocalSubRegion"`
-	PreferableLocalRegion		*string `json:"PreferableLocalRegion"`
-	PreferableCountry			*string `json:"PreferableCountry"`
-	ActPurpose					*string `json:"ActPurpose"`
-	CreationDate				*string	`json:"CreationDate"`
-	LastChangeDate				*string	`json:"LastChangeDate"`
-	IsMarkedForDeletion			*bool	`json:"IsMarkedForDeletion"`
+	BusinessPartner          int     `json:"BusinessPartner"`
+	BusinessPartnerType      *string `json:"BusinessPartnerType"`
+	FirstName                *string `json:"FirstName"`
+	LastName                 *string `json:"LastName"`
+	FullName                 *string `json:"FullName"`
+	MiddleName               *string `json:"MiddleName"`
+	NickName                 *string `json:"NickName"`
+	Gender                   *string `json:"Gender"`
+	Language                 *string `json:"Language"`
+	CorrespondenceLanguage   *string `json:"CorrespondenceLanguage"`
+	BirthDate                *string `json:"BirthDate"`
+	Nationality              *string `json:"Nationality"`
+	EmailAddress             *string `json:"EmailAddress"`
+	MobilePhoneNumber        *string `json:"MobilePhoneNumber"`
+	ProfileComment           *string `json:"ProfileComment"`
+	PreferableLocalSubRegion *string `json:"PreferableLocalSubRegion"`
+	PreferableLocalRegion    *string `json:"PreferableLocalRegion"`
+	PreferableCountry        *string `json:"PreferableCountry"`
+	ActPurpose               *string `json:"ActPurpose"`
+	TermsOfUseIsConfirmed	 *bool   `json:"TermsOfUseIsConfirmed"`
+	CreationDate             *string `json:"CreationDate"`
+	LastChangeDate           *string `json:"LastChangeDate"`
+	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 }
 
 type Address struct {
@@ -115,31 +120,52 @@ type Address struct {
 	Site            *int     `json:"Site"`
 }
 
+type SNS struct {
+	BusinessPartner     int     `json:"BusinessPartner"`
+	BusinessPartnerType *string `json:"BusinessPartnerType"`
+	XURL                *string `json:"XURL"`
+	InstagramURL        *string `json:"InstagramURL"`
+	TikTokURL           *string `json:"TikTokURL"`
+	PointAppsURL        *string	`json:"PointAppsURL"`
+	CreationDate        *string `json:"CreationDate"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+}
+
 type GPS struct {
-	BusinessPartner     int		`json:"BusinessPartner"`
-	BusinessPartnerType	*string	`json:"BusinessPartnerType"`
-	XCoordinate     	*float32 `json:"XCoordinate"`
-	YCoordinate     	*float32 `json:"YCoordinate"`
-	ZCoordinate     	*float32 `json:"ZCoordinate"`
-	LocalSubRegion  	*string	`json:"LocalSubRegion"`
-	LocalRegion     	*string	`json:"LocalRegion"`
-	Country         	*string	`json:"Country"`
-	CreationDate        *string	`json:"CreationDate"`
-	CreationTime        *string	`json:"CreationTime"`
-	LastChangeDate      *string	`json:"LastChangeDate"`
-	LastChangeTime      *string	`json:"LastChangeTime"`
-	IsMarkedForDeletion *bool	`json:"IsMarkedForDeletion"`
+	BusinessPartner     int      `json:"BusinessPartner"`
+	BusinessPartnerType *string  `json:"BusinessPartnerType"`
+	XCoordinate         *float32 `json:"XCoordinate"`
+	YCoordinate         *float32 `json:"YCoordinate"`
+	ZCoordinate         *float32 `json:"ZCoordinate"`
+	LocalSubRegion      *string  `json:"LocalSubRegion"`
+	LocalRegion         *string  `json:"LocalRegion"`
+	Country             *string  `json:"Country"`
+	CreationDate        *string  `json:"CreationDate"`
+	CreationTime        *string  `json:"CreationTime"`
+	LastChangeDate      *string  `json:"LastChangeDate"`
+	LastChangeTime      *string  `json:"LastChangeTime"`
+	IsMarkedForDeletion *bool    `json:"IsMarkedForDeletion"`
 }
 
 type Rank struct {
-	BusinessPartner     int 	`json:"BusinessPartner"`
-	RankType			string	`json:"RankType"`
-	Rank				*int	`json:"Rank"`
-	ValidityStartDate	*string	`json:"ValidityStartDate"`
-	ValidityEndDate     *string	`json:"ValidityEndDate"`
-	CreationDate		*string	`json:"CreationDate"`
-	LastChangeDate		*string `json:"LastChangeDate"`
-	IsMarkedForDeletion	*bool   `json:"IsMarkedForDeletion"`
+	BusinessPartner     int     `json:"BusinessPartner"`
+	RankType            string  `json:"RankType"`
+	Rank                *int    `json:"Rank"`
+	ValidityStartDate   *string `json:"ValidityStartDate"`
+	ValidityEndDate     *string `json:"ValidityEndDate"`
+	CreationDate        *string `json:"CreationDate"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+}
+
+type PersonOrganization struct {
+	BusinessPartner             int     `json:"BusinessPartner"`
+	BusinessPartnerType         *string `json:"BusinessPartnerType"`
+	OrganizationBusinessPartner *int    `json:"OrganizationBusinessPartner"`
+	CreationDate                *string `json:"CreationDate"`
+	LastChangeDate              *string `json:"LastChangeDate"`
+	IsMarkedForDeletion         *bool   `json:"IsMarkedForDeletion"`
 }
 
 type FinInst struct {
@@ -210,6 +236,9 @@ func CreateBusinessPartnerRequestRole(
 	req := BusinessPartnerReq{
 		General: General{
 			BusinessPartner: input.BusinessPartner,
+			Role: []Role{
+				{},
+			},
 		},
 		Accepter: []string{
 			"Role",
@@ -256,6 +285,29 @@ func CreateBusinessPartnerRequestAddresses(
 	return req
 }
 
+func CreateBusinessPartnerRequestSNS(
+	requestPram *apiInputReader.Request,
+	input SNS,
+) BusinessPartnerReq {
+	// TODO いったん固定値
+	isMarkedForDeletion := false
+
+	req := BusinessPartnerReq{
+		General: General{
+			BusinessPartner: input.BusinessPartner,
+			SNS: []SNS{
+				{
+					IsMarkedForDeletion: &isMarkedForDeletion,
+				},
+			},
+		},
+		Accepter: []string{
+			"SNS",
+		},
+	}
+	return req
+}
+
 func CreateBusinessPartnerRequestGPS(
 	requestPram *apiInputReader.Request,
 	input GPS,
@@ -291,7 +343,7 @@ func CreateBusinessPartnerRequestRank(
 			BusinessPartner: input.BusinessPartner,
 			Rank: []Rank{
 				{
-					RankType:			 input.RankType,
+					RankType:            input.RankType,
 					IsMarkedForDeletion: &isMarkedForDeletion,
 				},
 			},
@@ -311,6 +363,29 @@ func CreateBusinessPartnerRequestPersonsByBusinessPartners(
 		Generals: input,
 		Accepter: []string{
 			"PersonsByBusinessPartners",
+		},
+	}
+	return req
+}
+
+func CreateBusinessPartnerRequestPersonOrganization(
+	requestPram *apiInputReader.Request,
+	input PersonOrganization,
+) BusinessPartnerReq {
+	// TODO いったん固定値
+	isMarkedForDeletion := false
+
+	req := BusinessPartnerReq{
+		General: General{
+			BusinessPartner: input.BusinessPartner,
+			PersonOrganization: []PersonOrganization{
+				{
+					IsMarkedForDeletion: &isMarkedForDeletion,
+				},
+			},
+		},
+		Accepter: []string{
+			"PersonOrganization",
 		},
 	}
 	return req
@@ -345,6 +420,7 @@ func BusinessPartnerReadsGenerals(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -379,6 +455,7 @@ func BusinessPartnerReadsGeneralsByBusinessPartners(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -413,6 +490,7 @@ func BusinessPartnerReadsRole(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -447,6 +525,7 @@ func BusinessPartnerReadsPerson(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -481,6 +560,42 @@ func BusinessPartnerReadsAddresses(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func BusinessPartnerReadsSNS(
+	requestPram *apiInputReader.Request,
+	input SNS,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_BUSINESS_PARTNER_SRV"
+	aPIType := "reads"
+
+	var request BusinessPartnerReq
+
+	request = CreateBusinessPartnerRequestSNS(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -515,6 +630,7 @@ func BusinessPartnerReadsGPS(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -549,6 +665,7 @@ func BusinessPartnerReadsRank(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -583,6 +700,42 @@ func BusinessPartnerReadsPersonsByBusinessPartners(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func BusinessPartnerReadsPersonOrganization(
+	requestPram *apiInputReader.Request,
+	input PersonOrganization,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_BUSINESS_PARTNER_SRV"
+	aPIType := "reads"
+
+	var request BusinessPartnerReq
+
+	request = CreateBusinessPartnerRequestPersonOrganization(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody

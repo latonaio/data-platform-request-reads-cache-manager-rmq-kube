@@ -23,10 +23,12 @@ type Header struct {
 	Title				*string	`json:"Title"`
 	LongText			*string	`json:"LongText"`
 	MessageIsSent		*bool	`json:"MessageIsSent"`
+	MessageIsRead		*bool	`json:"MessageIsRead"`
 	CreationDate		*string	`json:"CreationDate"`
 	CreationTime		*string	`json:"CreationTime"`
 	LastChangeDate		*string	`json:"LastChangeDate"`
 	LastChangeTime		*string	`json:"LastChangeTime"`
+	IsCancelled			*bool	`json:"IsCancelled"`
 	IsMarkedForDeletion	*bool	`json:"IsMarkedForDeletion"`
 }
 
@@ -36,9 +38,9 @@ func CreateMessageRequestHeader(
 ) MessageReq {
 	req := MessageReq{
 		Header: Header{
-			Message:                messageHeader.Message,
-			MessageIsSent:			messageHeader.MessageIsSent,
-			IsMarkedForDeletion:    messageHeader.IsMarkedForDeletion,
+			Message:             messageHeader.Message,
+			MessageIsSent:       messageHeader.MessageIsSent,
+			IsMarkedForDeletion: messageHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"Header",
@@ -54,7 +56,7 @@ func CreateMessageRequestHeadersByReceiver(
 	req := MessageReq{
 		Header: Header{
 			Receiver:            messageHeader.Receiver,
-			MessageIsSent:		 messageHeader.MessageIsSent,
+			MessageIsSent:       messageHeader.MessageIsSent,
 			IsMarkedForDeletion: messageHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
@@ -71,7 +73,7 @@ func CreateMessageRequestHeadersBySender(
 	req := MessageReq{
 		Header: Header{
 			Sender:              messageHeader.Sender,
-			MessageIsSent:		 messageHeader.MessageIsSent,
+			MessageIsSent:       messageHeader.MessageIsSent,
 			IsMarkedForDeletion: messageHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
@@ -94,9 +96,9 @@ func MessageReadsHeader(
 	request = CreateMessageRequestHeader(
 		requestPram,
 		&apiInputReader.MessageHeader{
-			Message:                input.MessageHeader.Message,
-			MessageIsSent:		 	input.MessageHeader.MessageIsSent,
-			IsMarkedForDeletion:    input.MessageHeader.IsMarkedForDeletion,
+			Message:             input.MessageHeader.Message,
+			MessageIsSent:       input.MessageHeader.MessageIsSent,
+			IsMarkedForDeletion: input.MessageHeader.IsMarkedForDeletion,
 		},
 	)
 
@@ -114,6 +116,7 @@ func MessageReadsHeader(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -133,7 +136,7 @@ func MessageReadsHeadersByReceiver(
 		requestPram,
 		&apiInputReader.MessageHeader{
 			Receiver:            input.MessageHeader.Receiver,
-			MessageIsSent:		 input.MessageHeader.MessageIsSent,
+			MessageIsSent:       input.MessageHeader.MessageIsSent,
 			IsMarkedForDeletion: input.MessageHeader.IsMarkedForDeletion,
 		},
 	)
@@ -152,6 +155,7 @@ func MessageReadsHeadersByReceiver(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -171,7 +175,7 @@ func MessageReadsHeadersBySender(
 		requestPram,
 		&apiInputReader.MessageHeader{
 			Sender:              input.MessageHeader.Sender,
-			MessageIsSent:		 input.MessageHeader.MessageIsSent,
+			MessageIsSent:       input.MessageHeader.MessageIsSent,
 			IsMarkedForDeletion: input.MessageHeader.IsMarkedForDeletion,
 		},
 	)
@@ -190,6 +194,7 @@ func MessageReadsHeadersBySender(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

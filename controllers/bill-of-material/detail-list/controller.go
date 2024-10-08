@@ -31,7 +31,12 @@ type BillOfMaterialDetailListController struct {
 
 func (controller *BillOfMaterialDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	billOfMaterial, _ := controller.GetInt("billOfMaterial")
 	redisKeyCategory1 := "bill-of-material"
 	redisKeyCategory2 := "detail-list"

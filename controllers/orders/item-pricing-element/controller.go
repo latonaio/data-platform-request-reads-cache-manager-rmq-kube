@@ -34,7 +34,12 @@ const (
 )
 
 func (controller *OrdersItemPricingElementController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "orders"
 	redisKeyCategory2 := "orders-item-pricing-element"
 	orderId, _ := controller.GetInt("orderId")

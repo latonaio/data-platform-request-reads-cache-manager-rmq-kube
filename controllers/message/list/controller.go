@@ -2,7 +2,7 @@ package controllersMessageList
 
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
-	apiModuleRuntimesRequestsMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/message"
+	apiModuleRuntimesRequestsMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/message/message"
 	apiModuleRuntimesRequestsMessageType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/message-type"
 	apiModuleRuntimesResponsesMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/message"
 	apiModuleRuntimesResponsesMessageType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/message-type"
@@ -27,7 +27,12 @@ func (controller *MessageListController) Get() {
 	sender, _ := controller.GetInt("sender")
 	receiver, _ := controller.GetInt("receiver")
 	messageType := controller.GetString("messageType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "sender"
 	redisKeyCategory2 := "receiver"
 	redisKeyCategory3 := "messageType"
@@ -262,10 +267,12 @@ func (
 				MessageTypeName: messageTypeTextMapperByReceiver[v.MessageType].MessageTypeName,
 				Title:           v.Title,
 				LongText:        v.LongText,
+				MessageIsRead:	 v.MessageIsRead,
 				CreationDate:    v.CreationDate,
 				CreationTime:    v.CreationTime,
 				LastChangeDate:  v.LastChangeDate,
 				LastChangeTime:  v.LastChangeTime,
+				IsCancelled:	 v.IsCancelled,
 			},
 		)
 	}
@@ -278,10 +285,12 @@ func (
 				MessageTypeName: messageTypeTextMapperBySender[v.MessageType].MessageTypeName,
 				Title:           v.Title,
 				LongText:        v.LongText,
+				MessageIsRead:	 v.MessageIsRead,
 				CreationDate:    v.CreationDate,
 				CreationTime:    v.CreationTime,
 				LastChangeDate:  v.LastChangeDate,
 				LastChangeTime:  v.LastChangeTime,
+				IsCancelled:	 v.IsCancelled,
 			},
 		)
 	}

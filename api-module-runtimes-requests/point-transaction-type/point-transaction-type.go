@@ -10,26 +10,26 @@ import (
 )
 
 type PointTransactionTypeReq struct {
-	PointTransactionType   PointTransactionType    `json:"PointTransactionType"`
-	PointTransactionTypes  []PointTransactionType  `json:"PointTransactionTypes"`
-	Accepter               []string `json:"accepter"`
+	PointTransactionType  PointTransactionType   `json:"PointTransactionType"`
+	PointTransactionTypes []PointTransactionType `json:"PointTransactionTypes"`
+	Accepter              []string               `json:"accepter"`
 }
 
 type PointTransactionType struct {
-	PointTransactionType    string  `json:"PointTransactionType"`
-	CreationDate            *string `json:"CreationDate"`
-	LastChangeDate          *string `json:"LastChangeDate"`
-	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
-	Text                    []Text  `json:"Text"`
+	PointTransactionType string  `json:"PointTransactionType"`
+	CreationDate         *string `json:"CreationDate"`
+	LastChangeDate       *string `json:"LastChangeDate"`
+	IsMarkedForDeletion  *bool   `json:"IsMarkedForDeletion"`
+	Text                 []Text  `json:"Text"`
 }
 
 type Text struct {
-	PointTransactionType       string  `json:"PointTransactionType"`
-	Language                   string  `json:"Language"`
-	PointTransactionTypeName   *string `json:"PointTransactionTypeName"`
-	CreationDate               *string `json:"CreationDate"`
-	LastChangeDate             *string `json:"LastChangeDate"`
-	IsMarkedForDeletion        *bool   `json:"IsMarkedForDeletion"`
+	PointTransactionType     string  `json:"PointTransactionType"`
+	Language                 string  `json:"Language"`
+	PointTransactionTypeName *string `json:"PointTransactionTypeName"`
+	CreationDate             *string `json:"CreationDate"`
+	LastChangeDate           *string `json:"LastChangeDate"`
+	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 }
 
 func CreatePointTransactionTypeRequestPointTransactionTypesByPointTransactionTypes(
@@ -54,8 +54,8 @@ func CreatePointTransactionTypeRequestPointTransactionTypes(
 	req := PointTransactionTypeReq{
 		PointTransactionTypes: []PointTransactionType{
 			{
-				PointTransactionType:  input.PointTransactionType,
-				IsMarkedForDeletion: &isMarkedForDeletion,
+				PointTransactionType: input.PointTransactionType,
+				IsMarkedForDeletion:  &isMarkedForDeletion,
 			},
 		},
 		Accepter: []string{
@@ -73,8 +73,8 @@ func CreatePointTransactionTypeRequestText(
 
 	req := PointTransactionTypeReq{
 		PointTransactionType: PointTransactionType{
-			PointTransactionType:	input.PointTransactionType,
-			IsMarkedForDeletion:	&isMarkedForDeletion,
+			PointTransactionType: input.PointTransactionType,
+			IsMarkedForDeletion:  &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -96,8 +96,8 @@ func CreatePointTransactionTypeRequestTexts(
 	isMarkedForDeletion := false
 
 	req := PointTransactionTypeReq{
-		PointTransactionType:        PointTransactionType{
-			PointTransactionType:    input.PointTransactionType,
+		PointTransactionType: PointTransactionType{
+			PointTransactionType: input.PointTransactionType,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func PointTransactionTypeReadsPointTransactionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func PointTransactionTypeReadsPointTransactionTypesByPointTransactionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func PointTransactionTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func PointTransactionTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

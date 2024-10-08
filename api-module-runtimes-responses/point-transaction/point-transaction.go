@@ -28,6 +28,9 @@ type Header struct {
 	ReceiverPointBalanceAfterTransaction	float32	`json:"ReceiverPointBalanceAfterTransaction"`
 	Attendance								*int	`json:"Attendance"`
 	Participation							*int	`json:"Participation"`
+	Invitation								*int	`json:"Invitation"`
+	ValidityStartDate						string	`json:"ValidityStartDate"`
+	ValidityEndDate							string	`json:"ValidityEndDate"`
 	CreationDate							string	`json:"CreationDate"`
 	CreationTime							string	`json:"CreationTime"`
 	IsCancelled								*bool	`json:"IsCancelled"`

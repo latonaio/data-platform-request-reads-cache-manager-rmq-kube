@@ -18,13 +18,13 @@ type InspectionLotMillSheetPdfReq struct {
 }
 
 type Header struct {
-	InspectionLot           			int    `json:"InspectionLot"`
-	InspectionPlantBusinessPartnerName	string `json:"InspectionPlantBusinessPartnerName"`
-	InspectionLotDate       			string `json:"InspectionLotDate"`
-	InspectionSpecification 			string `json:"InspectionSpecification"`
-	Product                 			string `json:"Product"`
-	ProductionOrder         			*int   `json:"ProductionOrder"`
-	ProductionOrderItem    	 			*int   `json:"ProductionOrderItem"`
+	InspectionLot                      int    `json:"InspectionLot"`
+	InspectionPlantBusinessPartnerName string `json:"InspectionPlantBusinessPartnerName"`
+	InspectionLotDate                  string `json:"InspectionLotDate"`
+	InspectionSpecification            string `json:"InspectionSpecification"`
+	Product                            string `json:"Product"`
+	ProductionOrder                    *int   `json:"ProductionOrder"`
+	ProductionOrderItem                *int   `json:"ProductionOrderItem"`
 }
 
 type SpecDetails struct {
@@ -80,13 +80,13 @@ func FunctionInspectionLotMillSheetPdfGenerates(
 
 		for i, header := range input.InspectionLotHeader {
 			request.Header[i] = Header{
-				InspectionLot:           			header.InspectionLot,
-				InspectionPlantBusinessPartnerName:	header.InspectionPlantBusinessPartnerName,
-				InspectionLotDate:       			header.InspectionLotDate,
-				InspectionSpecification: 			*header.InspectionSpecification,
-				Product:                 			header.Product,
-				ProductionOrder:         			header.ProductionOrder,
-				ProductionOrderItem:     			header.ProductionOrderItem,
+				InspectionLot:                      header.InspectionLot,
+				InspectionPlantBusinessPartnerName: header.InspectionPlantBusinessPartnerName,
+				InspectionLotDate:                  header.InspectionLotDate,
+				InspectionSpecification:            *header.InspectionSpecification,
+				Product:                            header.Product,
+				ProductionOrder:                    header.ProductionOrder,
+				ProductionOrderItem:                header.ProductionOrderItem,
 			}
 		}
 
@@ -141,6 +141,7 @@ func FunctionInspectionLotMillSheetPdfGenerates(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		nil,
 	)
 
 	return responseBody

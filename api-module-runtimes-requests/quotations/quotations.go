@@ -51,8 +51,8 @@ type Header struct {
 	Incoterms                        *string  `json:"Incoterms"`
 	PaymentTerms                     *string  `json:"PaymentTerms"`
 	PaymentMethod                    *string  `json:"PaymentMethod"`
-	Contract		                 *int     `json:"Contract"`
-	ContractItem	                 *int     `json:"ContractItem"`
+	Contract                         *int     `json:"Contract"`
+	ContractItem                     *int     `json:"ContractItem"`
 	ReferenceDocument                *int     `json:"ReferenceDocument"`
 	AccountAssignmentGroup           *string  `json:"AccountAssignmentGroup"`
 	AccountingExchangeRate           *float32 `json:"AccountingExchangeRate"`
@@ -63,7 +63,7 @@ type Header struct {
 	HeaderBlockStatus                *bool    `json:"HeaderBlockStatus"`
 	ExternalReferenceDocument        *string  `json:"ExternalReferenceDocument"`
 	CertificateAuthorityChain        *string  `json:"CertificateAuthorityChain"`
-	UsageControlChain        		 *string  `json:"UsageControlChain"`
+	UsageControlChain                *string  `json:"UsageControlChain"`
 	CreationDate                     *string  `json:"CreationDate"`
 	LastChangeDate                   *string  `json:"LastChangeDate"`
 	IsCancelled                      *bool    `json:"IsCancelled"`
@@ -196,6 +196,7 @@ func QuotationsReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

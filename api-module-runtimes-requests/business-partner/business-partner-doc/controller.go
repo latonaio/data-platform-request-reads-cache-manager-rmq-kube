@@ -28,12 +28,18 @@ type GeneralDoc struct {
 
 func CreateBusinessPartnerDocRequestGeneralDoc(
 	requestPram *apiInputReader.Request,
+	generalDoc apiInputReader.BusinessPartnerDocGeneralDoc,
 ) BusinessPartnerDocReq {
 	docIssuerBusinessPartner := 1001 // TODO 暫定対応
 	docType := "IMAGE"
 
+	if generalDoc.DocType != nil {
+		docType = *generalDoc.DocType
+	}
+
 	req := BusinessPartnerDocReq{
 		GeneralDoc: GeneralDoc{
+			BusinessPartner: &generalDoc.BusinessPartner,
 			//DocType:                generalDoc.DocType,
 			DocType:                  &docType,
 			DocIssuerBusinessPartner: &docIssuerBusinessPartner,
@@ -48,6 +54,7 @@ func CreateBusinessPartnerDocRequestGeneralDoc(
 
 func BusinessPartnerDocReads(
 	requestPram *apiInputReader.Request,
+	input apiInputReader.BusinessPartner,
 	controller *beego.Controller,
 	accepter string,
 ) []byte {
@@ -59,6 +66,10 @@ func BusinessPartnerDocReads(
 	if accepter == "GeneralDoc" {
 		request = CreateBusinessPartnerDocRequestGeneralDoc(
 			requestPram,
+			apiInputReader.BusinessPartnerDocGeneralDoc{
+				BusinessPartner: input.BusinessPartnerDocGeneralDoc.BusinessPartner,
+				DocType:         input.BusinessPartnerDocGeneralDoc.DocType,
+			},
 		)
 	}
 
@@ -76,6 +87,7 @@ func BusinessPartnerDocReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

@@ -17,9 +17,11 @@ type MessageHeader struct {
 	Language			string	`json:"Language"`
 	Title				string  `json:"Title"`
 	LongText			string	`json:"LongText"`
+	MessageIsRead		bool	`json:"MessageIsRead"`
 	CreationDate		string	`json:"CreationDate"`
 	CreationTime		string	`json:"CreationTime"`
 	LastChangeDate		string	`json:"LastChangeDate"`
 	LastChangeTime		string	`json:"LastChangeTime"`
+	IsCancelled			*bool	`json:"IsCancelled"`
 	Images              Images  `json:"Images"`
 }

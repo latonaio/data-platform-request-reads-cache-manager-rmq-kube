@@ -1,16 +1,27 @@
 package apiInputReader
 
 type BusinessPartner struct {
-	BusinessPartnerGeneral			*BusinessPartnerGeneral
-	BusinessPartnerPerson			*BusinessPartnerPerson
-	BusinessPartnerAddress			*BusinessPartnerAddress
-	BusinessPartnerGPS				*BusinessPartnerGPS
-	BusinessPartnerRank				*BusinessPartnerRank
-	BusinessPartnerDocGeneralDoc	*BusinessPartnerDocGeneralDoc
+	BusinessPartnerGeneral				*BusinessPartnerGeneral
+	BusinessPartnerBPRole				*BusinessPartnerBPRole
+	BusinessPartnerPerson				*BusinessPartnerPerson
+	BusinessPartnerAddress				*BusinessPartnerAddress
+	BusinessPartnerSNS					*BusinessPartnerSNS
+	BusinessPartnerGPS					*BusinessPartnerGPS
+	BusinessPartnerRank					*BusinessPartnerRank
+	BusinessPartnerPersonOrganization	*BusinessPartnerPersonOrganization
+	BusinessPartnerDocGeneralDoc		*BusinessPartnerDocGeneralDoc
 }
 
 type BusinessPartnerGeneral struct {
 	BusinessPartner            int        `json:"BusinessPartner"`
+	Withdrawal           	   *bool	  `json:"Withdrawal"`
+	IsReleased           	   *bool	  `json:"IsReleased"`
+	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
+}
+
+type BusinessPartnerBPRole struct {
+	BusinessPartner            int        `json:"BusinessPartner"`
+	BusinessPartnerRole    	   string	  `json:"BusinessPartnerRole"`
 	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
 }
 
@@ -25,6 +36,11 @@ type BusinessPartnerAddress struct {
 	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
 }
 
+type BusinessPartnerSNS struct {
+	BusinessPartner            int        `json:"BusinessPartner"`
+	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
+}
+
 type BusinessPartnerGPS struct {
 	BusinessPartner            int        `json:"BusinessPartner"`
 	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
@@ -33,6 +49,11 @@ type BusinessPartnerGPS struct {
 type BusinessPartnerRank struct {
 	BusinessPartner            int        `json:"BusinessPartner"`
 	RankType				   string     `json:"RankType"`
+	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
+}
+
+type BusinessPartnerPersonOrganization struct {
+	BusinessPartner            int        `json:"BusinessPartner"`
 	IsMarkedForDeletion        *bool      `json:"IsMarkedForDeletion"`
 }
 

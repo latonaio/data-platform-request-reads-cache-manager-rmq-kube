@@ -23,6 +23,19 @@ type PointBalance struct {
 	CreationTime    *string  `json:"CreationTime"`
 	LastChangeDate  *string  `json:"LastChangeDate"`
 	LastChangeTime  *string  `json:"LastChangeTime"`
+	ByShop          []ByShop `json:"ByShop"`
+}
+
+type ByShop struct {
+	BusinessPartner int      `json:"BusinessPartner"`
+	PointSymbol     string   `json:"PointSymbol"`
+	Shop            int      `json:"Shop"`
+	CurrentBalance  *float32 `json:"CurrentBalance"`
+	LimitBalance    *float32 `json:"LimitBalance"`
+	CreationDate    *string  `json:"CreationDate"`
+	CreationTime    *string  `json:"CreationTime"`
+	LastChangeDate  *string  `json:"LastChangeDate"`
+	LastChangeTime  *string  `json:"LastChangeTime"`
 }
 
 func CreatePointBalanceRequestPointBalance(
@@ -51,6 +64,27 @@ func CreatePointBalanceRequestPointBalancesByBusinessPartner(
 		},
 		Accepter: []string{
 			"PointBalancesByBusinessPartner",
+		},
+	}
+	return req
+}
+
+func CreatePointBalanceRequestByShop(
+	requestPram *apiInputReader.Request,
+	byShop *apiInputReader.ByShop,
+) PointBalanceReq {
+	req := PointBalanceReq{
+		PointBalance: PointBalance{
+			ByShop: []ByShop{
+				{
+					BusinessPartner: byShop.BusinessPartner,
+					PointSymbol:     byShop.PointSymbol,
+					Shop:            byShop.Shop,
+				},
+			},
+		},
+		Accepter: []string{
+			"ByShop",
 		},
 	}
 	return req
@@ -88,6 +122,7 @@ func PointBalanceReadsPointBalance(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -124,6 +159,46 @@ func PointBalanceReadsPointBalancesByBusinessPartner(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func PointBalanceReadsByShop(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.PointBalanceGlobal,
+	controller *beego.Controller,
+) []byte {
+	aPIServiceName := "DPFM_API_POINT_BALANCE_SRV"
+	aPIType := "reads"
+
+	var request PointBalanceReq
+
+	request = CreatePointBalanceRequestByShop(
+		requestPram,
+		&apiInputReader.ByShop{
+			BusinessPartner: input.PointBalance.ByShop[0].BusinessPartner,
+			PointSymbol:     input.PointBalance.ByShop[0].PointSymbol,
+			Shop:            input.PointBalance.ByShop[0].Shop,
+		},
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody

@@ -8,6 +8,7 @@ type Site struct {
 	Header  *[]Header  `json:"Header"`
 	Partner *[]Partner `json:"Partner"`
 	Address *[]Address `json:"Address"`
+	Counter	*[]Counter `json:"Counter"`
 }
 
 type Header struct {
@@ -81,4 +82,13 @@ type Address struct {
 	XCoordinate    *float32 `json:"XCoordinate"`
 	YCoordinate    *float32 `json:"YCoordinate"`
 	ZCoordinate    *float32 `json:"ZCoordinate"`
+}
+
+type Counter struct {
+	Site					int		`json:"Site"`
+	NumberOfLikes			int		`json:"NumberOfLikes"`
+	CreationDate			string	`json:"CreationDate"`
+	CreationTime			string	`json:"CreationTime"`
+	LastChangeDate			string	`json:"LastChangeDate"`
+	LastChangeTime			string	`json:"LastChangeTime"`
 }

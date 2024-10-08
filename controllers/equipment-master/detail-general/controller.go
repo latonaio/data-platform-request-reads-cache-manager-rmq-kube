@@ -27,7 +27,12 @@ type EquipmentMasterDetailGeneralController struct {
 
 func (controller *EquipmentMasterDetailGeneralController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	equipmentMaster, _ := controller.GetInt("equipmentMaster")
 	redisKeyCategory1 := "equipment-master"
 	redisKeyCategory2 := "detail-general"

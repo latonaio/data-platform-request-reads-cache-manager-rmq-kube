@@ -29,7 +29,12 @@ type OperationsDetailListController struct {
 
 func (controller *OperationsDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	operations, _ := controller.GetInt("operations")
 	redisKeyCategory1 := "operations"
 	redisKeyCategory2 := "detail-list"

@@ -3,10 +3,14 @@ package controllersSiteCreatesSingleUnit
 import (
 	apiInputReader "data-platform-request-reads-cache-manager-rmq-kube/api-input-reader"
 	apiModuleRuntimesRequestsBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/business-partner/business-partner"
+	apiModuleRuntimesRequestsLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-region"
+	apiModuleRuntimesRequestsLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-sub-region"
 	apiModuleRuntimesRequestsSiteType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site-type"
 	apiModuleRuntimesRequestsSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site"
 	apiModuleRuntimesRequestsSiteDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
+	apiModuleRuntimesResponsesLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-region"
+	apiModuleRuntimesResponsesLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-sub-region"
 	apiModuleRuntimesResponsesSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site"
 	apiModuleRuntimesResponsesSiteType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site-type"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
@@ -29,6 +33,8 @@ type SiteCreatesSingleUnitController struct {
 type SiteCreatesSingleUnit struct {
 	BusinessPartnerPerson []apiOutputFormatter.BusinessPartnerPerson `json:"BusinessPartnerPerson"`
 	SiteTypeText          []apiOutputFormatter.SiteTypeText          `json:"SiteTypeText"`
+	LocalRegionText       []apiOutputFormatter.LocalRegionText       `json:"LocalRegionText"`
+	LocalSubRegionText    []apiOutputFormatter.LocalSubRegionText    `json:"LocalSubRegionText"`
 	SiteAddress           []apiOutputFormatter.SiteAddress           `json:"SiteAddress"`
 	SiteHeader            []apiOutputFormatter.SiteHeader            `json:"SiteHeader"`
 	SiteAddressWithHeader []apiOutputFormatter.SiteAddressWithHeader `json:"SiteAddressWithHeader"`
@@ -37,17 +43,27 @@ type SiteCreatesSingleUnit struct {
 func (controller *SiteCreatesSingleUnitController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
-	redisKeyCategory1 := "businessPartner"
-	redisKeyCategory2 := "site-creates-single-unit"
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 
 	businessPartner, _ := controller.GetInt("businessPartner")
-
 	localSubRegion := controller.GetString("localSubRegion")
+
+	redisKeyCategory1 := "site"
+	redisKeyCategory2 := "creates-single-unit"
+	redisKeyCategory3 := localSubRegion
+	redisKeyCategory4 := businessPartner
 
 	SiteCreatesSingleUnitBP := apiInputReader.BusinessPartner{}
 	SiteCreatesSingleUnitSiteType := apiInputReader.SiteTypeGlobal{}
 	SiteCreatesSingleUnitSiteAddress := apiInputReader.Site{}
+
+	LocalRegion := apiInputReader.LocalRegionGlobal{}
+	LocalSubRegion := apiInputReader.LocalSubRegionGlobal{}
 
 	isReleased := false
 	isMarkedForDeletion := false
@@ -68,6 +84,20 @@ func (controller *SiteCreatesSingleUnitController) Get() {
 		},
 	}
 
+	LocalRegion = apiInputReader.LocalRegionGlobal{
+		LocalRegionText: &apiInputReader.LocalRegionText{
+			Language:            *controller.UserInfo.Language,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
+	}
+
+	LocalSubRegion = apiInputReader.LocalSubRegionGlobal{
+		LocalSubRegionText: &apiInputReader.LocalSubRegionText{
+			Language:            *controller.UserInfo.Language,
+			IsMarkedForDeletion: &isMarkedForDeletion,
+		},
+	}
+
 	SiteCreatesSingleUnitSiteAddress = apiInputReader.Site{
 		SiteAddress: &apiInputReader.SiteAddress{
 			LocalSubRegion: &localSubRegion,
@@ -80,6 +110,8 @@ func (controller *SiteCreatesSingleUnitController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			redisKeyCategory3,
+			strconv.Itoa(redisKeyCategory4),
 		},
 	)
 
@@ -109,6 +141,8 @@ func (controller *SiteCreatesSingleUnitController) Get() {
 			controller.request(
 				SiteCreatesSingleUnitBP,
 				SiteCreatesSingleUnitSiteType,
+				LocalRegion,
+				LocalSubRegion,
 				SiteCreatesSingleUnitSiteAddress,
 				isReleased,
 				isMarkedForDeletion,
@@ -118,6 +152,8 @@ func (controller *SiteCreatesSingleUnitController) Get() {
 		controller.request(
 			SiteCreatesSingleUnitBP,
 			SiteCreatesSingleUnitSiteType,
+			LocalRegion,
+			LocalSubRegion,
 			SiteCreatesSingleUnitSiteAddress,
 			isReleased,
 			isMarkedForDeletion,
@@ -126,7 +162,7 @@ func (controller *SiteCreatesSingleUnitController) Get() {
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) createBusinessPartnerRequestPerson(
 	requestPram *apiInputReader.Request,
 	inputSiteCreatesSingleUnitBP apiInputReader.BusinessPartner,
@@ -158,7 +194,7 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) CreateSiteTypeRequestTexts(
 	requestPram *apiInputReader.Request,
 	inputSiteCreatesSingleUnitSiteType apiInputReader.SiteTypeGlobal,
@@ -193,7 +229,77 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
+) CreateLocalRegionRequestTexts(
+	requestPram *apiInputReader.Request,
+	inputLocalRegion apiInputReader.LocalRegionGlobal,
+) *apiModuleRuntimesResponsesLocalRegion.LocalRegionRes {
+	input := apiModuleRuntimesRequestsLocalRegion.LocalRegion{
+		Text: []apiModuleRuntimesRequestsLocalRegion.Text{
+			{
+				Language:            inputLocalRegion.LocalRegionText.Language,
+				IsMarkedForDeletion: inputLocalRegion.LocalRegionText.IsMarkedForDeletion,
+			},
+		},
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesLocalRegion.LocalRegionRes{}
+	responseBody := apiModuleRuntimesRequestsLocalRegion.LocalRegionReadsTexts(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("CreateLocalRegionRequestTexts Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+controller *SiteCreatesSingleUnitController,
+) CreateLocalSubRegionRequestTexts(
+	requestPram *apiInputReader.Request,
+	inputLocalSubRegion apiInputReader.LocalSubRegionGlobal,
+) *apiModuleRuntimesResponsesLocalSubRegion.LocalSubRegionRes {
+	input := apiModuleRuntimesRequestsLocalSubRegion.LocalSubRegion{
+		Text: []apiModuleRuntimesRequestsLocalSubRegion.Text{
+			{
+				Language:            inputLocalSubRegion.LocalSubRegionText.Language,
+				IsMarkedForDeletion: inputLocalSubRegion.LocalSubRegionText.IsMarkedForDeletion,
+			},
+		},
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesLocalSubRegion.LocalSubRegionRes{}
+	responseBody := apiModuleRuntimesRequestsLocalSubRegion.LocalSubRegionReadsTexts(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("CreateLocalSubRegionRequestTexts Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+controller *SiteCreatesSingleUnitController,
 ) createSiteRequestAddressesByLocalSubRegion(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Site,
@@ -231,7 +337,7 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) createSiteRequestHeadersBySites(
 	requestPram *apiInputReader.Request,
 	siteRes *apiModuleRuntimesResponsesSite.SiteRes,
@@ -280,7 +386,7 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) createSiteDocRequest(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Site,
@@ -307,11 +413,12 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) request(
-	//	input apiInputReader.Site,
 	inputSiteCreatesSingleUnitBP apiInputReader.BusinessPartner,
 	inputSiteCreatesSingleUnitSiteType apiInputReader.SiteTypeGlobal,
+	inputLocalRegion apiInputReader.LocalRegionGlobal,
+	inputLocalSubRegion apiInputReader.LocalSubRegionGlobal,
 	inputSiteCreatesSingleUnitSiteAddress apiInputReader.Site,
 	isReleased bool,
 	isMarkedForDeletion bool,
@@ -345,9 +452,21 @@ func (
 		inputSiteCreatesSingleUnitSiteAddress,
 	)
 
+	localRegionTextsRes := controller.CreateLocalRegionRequestTexts(
+		controller.UserInfo,
+		inputLocalRegion,
+	)
+
+	localSubRegionTextsRes := controller.CreateLocalSubRegionRequestTexts(
+		controller.UserInfo,
+		inputLocalSubRegion,
+	)
+
 	controller.fin(
 		&businessPartnerPersonRes,
 		&siteTypeTextRes,
+		localRegionTextsRes,
+		localSubRegionTextsRes,
 		&siteAddressRes,
 		&siteHeaderRes,
 		siteHeaderDocRes,
@@ -355,10 +474,12 @@ func (
 }
 
 func (
-	controller *SiteCreatesSingleUnitController,
+controller *SiteCreatesSingleUnitController,
 ) fin(
 	businessPartnerPersonRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	siteTypeTextRes *apiModuleRuntimesResponsesSiteType.SiteTypeRes,
+	localRegionTextsRes *apiModuleRuntimesResponsesLocalRegion.LocalRegionRes,
+	localSubRegionTextsRes *apiModuleRuntimesResponsesLocalSubRegion.LocalSubRegionRes,
 	siteAddressRes *apiModuleRuntimesResponsesSite.SiteRes,
 	siteHeaderRes *apiModuleRuntimesResponsesSite.SiteRes,
 	siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
@@ -388,6 +509,29 @@ func (
 				SiteType:     v.SiteType,
 				Language:     v.Language,
 				SiteTypeName: siteTypeTextMapper[v.SiteType].SiteTypeName,
+			},
+		)
+	}
+
+	for _, v := range *localSubRegionTextsRes.Message.Text {
+		data.LocalSubRegionText = append(data.LocalSubRegionText,
+			apiOutputFormatter.LocalSubRegionText{
+				LocalSubRegion:     v.LocalSubRegion,
+				LocalRegion:        v.LocalRegion,
+				Country:            v.Country,
+				Language:           v.Language,
+				LocalSubRegionName: v.LocalSubRegionName,
+			},
+		)
+	}
+
+	for _, v := range *localRegionTextsRes.Message.Text {
+		data.LocalRegionText = append(data.LocalRegionText,
+			apiOutputFormatter.LocalRegionText{
+				LocalRegion:     v.LocalRegion,
+				Country:         v.Country,
+				Language:        v.Language,
+				LocalRegionName: v.LocalRegionName,
 			},
 		)
 	}

@@ -1,9 +1,13 @@
 package apiOutputFormatter
 
 type Images struct {
-	BusinessPartner               *BusinessPartnerImage        	 `json:"BusinessPartner,omitempty"`
-	Event                         *EventImage                  	 `json:"Event,omitempty"`
-	Site						  *SiteImage                  	 `json:"Site,omitempty"`
+	BusinessPartner               *BusinessPartnerImage          `json:"BusinessPartner,omitempty"`
+	Event                         *EventImage                    `json:"Event,omitempty"`
+	Article                       *ArticleImage                  `json:"Article,omitempty"`
+	Site                          *SiteImage                     `json:"Site,omitempty"`
+	Shop                          *ShopImage                     `json:"Shop,omitempty"`
+	Participation                 *ParticipationImage            `json:"Participation,omitempty"`
+	Post                          *PostImage                     `json:"Post,omitempty"`
 	Equipment                     *ProductImage                  `json:"Equipment,omitempty"`
 	Product                       *ProductImage                  `json:"Product,omitempty"`
 	Barcord                       *BarcordImage                  `json:"Barcode,omitempty"`
@@ -12,7 +16,9 @@ type Images struct {
 	Operations                    *ProductImage                  `json:"Operations,omitempty"`
 	DocumentImageBusinessPartner  *DocumentImageBusinessPartner  `json:"DocumentImageBusinessPartner,omitempty"`
 	DocumentImageEvent            *DocumentImageEvent            `json:"DocumentImageEvent,omitempty"`
+	DocumentImageArticle          *DocumentImageArticle          `json:"DocumentImageArticle,omitempty"`
 	DocumentImageSite             *DocumentImageSite             `json:"DocumentImageSite,omitempty"`
+	DocumentImageShop             *DocumentImageShop             `json:"DocumentImageShop,omitempty"`
 	DocumentImageOrders           *DocumentImageOrders           `json:"DocumentImageOrders,omitempty"`
 	DocumentImageDeliveryDocument *DocumentImageDeliveryDocument `json:"DocumentImageDeliveryDocument,omitempty"`
 	DocumentImageBillOfMaterial   *DocumentImageBillOfMaterial   `json:"DocumentImageBillOfMaterial,omitempty"`
@@ -31,13 +37,43 @@ type EventImage struct {
 	FileExtension     string `json:"FileExtension"`
 }
 
+type ArticleImage struct {
+	BusinessPartnerID int    `json:"BusinessPartnerID"`
+	DocID             string `json:"DocID"`
+	FileExtension     string `json:"FileExtension"`
+}
+
 type SiteImage struct {
 	BusinessPartnerID int    `json:"BusinessPartnerID"`
 	DocID             string `json:"DocID"`
 	FileExtension     string `json:"FileExtension"`
 }
 
+type ShopImage struct {
+	BusinessPartnerID int    `json:"BusinessPartnerID"`
+	DocID             string `json:"DocID"`
+	FileExtension     string `json:"FileExtension"`
+}
+
+type ParticipationImage struct {
+	BusinessPartnerID int    `json:"BusinessPartnerID"`
+	DocID             string `json:"DocID"`
+	FileExtension     string `json:"FileExtension"`
+}
+
 type ProductImage struct {
+	BusinessPartnerID int    `json:"BusinessPartnerID"`
+	DocID             string `json:"DocID"`
+	FileExtension     string `json:"FileExtension"`
+}
+
+type PostImage struct {
+	Post          int    `json:"Post"`
+	DocID         string `json:"DocID"`
+	FileExtension string `json:"FileExtension"`
+}
+
+type MessageImage struct {
 	BusinessPartnerID int    `json:"BusinessPartnerID"`
 	DocID             string `json:"DocID"`
 	FileExtension     string `json:"FileExtension"`
@@ -55,10 +91,10 @@ type QRCodeImage struct {
 }
 
 type DocumentImageBusinessPartner struct {
-	BusinessPartner		int    `json:"BusinessPartner"`
-	DocType       		string `json:"DocType"`
-	DocID         		string `json:"DocID"`
-	FileExtension 		string `json:"FileExtension"`
+	BusinessPartner int    `json:"BusinessPartner"`
+	DocType         string `json:"DocType"`
+	DocID           string `json:"DocID"`
+	FileExtension   string `json:"FileExtension"`
 }
 
 type DocumentImageEvent struct {
@@ -68,8 +104,22 @@ type DocumentImageEvent struct {
 	FileExtension string `json:"FileExtension"`
 }
 
+type DocumentImageArticle struct {
+	Article       int    `json:"Article"`
+	DocType       string `json:"DocType"`
+	DocID         string `json:"DocID"`
+	FileExtension string `json:"FileExtension"`
+}
+
 type DocumentImageSite struct {
 	Site          int    `json:"Site"`
+	DocType       string `json:"DocType"`
+	DocID         string `json:"DocID"`
+	FileExtension string `json:"FileExtension"`
+}
+
+type DocumentImageShop struct {
+	Shop          int    `json:"Shop"`
 	DocType       string `json:"DocType"`
 	DocID         string `json:"DocID"`
 	FileExtension string `json:"FileExtension"`
@@ -92,11 +142,11 @@ type DocumentImageDeliveryDocument struct {
 }
 
 type DocumentImageBillOfMaterial struct {
-	BillOfMaterial		int    `json:"BillOfMaterial"`
-	BillOfMaterialItem	int    `json:"BillOfMaterialItem"`
-	DocType				string `json:"DocType"`
-	DocID				string `json:"DocID"`
-	FileExtension		string `json:"FileExtension"`
+	BillOfMaterial     int    `json:"BillOfMaterial"`
+	BillOfMaterialItem int    `json:"BillOfMaterialItem"`
+	DocType            string `json:"DocType"`
+	DocID              string `json:"DocID"`
+	FileExtension      string `json:"FileExtension"`
 }
 
 type DocumentImageInspectionLot struct {

@@ -22,7 +22,12 @@ type PointBalanceSingleUnitController struct {
 }
 
 func (controller *PointBalanceSingleUnitController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "point-balance"
 	redisKeyCategory2 := "point-balance-single-unit"
 	businessPartner, _ := controller.GetInt("businessPartner")

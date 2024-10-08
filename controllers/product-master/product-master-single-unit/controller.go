@@ -26,7 +26,12 @@ const ()
 
 func (controller *ProductMasterSingleUnitController) Get() {
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "product-master"
 	redisKeyCategory2 := "single-unit"
 	product := controller.GetString("product")

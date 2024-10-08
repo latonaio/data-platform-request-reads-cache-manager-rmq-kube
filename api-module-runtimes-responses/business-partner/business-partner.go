@@ -5,14 +5,16 @@ type BusinessPartnerRes struct {
 }
 
 type BusinessPartner struct {
-	General    *[]General    `json:"General,omitempty"`
-	Role       *[]Role       `json:"Role,omitempty"`
-	Person     *[]Person     `json:"Person,omitempty"`
-	Address    *[]Address    `json:"Address,omitempty"`
-	GPS        *[]GPS        `json:"GPS,omitempty"`
-	Rank       *[]Rank       `json:"Rank,omitempty"`
-	FinInst    *[]FinInst    `json:"FinInst,omitempty"`
-	Accounting *[]Accounting `json:"Accounting,omitempty"`
+	General    			*[]General    			`json:"General,omitempty"`
+	Role       			*[]Role       			`json:"Role,omitempty"`
+	Person     			*[]Person     			`json:"Person,omitempty"`
+	Address    			*[]Address    			`json:"Address,omitempty"`
+	SNS        			*[]SNS        			`json:"SNS,omitempty"`
+	GPS        			*[]GPS        			`json:"GPS,omitempty"`
+	Rank       			*[]Rank       			`json:"Rank,omitempty"`
+	PersonOrganization	*[]PersonOrganization	`json:"PersonOrganization,omitempty"`
+	FinInst    			*[]FinInst				`json:"FinInst,omitempty"`
+	Accounting 			*[]Accounting			`json:"Accounting,omitempty"`
 }
 
 type General struct {
@@ -46,8 +48,10 @@ type General struct {
 	BusinessPartnerIsBlocked      *bool   `json:"BusinessPartnerIsBlocked"`
 	CertificateAuthorityChain     *string `json:"CertificateAuthorityChain"`
 	UsageControlChain        	  *string `json:"UsageControlChain"`
+	Withdrawal           		  *bool   `json:"Withdrawal"`
 	CreationDate                  string  `json:"CreationDate"`
 	LastChangeDate                string  `json:"LastChangeDate"`
+	IsReleased           		  *bool   `json:"IsReleased"`
 	IsMarkedForDeletion           *bool   `json:"IsMarkedForDeletion"`
 }
 
@@ -64,15 +68,15 @@ type Role struct {
 type Person struct {
 	BusinessPartner        		int     `json:"BusinessPartner"`
 	BusinessPartnerType    		string  `json:"BusinessPartnerType"`
-	FirstName              		*string `json:"FirstName"`
-	LastName               		*string `json:"LastName"`
-	FullName               		*string `json:"FullName"`
+	FirstName              		string	`json:"FirstName"`
+	LastName               		string	`json:"LastName"`
+	FullName               		string	`json:"FullName"`
 	MiddleName             		*string `json:"MiddleName"`
 	NickName               		string  `json:"NickName"`
 	Gender                 		string  `json:"Gender"`
 	Language               		string  `json:"Language"`
 	CorrespondenceLanguage 		*string `json:"CorrespondenceLanguage"`
-	BirthDate              		*string `json:"BirthDate"`
+	BirthDate              		string	`json:"BirthDate"`
 	Nationality		            string  `json:"Nationality"`
 	EmailAddress           		*string `json:"EmailAddress"`
 	MobilePhoneNumber      		*string `json:"MobilePhoneNumber"`
@@ -81,6 +85,7 @@ type Person struct {
 	PreferableLocalRegion		string  `json:"PreferableLocalRegion"`
 	PreferableCountry			string  `json:"PreferableCountry"`
 	ActPurpose					string  `json:"ActPurpose"`
+	TermsOfUseIsConfirmed		*bool   `json:"TermsOfUseIsConfirmed"`
 	CreationDate           		string  `json:"CreationDate"`
 	LastChangeDate         		string  `json:"LastChangeDate"`
 	IsMarkedForDeletion    		*bool   `json:"IsMarkedForDeletion"`
@@ -105,6 +110,18 @@ type Address struct {
 	YCoordinate 		*float32 `json:"YCoordinate"`
 	ZCoordinate 		*float32 `json:"ZCoordinate"`
 	Site				*int	`json:"Site"`
+}
+
+type SNS struct {
+	BusinessPartner     int		`json:"BusinessPartner"`
+	BusinessPartnerType	string	`json:"BusinessPartnerType"`
+	XURL  				*string	`json:"XURL"`
+	InstagramURL     	*string	`json:"InstagramURL"`
+	TikTokURL         	*string	`json:"TikTokURL"`
+	PointAppsURL        string	`json:"PointAppsURL"`
+	CreationDate        string	`json:"CreationDate"`
+	LastChangeDate      string	`json:"LastChangeDate"`
+	IsMarkedForDeletion *bool	`json:"IsMarkedForDeletion"`
 }
 
 type GPS struct {
@@ -132,6 +149,15 @@ type Rank struct {
 	CreationDate        string `json:"CreationDate"`
 	LastChangeDate      string `json:"LastChangeDate"`
 	IsMarkedForDeletion *bool  `json:"IsMarkedForDeletion"`
+}
+
+type PersonOrganization struct {
+	BusinessPartner        		int     `json:"BusinessPartner"`
+	BusinessPartnerType    		string  `json:"BusinessPartnerType"`
+	OrganizationBusinessPartner	int  `json:"OrganizationBusinessPartner"`
+	CreationDate           		string  `json:"CreationDate"`
+	LastChangeDate         		string  `json:"LastChangeDate"`
+	IsMarkedForDeletion    		*bool   `json:"IsMarkedForDeletion"`
 }
 
 type FinInst struct {

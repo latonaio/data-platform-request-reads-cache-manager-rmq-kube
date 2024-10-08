@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
+	"strconv"
 )
 
 type FriendListController struct {
@@ -26,9 +27,15 @@ type FriendListController struct {
 func (controller *FriendListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	businessPartner, _ := controller.GetInt("businessPartner")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "businessPartner"
 	redisKeyCategory2 := "friend-list"
+	redisKeyCategory3 := businessPartner
 
 	friendIsBlocked := false
 	isMarkedForDeletion := false
@@ -39,6 +46,10 @@ func (controller *FriendListController) Get() {
 			FriendIsBlocked:     friendIsBlocked,
 			IsMarkedForDeletion: &isMarkedForDeletion,
 		},
+	}
+
+	BusinessPartner := apiInputReader.BusinessPartner{
+		BusinessPartnerDocGeneralDoc: &apiInputReader.BusinessPartnerDocGeneralDoc{},
 	}
 
 	//FriendBusinessPartnerDocGeneralDoc := apiInputReader.BusinessPartner{
@@ -54,6 +65,7 @@ func (controller *FriendListController) Get() {
 		[]string{
 			redisKeyCategory1,
 			redisKeyCategory2,
+			strconv.Itoa(redisKeyCategory3),
 		},
 	)
 
@@ -80,10 +92,10 @@ func (controller *FriendListController) Get() {
 
 	if cacheData != nil {
 		go func() {
-			controller.request(FriendGeneral)
+			controller.request(FriendGeneral, BusinessPartner)
 		}()
 	} else {
-		controller.request(FriendGeneral)
+		controller.request(FriendGeneral, BusinessPartner)
 	}
 }
 
@@ -103,15 +115,15 @@ func (
 
 	err := json.Unmarshal(responseBody, &responseJsonData)
 
-	if len(*responseJsonData.Message.General) == 0 {
-		status := 500
-		services.HandleError(
-			&controller.Controller,
-			"フレンドが見つかりませんでした",
-			&status,
-		)
-		return nil
-	}
+	//if len(*responseJsonData.Message.General) == 0 {
+	//	status := 500
+	//	services.HandleError(
+	//		&controller.Controller,
+	//		"フレンドが見つかりませんでした",
+	//		&status,
+	//	)
+	//	return nil
+	//}
 
 	if err != nil {
 		services.HandleError(
@@ -129,10 +141,12 @@ func (
 	controller *FriendListController,
 ) createBusinessPartnerDocRequest(
 	requestPram *apiInputReader.Request,
+	input apiInputReader.BusinessPartner,
 ) *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes {
 	responseJsonData := apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes{}
 	responseBody := apiModuleRuntimesRequestsBusinessPartnerDoc.BusinessPartnerDocReads(
 		requestPram,
+		input,
 		&controller.Controller,
 		"GeneralDoc",
 	)
@@ -198,23 +212,30 @@ func (
 func (
 	controller *FriendListController,
 ) request(
-	input apiInputReader.Friend,
+	inputFriend apiInputReader.Friend,
+	inputBusinessPartner apiInputReader.BusinessPartner,
 ) {
 	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
+	var businessPartnerGeneralDocRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes
+	var businessPartnerPersonRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes
+
 	generalRes := *controller.createFriendRequestGenerals(
 		controller.UserInfo,
-		input,
+		inputFriend,
 	)
 
-	businessPartnerGeneralDocRes := controller.createBusinessPartnerDocRequest(
-		controller.UserInfo,
-	)
+	if generalRes.Message.General != nil && len(*generalRes.Message.General) != 0 {
+		businessPartnerGeneralDocRes = controller.createBusinessPartnerDocRequest(
+			controller.UserInfo,
+			inputBusinessPartner,
+		)
 
-	businessPartnerPersonRes := controller.createBusinessPartnerRequestPerson(
-		controller.UserInfo,
-		generalRes,
-	)
+		businessPartnerPersonRes = controller.createBusinessPartnerRequestPerson(
+			controller.UserInfo,
+			generalRes,
+		)
+	}
 
 	controller.fin(
 		&generalRes,
@@ -226,24 +247,32 @@ func (
 func (
 	controller *FriendListController,
 ) fin(
-	generalRes *apiModuleRuntimesResponsesFriend.FriendRes,
+	friendRes *apiModuleRuntimesResponsesFriend.FriendRes,
 	businessPartnerGeneralDocRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes,
 	businessPartnerPersonRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 ) {
+	var businessPartnerPersonMapper map[int]apiModuleRuntimesResponsesBusinessPartner.Person
+
+	if friendRes.Message.General != nil && len(*friendRes.Message.General) != 0 {
+		businessPartnerPersonMapper = services.BusinessPartnerPersonMapper(
+			businessPartnerPersonRes.Message.Person,
+		)
+	}
+
 	data := apiOutputFormatter.Friend{}
 
-	for _, v := range *generalRes.Message.General {
+	for _, v := range *friendRes.Message.General {
 		img := services.ReadBusinessPartnerImage(
 			businessPartnerGeneralDocRes,
-			v.BusinessPartner,
+			v.Friend,
 		)
 
 		data.FriendGeneral = append(data.FriendGeneral,
 			apiOutputFormatter.FriendGeneral{
 				BusinessPartner: v.BusinessPartner,
 				Friend:          v.Friend,
-				CommunityRank	 v.CommunityRank,
-				//FriendNickName:  v.FriendNickName, // Mapper対応
+				//CommunityRank:	 v.CommunityRank,
+				FriendNickName: businessPartnerPersonMapper[v.Friend].NickName, // Mapper対応
 				Images: apiOutputFormatter.Images{
 					BusinessPartner: img,
 				},
@@ -251,14 +280,14 @@ func (
 		)
 	}
 
-	for _, v := range *businessPartnerPersonRes.Message.Person {
-		data.FriendGeneral = append(data.FriendGeneral,
-			apiOutputFormatter.FriendGeneral{
-				BusinessPartner: v.BusinessPartner,
-				FriendNickName:  v.NickName,
-			},
-		)
-	}
+	//for _, v := range *businessPartnerPersonRes.Message.Person {
+	//	data.FriendGeneral = append(data.FriendGeneral,
+	//		apiOutputFormatter.FriendGeneral{
+	//			BusinessPartner: v.BusinessPartner,
+	//			FriendNickName:  v.NickName,
+	//		},
+	//	)
+	//}
 
 	err := controller.RedisCache.SetCache(
 		controller.RedisKey,

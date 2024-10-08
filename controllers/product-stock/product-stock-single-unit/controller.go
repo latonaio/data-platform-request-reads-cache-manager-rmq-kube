@@ -32,7 +32,12 @@ const ()
 func (controller *ProductStockSingleUnitController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "product-stock"
 	redisKeyCategory2 := "product-stock-single-unit"
 	product := controller.GetString("product")

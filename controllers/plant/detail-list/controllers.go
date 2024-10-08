@@ -24,7 +24,12 @@ type PlantDetailListController struct {
 
 func (controller *PlantDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	businessPartner, _ := controller.GetInt("businessPartner")
 	plant := controller.GetString("plant")
 	redisKeyCategory1 := "plant"

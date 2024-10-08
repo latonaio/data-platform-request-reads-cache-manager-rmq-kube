@@ -23,7 +23,12 @@ type BusinessPartnerDetailGeneralController struct {
 
 func (controller *BusinessPartnerDetailGeneralController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	businessPartner, _ := controller.GetInt("businessPartner")
 	redisKeyCategory1 := "business-partner"
 	redisKeyCategory2 := "detail-general"

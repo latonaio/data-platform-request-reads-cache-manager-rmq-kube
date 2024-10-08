@@ -10,8 +10,11 @@ type Event struct {
 	Address               *[]Address               `json:"Address"`
 	Campaign              *[]Campaign              `json:"Campaign"`
 	Game                  *[]Game                  `json:"Game"`
+	Participation	      *[]Participation		   `json:"Participation"`
+	Attendance		      *[]Attendance		   	   `json:"Attendance"`
 	PointTransaction      *[]PointTransaction      `json:"PointTransaction"`
 	PointConditionElement *[]PointConditionElement `json:"PointConditionElement"`
+	Counter				  *[]Counter			   `json:"Counter"`
 }
 
 type Header struct {
@@ -20,6 +23,7 @@ type Header struct {
 	EventOwner                    int     `json:"EventOwner"`
 	EventOwnerBusinessPartnerRole string  `json:"EventOwnerBusinessPartnerRole"`
 	PersonResponsible             string  `json:"PersonResponsible"`
+	URL							  *string `json:"URL"`
 	ValidityStartDate             string  `json:"ValidityStartDate"`
 	ValidityStartTime             string  `json:"ValidityStartTime"`
 	ValidityEndDate               string  `json:"ValidityEndDate"`
@@ -32,6 +36,8 @@ type Header struct {
 	LongText                      string  `json:"LongText"`
 	Introduction                  *string `json:"Introduction"`
 	Site                          int     `json:"Site"`
+	Capacity					  int	  `json:"Capacity"`
+	Shop						  *int	  `json:"Shop"`
 	Project                       *int    `json:"Project"`
 	WBSElement                    *int    `json:"WBSElement"`
 	Tag1                          *string `json:"Tag1"`
@@ -109,6 +115,29 @@ type Game struct {
 	IsMarkedForDeletion *bool  `json:"IsMarkedForDeletion"`
 }
 
+type Participation struct {
+	Event							int		`json:"Event"`
+	Participator					int		`json:"Participator"`
+	Participation					int		`json:"Participation"`
+	CreationDate					string	`json:"CreationDate"`
+	CreationTime					string	`json:"CreationTime"`
+	LastChangeDate					string	`json:"LastChangeDate"`
+	LastChangeTime					string	`json:"LastChangeTime"`
+	IsCancelled						*bool	`json:"IsCancelled"`
+}
+
+type Attendance struct {
+	Event							int		`json:"Event"`
+	Attender						int		`json:"Attender"`
+	Attendance						int		`json:"Attendance"`
+	Participation					int		`json:"Participation"`
+	CreationDate					string	`json:"CreationDate"`
+	CreationTime					string	`json:"CreationTime"`
+	LastChangeDate					string	`json:"LastChangeDate"`
+	LastChangeTime					string	`json:"LastChangeTime"`
+	IsCancelled						*bool	`json:"IsCancelled"`
+}
+
 type PointTransaction struct {
 	Event                          int     `json:"Event"`
 	Sender                         int     `json:"Sender"`
@@ -145,4 +174,15 @@ type PointConditionElement struct {
 	IsReleased                     *bool   `json:"IsReleased"`
 	IsCancelled                    *bool   `json:"IsCancelled"`
 	IsMarkedForDeletion            *bool   `json:"IsMarkedForDeletion"`
+}
+
+type Counter struct {
+	Event					int		`json:"Event"`
+	NumberOfLikes			int		`json:"NumberOfLikes"`
+	NumberOfParticipations	int		`json:"NumberOfParticipations"`
+	NumberOfAttendances		int		`json:"NumberOfAttendances"`
+	CreationDate			string	`json:"CreationDate"`
+	CreationTime			string	`json:"CreationTime"`
+	LastChangeDate			string	`json:"LastChangeDate"`
+	LastChangeTime			string	`json:"LastChangeTime"`
 }

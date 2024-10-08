@@ -622,7 +622,7 @@ func OrdersReads(
 			},
 		)
 	}
-	
+
 	if accepter == "Addresses" {
 		request = CreateOrdersRequestAddresses(
 			requestPram,
@@ -646,6 +646,7 @@ func OrdersReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

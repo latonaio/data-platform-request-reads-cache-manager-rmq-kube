@@ -10,9 +10,9 @@ import (
 )
 
 type DistributionProfileReq struct {
-	DistributionProfile   DistributionProfile    `json:"DistributionProfile"`
-	DistributionProfiles  []DistributionProfile  `json:"DistributionProfiles"`
-	Accepter              []string `json:"accepter"`
+	DistributionProfile  DistributionProfile   `json:"DistributionProfile"`
+	DistributionProfiles []DistributionProfile `json:"DistributionProfiles"`
+	Accepter             []string              `json:"accepter"`
 }
 
 type DistributionProfile struct {
@@ -24,12 +24,12 @@ type DistributionProfile struct {
 }
 
 type Text struct {
-	DistributionProfile         string  `json:"DistributionProfile"`
-	Language                    string  `json:"Language"`
-	DistributionProfileName     *string `json:"DistributionProfileName"`
-	CreationDate                *string `json:"CreationDate"`
-	LastChangeDate              *string `json:"LastChangeDate"`
-	IsMarkedForDeletion         *bool   `json:"IsMarkedForDeletion"`
+	DistributionProfile     string  `json:"DistributionProfile"`
+	Language                string  `json:"Language"`
+	DistributionProfileName *string `json:"DistributionProfileName"`
+	CreationDate            *string `json:"CreationDate"`
+	LastChangeDate          *string `json:"LastChangeDate"`
+	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
 }
 
 func CreateDistributionProfileRequestDistributionProfilesByDistributionProfiles(
@@ -54,8 +54,8 @@ func CreateDistributionProfileRequestDistributionProfiles(
 	req := DistributionProfileReq{
 		DistributionProfiles: []DistributionProfile{
 			{
-				DistributionProfile:	input.DistributionProfile,
-				IsMarkedForDeletion:	&isMarkedForDeletion,
+				DistributionProfile: input.DistributionProfile,
+				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		},
 		Accepter: []string{
@@ -73,8 +73,8 @@ func CreateDistributionProfileRequestText(
 
 	req := DistributionProfileReq{
 		DistributionProfile: DistributionProfile{
-			DistributionProfile:    input.DistributionProfile,
-			IsMarkedForDeletion:    &isMarkedForDeletion,
+			DistributionProfile: input.DistributionProfile,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -96,8 +96,8 @@ func CreateDistributionProfileRequestTexts(
 	isMarkedForDeletion := false
 
 	req := DistributionProfileReq{
-		DistributionProfile:        DistributionProfile{
-			DistributionProfile:    input.DistributionProfile,
+		DistributionProfile: DistributionProfile{
+			DistributionProfile: input.DistributionProfile,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func DistributionProfileReadsDistributionProfiles(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func DistributionProfileReadsDistributionProfilesByDistributionProfiles(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func DistributionProfileReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func DistributionProfileReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

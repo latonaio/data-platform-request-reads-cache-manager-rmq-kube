@@ -34,7 +34,12 @@ const (
 func (controller *InvoiceDocumentDetailListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	invoiceDocument, _ := controller.GetInt("invoiceDocument")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "invoice-document"
 	redisKeyCategory2 := "detail-list"
 	userType := controller.GetString(":userType") // billToParty or billFromParty

@@ -18,5 +18,8 @@ type REQUEST struct {
 }
 
 func (c *REQUEST) RequestURL() string {
-	return fmt.Sprintf("http://%s:%s", c.host, c.port)
+	if c.port == "" {
+		return fmt.Sprintf("http://%s/api/request", c.host)
+	}
+	return fmt.Sprintf("http://%s:%s/api/request", c.host, c.port)
 }

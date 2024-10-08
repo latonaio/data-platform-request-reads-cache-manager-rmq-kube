@@ -8,17 +8,24 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	logger "github.com/latonaio/golang-logging-library-for-data-platform"
+	"github.com/google/uuid"
+	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
 	"golang.org/x/xerrors"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 const (
 	POST = "POST"
 	GET  = "GET"
 )
+
+type RequestWrapperController struct {
+	Controller   *beego.Controller
+	CustomLogger *logger.Logger
+}
 
 type ResponseData struct {
 	StatusCode int    `json:"statusCode"`
@@ -35,16 +42,27 @@ type AuthenticatorResponseData struct {
 }
 
 func UserRequestParams(
-	controller *beego.Controller,
+	requestWrapperController RequestWrapperController,
 ) *apiInputReader.Request {
-	businessPartner, _ := controller.GetInt("businessPartner")
-	language := controller.GetString("language")
-	userId := controller.GetString("userId")
+	businessPartner, _ := requestWrapperController.Controller.GetInt("businessPartner")
+	language := requestWrapperController.Controller.GetString("language")
+	userId := requestWrapperController.Controller.GetString("userId")
+
+	runtimeSessionId := uuid.New().String()
+	runtimeSessionId = strings.ReplaceAll(runtimeSessionId, "-", "")
+
+	if requestWrapperController.CustomLogger != nil {
+		requestWrapperController.CustomLogger.Info(
+			"RuntimeSessionID: %v",
+			runtimeSessionId,
+		)
+	}
 
 	return &apiInputReader.Request{
-		Language:        &language,
-		BusinessPartner: &businessPartner,
-		UserID:          &userId,
+		Language:         &language,
+		BusinessPartner:  &businessPartner,
+		UserID:           &userId,
+		RuntimeSessionID: &runtimeSessionId,
 	}
 }
 
@@ -53,6 +71,7 @@ func Request(
 	aPIType string,
 	body io.ReadCloser,
 	controller *beego.Controller,
+	requestPram *apiInputReader.Request,
 ) []byte {
 	conf := config.NewConf()
 	nestjsURL := conf.REQUEST.RequestURL()
@@ -84,6 +103,11 @@ func Request(
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
+
+	if requestPram != nil && requestPram.RuntimeSessionID != nil {
+		req.Header.Add("global-runtime-session-id", *requestPram.RuntimeSessionID)
+	}
+
 	req.Header.Set("Authorization", jwtToken)
 
 	client := &http.Client{}

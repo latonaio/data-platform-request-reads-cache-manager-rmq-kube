@@ -16,80 +16,80 @@ type ProductionOrderReq struct {
 }
 
 type Header struct {
-	ProductionOrder                                    int         `json:"ProductionOrder"`
-	ProductionOrderDate                                *string	   `json:"ProductionOrderDate"`
-	SupplyChainRelationshipID                          *int        `json:"SupplyChainRelationshipID"`
-	SupplyChainRelationshipProductionPlantID           *int        `json:"SupplyChainRelationshipProductionPlantID"`
-	SupplyChainRelationshipDeliveryID                  *int        `json:"SupplyChainRelationshipDeliveryID"`
-	SupplyChainRelationshipDeliveryPlantID             *int        `json:"SupplyChainRelationshipDeliveryPlantID"`
-	ProductionOrderType                                *string     `json:"ProductionOrderType"`
-	Product                                            *string     `json:"Product"`
-	Buyer                                              *int        `json:"Buyer"`
-	Seller                                             *int        `json:"Seller"`
-	OwnerProductionPlantBusinessPartner                *int        `json:"OwnerProductionPlantBusinessPartner"`
-	OwnerProductionPlant                               *string     `json:"OwnerProductionPlant"`
-	OwnerProductionPlantStorageLocation                *string     `json:"OwnerProductionPlantStorageLocation"`
-	DepartureDeliverFromParty                          *int        `json:"DepartureDeliverFromParty"`
-	DepartureDeliverFromPlant                          *string     `json:"DepartureDeliverFromPlant"`
-	DepartureDeliverFromPlantStorageLocation           *string     `json:"DepartureDeliverFromPlantStorageLocation"`
-	DestinationDeliverToParty                          *int        `json:"DestinationDeliverToParty"`
-	DestinationDeliverToPlant                          *string     `json:"DestinationDeliverToPlant"`
-	DestinationDeliverToPlantStorageLocation           *string     `json:"DestinationDeliverToPlantStorageLocation"`
-	ProductBaseUnit                                    *string     `json:"ProductBaseUnit"`
-	MRPArea                                            *string     `json:"MRPArea"`
-	MRPController                                      *string     `json:"MRPController"`
-	ProductionVersion                                  *int        `json:"ProductionVersion"`
-	BillOfMaterial                                     *int        `json:"BillOfMaterial"`
-	Operations                                         *int        `json:"Operations"`
-	ProductionOrderQuantityInBaseUnit                  *float32    `json:"ProductionOrderQuantityInBaseUnit"`
-	ProductionOrderQuantityInDepartureProductionUnit   *float32    `json:"ProductionOrderQuantityInDepartureProductionUnit"`
-	ProductionOrderQuantityInDestinationProductionUnit *float32    `json:"ProductionOrderQuantityInDestinationProductionUnit"`
-	ProductionOrderQuantityInDepartureDeliveryUnit     *float32    `json:"ProductionOrderQuantityInDepartureDeliveryUnit"`
-	ProductionOrderQuantityInDestinationDeliveryUnit   *float32    `json:"ProductionOrderQuantityInDestinationDeliveryUnit"`
-	ProductionOrderDepartureProductionUnit             *string     `json:"ProductionOrderDepartureProductionUnit"`
-	ProductionOrderDestinationProductionUnit           *string     `json:"ProductionOrderDestinationProductionUnit"`
-	ProductionOrderDepartureDeliveryUnit               *string     `json:"ProductionOrderDepartureDeliveryUnit"`
-	ProductionOrderDestinationDeliveryUnit             *string     `json:"ProductionOrderDestinationDeliveryUnit"`
-	ProductionOrderPlannedScrapQtyInBaseUnit           *float32    `json:"ProductionOrderPlannedScrapQtyInBaseUnit"`
-	ProductionOrderPlannedStartDate                    *string     `json:"ProductionOrderPlannedStartDate"`
-	ProductionOrderPlannedStartTime                    *string     `json:"ProductionOrderPlannedStartTime"`
-	ProductionOrderPlannedEndDate                      *string     `json:"ProductionOrderPlannedEndDate"`
-	ProductionOrderPlannedEndTime                      *string     `json:"ProductionOrderPlannedEndTime"`
-	ProductionOrderActualReleaseDate                   *string     `json:"ProductionOrderActualReleaseDate"`
-	ProductionOrderActualReleaseTime                   *string     `json:"ProductionOrderActualReleaseTime"`
-	ProductionOrderActualStartDate                     *string     `json:"ProductionOrderActualStartDate"`
-	ProductionOrderActualStartTime                     *string     `json:"ProductionOrderActualStartTime"`
-	ProductionOrderActualEndDate                       *string     `json:"ProductionOrderActualEndDate"`
-	ProductionOrderActualEndTime                       *string     `json:"ProductionOrderActualEndTime"`
-	PlannedOrder                                       *int        `json:"PlannedOrder"`
-	OrderID                                            *int        `json:"OrderID"`
-	OrderItem                                          *int        `json:"OrderItem"`
-	Project                                            *int        `json:"Project"`
-	WBSElement                                         *int        `json:"WBSElement"`
-	InspectionPlantBusinessPartner                	   *int        `json:"InspectionPlantBusinessPartner"`
-	InspectionPlant                               	   *string     `json:"InspectionPlant"`
-	InspectionPlan                                	   *int        `json:"InspectionPlan"`
-	InspectionLot                                 	   *int        `json:"InspectionLot"`
-	ProductionOrderHeaderText                          *string     `json:"ProductionOrderHeaderText"`
-	CertificateAuthorityChain        				   *string 	   `json:"CertificateAuthorityChain"`
-	UsageControlChain        		 				   *string     `json:"UsageControlChain"`
-	CreationDate                                       *string     `json:"CreationDate"`
-	CreationTime                                       *string     `json:"CreationTime"`
-	LastChangeDate                                     *string     `json:"LastChangeDate"`
-	LastChangeTime                                     *string     `json:"LastChangeTime"`
-	IsReleased                                         *bool       `json:"IsReleased"`
-	IsPartiallyConfirmed                               *bool       `json:"IsPartiallyConfirmed"`
-	IsConfirmed                                        *bool       `json:"IsConfirmed"`
-	IsLocked                                           *bool       `json:"IsLocked"`
-	IsCancelled                                        *bool       `json:"IsCancelled"`
-	IsMarkedForDeletion                                *bool       `json:"IsMarkedForDeletion"`
+	ProductionOrder                                    int      `json:"ProductionOrder"`
+	ProductionOrderDate                                *string  `json:"ProductionOrderDate"`
+	SupplyChainRelationshipID                          *int     `json:"SupplyChainRelationshipID"`
+	SupplyChainRelationshipProductionPlantID           *int     `json:"SupplyChainRelationshipProductionPlantID"`
+	SupplyChainRelationshipDeliveryID                  *int     `json:"SupplyChainRelationshipDeliveryID"`
+	SupplyChainRelationshipDeliveryPlantID             *int     `json:"SupplyChainRelationshipDeliveryPlantID"`
+	ProductionOrderType                                *string  `json:"ProductionOrderType"`
+	Product                                            *string  `json:"Product"`
+	Buyer                                              *int     `json:"Buyer"`
+	Seller                                             *int     `json:"Seller"`
+	OwnerProductionPlantBusinessPartner                *int     `json:"OwnerProductionPlantBusinessPartner"`
+	OwnerProductionPlant                               *string  `json:"OwnerProductionPlant"`
+	OwnerProductionPlantStorageLocation                *string  `json:"OwnerProductionPlantStorageLocation"`
+	DepartureDeliverFromParty                          *int     `json:"DepartureDeliverFromParty"`
+	DepartureDeliverFromPlant                          *string  `json:"DepartureDeliverFromPlant"`
+	DepartureDeliverFromPlantStorageLocation           *string  `json:"DepartureDeliverFromPlantStorageLocation"`
+	DestinationDeliverToParty                          *int     `json:"DestinationDeliverToParty"`
+	DestinationDeliverToPlant                          *string  `json:"DestinationDeliverToPlant"`
+	DestinationDeliverToPlantStorageLocation           *string  `json:"DestinationDeliverToPlantStorageLocation"`
+	ProductBaseUnit                                    *string  `json:"ProductBaseUnit"`
+	MRPArea                                            *string  `json:"MRPArea"`
+	MRPController                                      *string  `json:"MRPController"`
+	ProductionVersion                                  *int     `json:"ProductionVersion"`
+	BillOfMaterial                                     *int     `json:"BillOfMaterial"`
+	Operations                                         *int     `json:"Operations"`
+	ProductionOrderQuantityInBaseUnit                  *float32 `json:"ProductionOrderQuantityInBaseUnit"`
+	ProductionOrderQuantityInDepartureProductionUnit   *float32 `json:"ProductionOrderQuantityInDepartureProductionUnit"`
+	ProductionOrderQuantityInDestinationProductionUnit *float32 `json:"ProductionOrderQuantityInDestinationProductionUnit"`
+	ProductionOrderQuantityInDepartureDeliveryUnit     *float32 `json:"ProductionOrderQuantityInDepartureDeliveryUnit"`
+	ProductionOrderQuantityInDestinationDeliveryUnit   *float32 `json:"ProductionOrderQuantityInDestinationDeliveryUnit"`
+	ProductionOrderDepartureProductionUnit             *string  `json:"ProductionOrderDepartureProductionUnit"`
+	ProductionOrderDestinationProductionUnit           *string  `json:"ProductionOrderDestinationProductionUnit"`
+	ProductionOrderDepartureDeliveryUnit               *string  `json:"ProductionOrderDepartureDeliveryUnit"`
+	ProductionOrderDestinationDeliveryUnit             *string  `json:"ProductionOrderDestinationDeliveryUnit"`
+	ProductionOrderPlannedScrapQtyInBaseUnit           *float32 `json:"ProductionOrderPlannedScrapQtyInBaseUnit"`
+	ProductionOrderPlannedStartDate                    *string  `json:"ProductionOrderPlannedStartDate"`
+	ProductionOrderPlannedStartTime                    *string  `json:"ProductionOrderPlannedStartTime"`
+	ProductionOrderPlannedEndDate                      *string  `json:"ProductionOrderPlannedEndDate"`
+	ProductionOrderPlannedEndTime                      *string  `json:"ProductionOrderPlannedEndTime"`
+	ProductionOrderActualReleaseDate                   *string  `json:"ProductionOrderActualReleaseDate"`
+	ProductionOrderActualReleaseTime                   *string  `json:"ProductionOrderActualReleaseTime"`
+	ProductionOrderActualStartDate                     *string  `json:"ProductionOrderActualStartDate"`
+	ProductionOrderActualStartTime                     *string  `json:"ProductionOrderActualStartTime"`
+	ProductionOrderActualEndDate                       *string  `json:"ProductionOrderActualEndDate"`
+	ProductionOrderActualEndTime                       *string  `json:"ProductionOrderActualEndTime"`
+	PlannedOrder                                       *int     `json:"PlannedOrder"`
+	OrderID                                            *int     `json:"OrderID"`
+	OrderItem                                          *int     `json:"OrderItem"`
+	Project                                            *int     `json:"Project"`
+	WBSElement                                         *int     `json:"WBSElement"`
+	InspectionPlantBusinessPartner                     *int     `json:"InspectionPlantBusinessPartner"`
+	InspectionPlant                                    *string  `json:"InspectionPlant"`
+	InspectionPlan                                     *int     `json:"InspectionPlan"`
+	InspectionLot                                      *int     `json:"InspectionLot"`
+	ProductionOrderHeaderText                          *string  `json:"ProductionOrderHeaderText"`
+	CertificateAuthorityChain                          *string  `json:"CertificateAuthorityChain"`
+	UsageControlChain                                  *string  `json:"UsageControlChain"`
+	CreationDate                                       *string  `json:"CreationDate"`
+	CreationTime                                       *string  `json:"CreationTime"`
+	LastChangeDate                                     *string  `json:"LastChangeDate"`
+	LastChangeTime                                     *string  `json:"LastChangeTime"`
+	IsReleased                                         *bool    `json:"IsReleased"`
+	IsPartiallyConfirmed                               *bool    `json:"IsPartiallyConfirmed"`
+	IsConfirmed                                        *bool    `json:"IsConfirmed"`
+	IsLocked                                           *bool    `json:"IsLocked"`
+	IsCancelled                                        *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion                                *bool    `json:"IsMarkedForDeletion"`
 	Item                                               []Item   `json:"Item"`
 }
 
 type Item struct {
 	ProductionOrder                               int             `json:"ProductionOrder"`
 	ProductionOrderItem                           int             `json:"ProductionOrderItem"`
-	ProductionOrderItemDate                       *string  		  `json:"ProductionOrderItemDate"`
+	ProductionOrderItemDate                       *string         `json:"ProductionOrderItemDate"`
 	PrecedingProductionOrderItem                  *int            `json:"PrecedingProductionOrderItem"`
 	FollowingProductionOrderItem                  *int            `json:"FollowingProductionOrderItem"`
 	SupplyChainRelationshipID                     *int            `json:"SupplyChainRelationshipID"`
@@ -144,12 +144,12 @@ type Item struct {
 	PlannedOrderItem                              *int            `json:"PlannedOrderItem"`
 	OrderID                                       *int            `json:"OrderID"`
 	OrderItem                                     *int            `json:"OrderItem"`
-	Project                                       *int     		  `json:"Project"`
-	WBSElement                                    *int     		  `json:"WBSElement"`
-	InspectionPlantBusinessPartner                *int     		  `json:"InspectionPlantBusinessPartner"`
-	InspectionPlant                               *string  		  `json:"InspectionPlant"`
-	InspectionPlan                                *int     		  `json:"InspectionPlan"`
-	InspectionLot                                 *int     		  `json:"InspectionLot"`
+	Project                                       *int            `json:"Project"`
+	WBSElement                                    *int            `json:"WBSElement"`
+	InspectionPlantBusinessPartner                *int            `json:"InspectionPlantBusinessPartner"`
+	InspectionPlant                               *string         `json:"InspectionPlant"`
+	InspectionPlan                                *int            `json:"InspectionPlan"`
+	InspectionLot                                 *int            `json:"InspectionLot"`
 	ProductIsBatchManagedInProductionPlant        *bool           `json:"ProductIsBatchManagedInProductionPlant"`
 	BatchMgmtPolicyInProductionOrder              *string         `json:"BatchMgmtPolicyInProductionOrder"`
 	ProductionOrderTargetedBatch                  *string         `json:"ProductionOrderTargetedBatch"`
@@ -670,6 +670,7 @@ func ProductionOrderReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

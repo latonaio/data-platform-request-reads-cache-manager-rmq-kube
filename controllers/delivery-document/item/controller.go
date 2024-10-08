@@ -36,7 +36,12 @@ const (
 func (controller *DeliveryDocumentItemController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "delivery-document"
 	redisKeyCategory2 := "delivery-document-item"
 	deliveryDocument, _ := controller.GetInt("deliveryDocument")

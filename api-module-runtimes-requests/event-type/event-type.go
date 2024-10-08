@@ -10,9 +10,9 @@ import (
 )
 
 type EventTypeReq struct {
-	EventType   EventType    `json:"EventType"`
-	EventTypes  []EventType  `json:"EventTypes"`
-	Accepter    []string     `json:"accepter"`
+	EventType  EventType   `json:"EventType"`
+	EventTypes []EventType `json:"EventTypes"`
+	Accepter   []string    `json:"accepter"`
 }
 
 type EventType struct {
@@ -141,6 +141,7 @@ func EventTypeReadsEventTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func EventTypeReadsEventTypesByEventTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func EventTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func EventTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

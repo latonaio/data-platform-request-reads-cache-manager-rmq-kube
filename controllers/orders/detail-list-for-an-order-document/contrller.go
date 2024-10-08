@@ -36,7 +36,12 @@ type OrdersDetailListForAnOrderDocumentController struct {
 func (controller *OrdersDetailListForAnOrderDocumentController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	orderID, _ := controller.GetInt("orderId")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "orders"
 	redisKeyCategory2 := "detail-list-for-an-order-document"
 
@@ -455,6 +460,7 @@ func functionOrderPdfGenerates(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		nil,
 	)
 
 	return responseBody

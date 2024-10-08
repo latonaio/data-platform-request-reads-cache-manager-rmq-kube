@@ -10,9 +10,9 @@ import (
 )
 
 type BusinessPartnerRoleReq struct {
-	BusinessPartnerRole   BusinessPartnerRole    `json:"BusinessPartnerRole"`
-	BusinessPartnerRoles  []BusinessPartnerRole  `json:"BusinessPartnerRoles"`
-	Accepter              []string    `json:"accepter"`
+	BusinessPartnerRole  BusinessPartnerRole   `json:"BusinessPartnerRole"`
+	BusinessPartnerRoles []BusinessPartnerRole `json:"BusinessPartnerRoles"`
+	Accepter             []string              `json:"accepter"`
 }
 
 type BusinessPartnerRole struct {
@@ -54,8 +54,8 @@ func CreateBusinessPartnerRoleRequestBusinessPartnerRoles(
 	req := BusinessPartnerRoleReq{
 		BusinessPartnerRoles: []BusinessPartnerRole{
 			{
-				BusinessPartnerRole:    input.BusinessPartnerRole,
-				IsMarkedForDeletion:    &isMarkedForDeletion,
+				BusinessPartnerRole: input.BusinessPartnerRole,
+				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		},
 		Accepter: []string{
@@ -73,8 +73,8 @@ func CreateBusinessPartnerRoleRequestText(
 
 	req := BusinessPartnerRoleReq{
 		BusinessPartnerRole: BusinessPartnerRole{
-			BusinessPartnerRole:    input.BusinessPartnerRole,
-			IsMarkedForDeletion:    &isMarkedForDeletion,
+			BusinessPartnerRole: input.BusinessPartnerRole,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func BusinessPartnerRoleReadsBusinessPartnerRoles(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func BusinessPartnerRoleReadsBusinessPartnerRolesByBusinessPartnerRoles(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func BusinessPartnerRoleReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func BusinessPartnerRoleReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

@@ -28,7 +28,12 @@ type CertificateAuthorityChainWithUsageControlChainController struct {
 //)
 
 func (controller *CertificateAuthorityChainWithUsageControlChainController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "certificate-authority-chain-with-usage-control-chain"
 	certificateAuthorityChain := controller.GetString("certificateAuthorityChain")
 	usageControlChain := controller.GetString("usageControlChain")

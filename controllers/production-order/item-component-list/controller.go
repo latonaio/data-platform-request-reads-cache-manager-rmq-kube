@@ -30,7 +30,12 @@ type ProductionOrderItemComponentListController struct {
 }
 
 func (controller *ProductionOrderItemComponentListController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	productionOrder, _ := controller.GetInt("productionOrder")
 	productionOrderItem, _ := controller.GetInt("productionOrderItem")
 	redisKeyCategory1 := "production-order"

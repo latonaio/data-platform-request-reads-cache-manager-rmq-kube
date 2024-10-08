@@ -33,7 +33,12 @@ const (
 func (controller *ProductStockListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	_, _ = controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "product-stock"
 	redisKeyCategory2 := "list"
 	userType := controller.GetString(":userType") // buyer or seller

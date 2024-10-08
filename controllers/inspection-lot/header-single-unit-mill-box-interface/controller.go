@@ -25,7 +25,12 @@ type InspectionLotSingleUnitMillBoxInterfaceController struct {
 }
 
 func (controller *InspectionLotSingleUnitMillBoxInterfaceController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "inspection-lot"
 	redisKeyCategory2 := "inspection-lot-header-single-unit-mill-box-interface"
 	inspectionLot, _ := controller.GetInt("inspectionLot")

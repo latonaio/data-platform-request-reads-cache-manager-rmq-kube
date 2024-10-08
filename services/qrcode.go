@@ -1,15 +1,18 @@
 package services
 
 import (
+	apiModuleRuntimesResponsesArticle "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/article"
 	apiModuleRuntimesResponsesBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
 	apiModuleRuntimesResponsesDeliveryDocument "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/delivery-document"
 	apiModuleRuntimesResponsesEvent "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/event"
 	apiModuleRuntimesResponsesInspectionLot "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/inspection-lot"
 	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
+	apiModuleRuntimesResponsesParticipation "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/participation"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProductStock "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-stock"
 	apiModuleRuntimesResponsesProductionOrder "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/production-order"
+	apiModuleRuntimesResponsesShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop"
 	apiModuleRuntimesResponsesSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 )
@@ -20,12 +23,18 @@ func CreateQRCodeBusinessPartnerDocImage(
 ) *apiOutputFormatter.QRCodeImage {
 	img := &apiOutputFormatter.QRCodeImage{}
 
-	img = &apiOutputFormatter.QRCodeImage{
-		DocID:         (*businessPartnerDocRes.Message.GeneralDoc)[0].DocID,
-		FileExtension: (*businessPartnerDocRes.Message.GeneralDoc)[0].FileExtension,
+	if businessPartnerDocRes.Message.GeneralDoc != nil &&
+		len(*businessPartnerDocRes.Message.GeneralDoc) > 0 &&
+		(*businessPartnerDocRes.Message.GeneralDoc)[0].DocType == "QRCODE" {
+		img = &apiOutputFormatter.QRCodeImage{
+			DocID:         (*businessPartnerDocRes.Message.GeneralDoc)[0].DocID,
+			FileExtension: (*businessPartnerDocRes.Message.GeneralDoc)[0].FileExtension,
+		}
+
+		return img
 	}
 
-	return img
+	return nil
 }
 
 func CreateQRCodeEventDocImage(
@@ -42,6 +51,20 @@ func CreateQRCodeEventDocImage(
 	return img
 }
 
+func CreateQRCodeArticleDocImage(
+	articleDocRes *apiModuleRuntimesResponsesArticle.ArticleDocRes,
+	article int,
+) *apiOutputFormatter.QRCodeImage {
+	img := &apiOutputFormatter.QRCodeImage{}
+
+	img = &apiOutputFormatter.QRCodeImage{
+		DocID:         (*articleDocRes.Message.HeaderDoc)[0].DocID,
+		FileExtension: (*articleDocRes.Message.HeaderDoc)[0].FileExtension,
+	}
+
+	return img
+}
+
 func CreateQRCodeSiteDocImage(
 	siteDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
 	site int,
@@ -51,6 +74,34 @@ func CreateQRCodeSiteDocImage(
 	img = &apiOutputFormatter.QRCodeImage{
 		DocID:         (*siteDocRes.Message.HeaderDoc)[0].DocID,
 		FileExtension: (*siteDocRes.Message.HeaderDoc)[0].FileExtension,
+	}
+
+	return img
+}
+
+func CreateQRCodeShopDocImage(
+	shopDocRes *apiModuleRuntimesResponsesShop.ShopDocRes,
+	shop int,
+) *apiOutputFormatter.QRCodeImage {
+	img := &apiOutputFormatter.QRCodeImage{}
+
+	img = &apiOutputFormatter.QRCodeImage{
+		DocID:         (*shopDocRes.Message.HeaderDoc)[0].DocID,
+		FileExtension: (*shopDocRes.Message.HeaderDoc)[0].FileExtension,
+	}
+
+	return img
+}
+
+func CreateQRCodeParticipationDocImage(
+	participationDocRes *apiModuleRuntimesResponsesParticipation.ParticipationDocRes,
+	participation int,
+) *apiOutputFormatter.QRCodeImage {
+	img := &apiOutputFormatter.QRCodeImage{}
+
+	img = &apiOutputFormatter.QRCodeImage{
+		DocID:         (*participationDocRes.Message.HeaderDoc)[0].DocID,
+		FileExtension: (*participationDocRes.Message.HeaderDoc)[0].FileExtension,
 	}
 
 	return img

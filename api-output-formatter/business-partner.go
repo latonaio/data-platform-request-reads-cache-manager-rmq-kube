@@ -1,19 +1,25 @@
 package apiOutputFormatter
 
 type BusinessPartner struct {
-	BusinessPartnerGeneral       []BusinessPartnerGeneral       `json:"Generals"`
-	BusinessPartnerGeneralDoc    []BusinessPartnerGeneralDoc    `json:"GeneralDoc"`
-	BusinessPartnerPerson        []BusinessPartnerPerson        `json:"Person"`
-	BusinessPartnerAddress       []BusinessPartnerAddress       `json:"Address"`
-	BusinessPartnerGPS           []BusinessPartnerGPS           `json:"GPS"`
-	BusinessPartnerRank          []BusinessPartnerRank          `json:"Rank"`
-	BusinessPartnerDetailGeneral []BusinessPartnerDetailGeneral `json:"DetailGeneral"`
+	BusinessPartnerGeneral       			[]BusinessPartnerGeneral			`json:"Generals"`
+	BusinessPartnerGeneralDoc    			[]BusinessPartnerGeneralDoc			`json:"GeneralDoc"`
+	BusinessPartnerBPRole        			[]BusinessPartnerBPRole				`json:"Role"`
+	BusinessPartnerPerson        			[]BusinessPartnerPerson				`json:"Person"`
+	BusinessPartnerAddress       			[]BusinessPartnerAddress			`json:"Address"`
+	BusinessPartnerSNS           			[]BusinessPartnerSNS				`json:"SNS"`
+	BusinessPartnerGPS           			[]BusinessPartnerGPS				`json:"GPS"`
+	BusinessPartnerRank          			[]BusinessPartnerRank				`json:"Rank"`
+	BusinessPartnerPersonOrganization		[]BusinessPartnerPersonOrganization	`json:"PersonOrganization"`
+	BusinessPartnerDetailGeneral			[]BusinessPartnerDetailGeneral		`json:"DetailGeneral"`
 }
 
 type BusinessPartnerGeneral struct {
 	BusinessPartner     int    `json:"BusinessPartner"`
 	BusinessPartnerName string `json:"BusinessPartnerName"`
+	Withdrawal          *bool  `json:"Withdrawal"`
+	IsReleased          *bool  `json:"IsReleased"`
 	IsMarkedForDeletion *bool  `json:"IsMarkedForDeletion"`
+	Images              Images `json:"Images"`
 }
 
 type BusinessPartnerGeneralDoc struct {
@@ -29,26 +35,39 @@ type BusinessPartnerGeneralDoc struct {
 	Images                   Images `json:"Images"`
 }
 
+type BusinessPartnerBPRole struct {
+	BusinessPartner			int    `json:"BusinessPartner"`
+	BusinessPartnerRole		string `json:"BusinessPartnerRole"`
+	BusinessPartnerRoleName string `json:"BusinessPartnerRoleName"`
+}
+
 type BusinessPartnerPerson struct {
-	BusinessPartner				int		`json:"BusinessPartner"`
-	BusinessPartnerType			string	`json:"BusinessPartnerType"`
-	FirstName					*string	`json:"FirstName"`
-	LastName					*string	`json:"LastName"`
-	FullName					*string	`json:"FullName"`
-	MiddleName					*string	`json:"MiddleName"`
-	NickName					string	`json:"NickName"`
-	Gender						string	`json:"Gender"`
-	Language					string	`json:"Language"`
-	CorrespondenceLanguage		*string	`json:"CorrespondenceLanguage"`
-	BirthDate					*string	`json:"BirthDate"`
-	Nationality					string	`json:"Nationality"`
-	EmailAddress				*string	`json:"EmailAddress"`
-	MobilePhoneNumber			*string	`json:"MobilePhoneNumber"`
-	ProfileComment				*string	`json:"ProfileComment"`
-	PreferableLocalSubRegion	string  `json:"PreferableLocalSubRegion"`
-	PreferableLocalRegion		string  `json:"PreferableLocalRegion"`
-	PreferableCountry			string  `json:"PreferableCountry"`
-	ActPurpose					string  `json:"ActPurpose"`
+	BusinessPartner					int		`json:"BusinessPartner"`
+	BusinessPartnerType				string	`json:"BusinessPartnerType"`
+	FirstName						string	`json:"FirstName"`
+	LastName						string	`json:"LastName"`
+	FullName						string	`json:"FullName"`
+	MiddleName						*string	`json:"MiddleName"`
+	NickName						string	`json:"NickName"`
+	Gender							string	`json:"Gender"`
+	Language						string	`json:"Language"`
+	LanguageName					string	`json:"LanguageName"`
+	CorrespondenceLanguage			*string	`json:"CorrespondenceLanguage"`
+	BirthDate						string	`json:"BirthDate"`
+	Nationality						string	`json:"Nationality"`
+	NationalityName					string	`json:"NationalityName"`
+	EmailAddress					*string	`json:"EmailAddress"`
+	MobilePhoneNumber				*string	`json:"MobilePhoneNumber"`
+	ProfileComment					*string	`json:"ProfileComment"`
+	PreferableLocalSubRegion		string  `json:"PreferableLocalSubRegion"`
+	PreferableLocalSubRegionName	string  `json:"PreferableLocalSubRegionName"`
+	PreferableLocalRegion			string  `json:"PreferableLocalRegion"`
+	PreferableLocalRegionName		string  `json:"PreferableLocalRegionName"`
+	PreferableCountry				string  `json:"PreferableCountry"`
+	ActPurpose						string  `json:"ActPurpose"`
+	ActPurposeName					string  `json:"ActPurposeName"`
+	TermsOfUseIsConfirmed			*bool   `json:"TermsOfUseIsConfirmed"`
+	Images                  		Images  `json:"Images"`
 }
 
 type BusinessPartnerAddress struct {
@@ -68,6 +87,14 @@ type BusinessPartnerAddress struct {
 	Site               *int    `json:"Site"`
 }
 
+type BusinessPartnerSNS struct {
+	BusinessPartner     int		`json:"BusinessPartner"`
+	XURL  				*string	`json:"XURL"`
+	InstagramURL     	*string	`json:"InstagramURL"`
+	TikTokURL         	*string	`json:"TikTokURL"`
+	PointAppsURL        string	`json:"PointAppsURL"`
+}
+
 type BusinessPartnerGPS struct {
 	BusinessPartner     int		`json:"BusinessPartner"`
 	XCoordinate     	float32	`json:"XCoordinate"`
@@ -84,8 +111,16 @@ type BusinessPartnerRank struct {
 	BusinessPartner     int    `json:"BusinessPartner"`
 	RankType            string `json:"RankType"`
 	Rank                int    `json:"Rank"`
+	RankName			string `json:"RankName"`
 	ValidityStartDate   string `json:"ValidityStartDate"`
 	ValidityEndDate     string `json:"ValidityEndDate"`
+}
+
+type BusinessPartnerPersonOrganization struct {
+	BusinessPartner        			int     `json:"BusinessPartner"`
+	BusinessPartnerType    			string  `json:"BusinessPartnerType"`
+	OrganizationBusinessPartner		int		`json:"OrganizationBusinessPartner"`
+	OrganizationBusinessPartnerName	string  `json:"OrganizationBusinessPartnerName"`
 }
 
 type BusinessPartnerDetailGeneral struct {

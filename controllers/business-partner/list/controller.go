@@ -28,7 +28,12 @@ type BusinessPartnerListController struct {
 func (controller *BusinessPartnerListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "business-partner"
 	redisKeyCategory2 := "list"
 	//userType :=

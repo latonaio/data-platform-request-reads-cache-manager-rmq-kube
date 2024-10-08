@@ -10,26 +10,26 @@ import (
 )
 
 type PointConsumptionTypeReq struct {
-	PointConsumptionType   PointConsumptionType    `json:"PointConsumptionType"`
-	PointConsumptionTypes  []PointConsumptionType  `json:"PointConsumptionTypes"`
-	Accepter               []string `json:"accepter"`
+	PointConsumptionType  PointConsumptionType   `json:"PointConsumptionType"`
+	PointConsumptionTypes []PointConsumptionType `json:"PointConsumptionTypes"`
+	Accepter              []string               `json:"accepter"`
 }
 
 type PointConsumptionType struct {
-	PointConsumptionType    string  `json:"PointConsumptionType"`
-	CreationDate            *string `json:"CreationDate"`
-	LastChangeDate          *string `json:"LastChangeDate"`
-	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
-	Text                    []Text  `json:"Text"`
+	PointConsumptionType string  `json:"PointConsumptionType"`
+	CreationDate         *string `json:"CreationDate"`
+	LastChangeDate       *string `json:"LastChangeDate"`
+	IsMarkedForDeletion  *bool   `json:"IsMarkedForDeletion"`
+	Text                 []Text  `json:"Text"`
 }
 
 type Text struct {
-	PointConsumptionType       string  `json:"PointConsumptionType"`
-	Language                   string  `json:"Language"`
-	PointConsumptionTypeName   *string `json:"PointConsumptionTypeName"`
-	CreationDate               *string `json:"CreationDate"`
-	LastChangeDate             *string `json:"LastChangeDate"`
-	IsMarkedForDeletion        *bool   `json:"IsMarkedForDeletion"`
+	PointConsumptionType     string  `json:"PointConsumptionType"`
+	Language                 string  `json:"Language"`
+	PointConsumptionTypeName *string `json:"PointConsumptionTypeName"`
+	CreationDate             *string `json:"CreationDate"`
+	LastChangeDate           *string `json:"LastChangeDate"`
+	IsMarkedForDeletion      *bool   `json:"IsMarkedForDeletion"`
 }
 
 func CreatePointConsumptionTypeRequestPointConsumptionTypesByPointConsumptionTypes(
@@ -54,8 +54,8 @@ func CreatePointConsumptionTypeRequestPointConsumptionTypes(
 	req := PointConsumptionTypeReq{
 		PointConsumptionTypes: []PointConsumptionType{
 			{
-				PointConsumptionType:    input.PointConsumptionType,
-				IsMarkedForDeletion:     &isMarkedForDeletion,
+				PointConsumptionType: input.PointConsumptionType,
+				IsMarkedForDeletion:  &isMarkedForDeletion,
 			},
 		},
 		Accepter: []string{
@@ -73,8 +73,8 @@ func CreatePointConsumptionTypeRequestText(
 
 	req := PointConsumptionTypeReq{
 		PointConsumptionType: PointConsumptionType{
-			PointConsumptionType:    input.PointConsumptionType,
-			IsMarkedForDeletion:     &isMarkedForDeletion,
+			PointConsumptionType: input.PointConsumptionType,
+			IsMarkedForDeletion:  &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -96,8 +96,8 @@ func CreatePointConsumptionTypeRequestTexts(
 	isMarkedForDeletion := false
 
 	req := PointConsumptionTypeReq{
-		PointConsumptionType:        PointConsumptionType{
-			PointConsumptionType:    input.PointConsumptionType,
+		PointConsumptionType: PointConsumptionType{
+			PointConsumptionType: input.PointConsumptionType,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func PointConsumptionTypeReadsPointConsumptionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func PointConsumptionTypeReadsPointConsumptionTypesByPointConsumptionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func PointConsumptionTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func PointConsumptionTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

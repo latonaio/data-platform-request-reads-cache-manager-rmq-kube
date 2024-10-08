@@ -22,18 +22,21 @@ type Header struct {
 	EventOwner                    *int                    `json:"EventOwner"`
 	EventOwnerBusinessPartnerRole *string                 `json:"EventOwnerBusinessPartnerRole"`
 	PersonResponsible             *string                 `json:"PersonResponsible"`
+	URL							  *string				  `json:"URL"`
 	ValidityStartDate             *string                 `json:"ValidityStartDate"`
 	ValidityStartTime             *string                 `json:"ValidityStartTime"`
 	ValidityEndDate               *string                 `json:"ValidityEndDate"`
 	ValidityEndTime               *string                 `json:"ValidityEndTime"`
-	OperationStartDate			  *string				  `json:"OperationStartDate"`
-	OperationStartTime			  *string				  `json:"OperationStartTime"`
-	OperationEndDate			  *string				  `json:"OperationEndDate"`
-	OperationEndTime			  *string				  `json:"OperationEndTime"`
+	OperationStartDate            *string                 `json:"OperationStartDate"`
+	OperationStartTime            *string                 `json:"OperationStartTime"`
+	OperationEndDate              *string                 `json:"OperationEndDate"`
+	OperationEndTime              *string                 `json:"OperationEndTime"`
 	Description                   *string                 `json:"Description"`
 	LongText                      *string                 `json:"LongText"`
 	Introduction                  *string                 `json:"Introduction"`
 	Site                          *int                    `json:"Site"`
+	Capacity					  *int			          `json:"Capacity"`
+	Shop                          *int                    `json:"Shop"`
 	Project                       *int                    `json:"Project"`
 	WBSElement                    *int                    `json:"WBSElement"`
 	Tag1                          *string                 `json:"Tag1"`
@@ -42,14 +45,14 @@ type Header struct {
 	Tag4                          *string                 `json:"Tag4"`
 	DistributionProfile           *string                 `json:"DistributionProfile"`
 	PointConditionType            *string                 `json:"PointConditionType"`
-	QuestionnaireType			  *string				  `json:"QuestionnaireType"`
-	QuestionnaireTemplate		  *string				  `json:"QuestionnaireTemplate"`
+	QuestionnaireType             *string                 `json:"QuestionnaireType"`
+	QuestionnaireTemplate         *string                 `json:"QuestionnaireTemplate"`
 	CreationDate                  *string                 `json:"CreationDate"`
 	CreationTime                  *string                 `json:"CreationTime"`
 	LastChangeDate                *string                 `json:"LastChangeDate"`
 	LastChangeTime                *string                 `json:"LastChangeTime"`
-	CreateUser					  *int	   				  `json:"CreateUser"`
-	LastChangeUser				  *int	   				  `json:"LastChangeUser"`
+	CreateUser                    *int                    `json:"CreateUser"`
+	LastChangeUser                *int                    `json:"LastChangeUser"`
 	IsReleased                    *bool                   `json:"IsReleased"`
 	IsCancelled                   *bool                   `json:"IsCancelled"`
 	IsMarkedForDeletion           *bool                   `json:"IsMarkedForDeletion"`
@@ -57,8 +60,11 @@ type Header struct {
 	Address                       []Address               `json:"Address"`
 	Campaign                      []Campaign              `json:"Campaign"`
 	Game                          []Game                  `json:"Game"`
+	Participation	              []Participation		  `json:"Participation"`
+	Attendance                    []Attendance            `json:"Attendance"`
 	PointTransaction              []PointTransaction      `json:"PointTransaction"`
 	PointConditionElement         []PointConditionElement `json:"PointConditionElement"`
+	Counter						  []Counter				  `json:"Counter"`
 }
 
 type Partner struct {
@@ -117,6 +123,33 @@ type Game struct {
 	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
 }
 
+type Participation struct {
+	Event               int     `json:"Event"`
+	Participator        int     `json:"Participator"`
+	Participation       *int    `json:"Participation"`
+	CreationDate        *string `json:"CreationDate"`
+	CreationTime        *string `json:"CreationTime"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	LastChangeTime      *string `json:"LastChangeTime"`
+	IsReleased          *bool   `json:"IsReleased"`
+	IsCancelled         *bool   `json:"IsCancelled"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+}
+
+type Attendance struct {
+	Event               int     `json:"Event"`
+	Attender            int     `json:"Attender"`
+	Attendance          *int    `json:"Attendance"`
+	Participation       *int    `json:"Participation"`
+	CreationDate        *string `json:"CreationDate"`
+	CreationTime        *string `json:"CreationTime"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	LastChangeTime      *string `json:"LastChangeTime"`
+	IsReleased          *bool   `json:"IsReleased"`
+	IsCancelled         *bool   `json:"IsCancelled"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+}
+
 type PointTransaction struct {
 	Event                          int      `json:"Event"`
 	Sender                         int      `json:"Sender"`
@@ -153,6 +186,17 @@ type PointConditionElement struct {
 	IsReleased                     *bool    `json:"IsReleased"`
 	IsCancelled                    *bool    `json:"IsCancelled"`
 	IsMarkedForDeletion            *bool    `json:"IsMarkedForDeletion"`
+}
+
+type Counter struct {
+	Event                  int     `json:"Event"`
+	NumberOfLikes          *int    `json:"NumberOfLikes"`
+	NumberOfParticipations *int    `json:"NumberOfParticipations"`
+	NumberOfAttendances    *int    `json:"NumberOfAttendances"`
+	CreationDate           *string `json:"CreationDate"`
+	CreationTime           *string `json:"CreationTime"`
+	LastChangeDate         *string `json:"LastChangeDate"`
+	LastChangeTime         *string `json:"LastChangeTime"`
 }
 
 func CreateEventRequestHeader(
@@ -198,6 +242,24 @@ func CreateEventRequestHeadersByEvents(
 		Headers: eventHeaders,
 		Accepter: []string{
 			"HeadersByEvents",
+		},
+	}
+	return req
+}
+
+func CreateEventRequestHeadersByEventOwner(
+	requestPram *apiInputReader.Request,
+	eventHeaders *apiInputReader.EventHeader,
+) EventReq {
+	req := EventReq{
+		Header: Header{
+			EventOwner:			 eventHeaders.EventOwner,
+			IsReleased:          eventHeaders.IsReleased,
+			IsCancelled:         eventHeaders.IsCancelled,
+			IsMarkedForDeletion: eventHeaders.IsMarkedForDeletion,
+		},
+		Accepter: []string{
+			"HeadersByEventOwner",
 		},
 	}
 	return req
@@ -441,48 +503,46 @@ func CreateEventRequestGames(
 	return req
 }
 
-func EventReadsHeadersByEvents(
+func CreateEventRequestParticipation(
 	requestPram *apiInputReader.Request,
-	input []Header,
-	controller *beego.Controller,
-) []byte {
-	//if accepter == "HeadersByEvents" {
-	//	request = CreateEventRequestHeadersByEvents(
-	//		requestPram,
-	//		&apiInputReader.EventHeader{
-	//			Event:               input.EventHeader.Event,
-	//			IsReleased:          input.EventHeader.IsReleased,
-	//			IsCancelled:         input.EventHeader.IsCancelled,
-	//			IsMarkedForDeletion: input.EventHeader.IsMarkedForDeletion,
-	//		},
-	//	)
-	//}
-
-	aPIServiceName := "DPFM_API_EVENT_SRV"
-	aPIType := "reads"
-
-	request := CreateEventRequestHeadersByEvents(
-		requestPram,
-		input,
-	)
-
-	marshaledRequest, err := json.Marshal(request)
-	if err != nil {
-		services.HandleError(
-			controller,
-			err,
-			nil,
-		)
+	eventParticipation *apiInputReader.EventParticipation,
+) EventReq {
+	req := EventReq{
+		Header: Header{
+			Event: eventParticipation.Event,
+			Participation: []Participation{
+				{
+					Participator:		eventParticipation.Participator,
+					IsCancelled:		eventParticipation.IsCancelled,
+				},
+			},
+		},
+		Accepter: []string{
+			"Participation",
+		},
 	}
+	return req
+}
 
-	responseBody := services.Request(
-		aPIServiceName,
-		aPIType,
-		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
-		controller,
-	)
-
-	return responseBody
+func CreateEventRequestAttendance(
+	requestPram *apiInputReader.Request,
+	eventAttendance *apiInputReader.EventAttendance,
+) EventReq {
+	req := EventReq{
+		Header: Header{
+			Event: eventAttendance.Event,
+			Attendance: []Attendance{
+				{
+					Attender:			eventAttendance.Attender,
+					IsCancelled:		eventAttendance.IsCancelled,
+				},
+			},
+		},
+		Accepter: []string{
+			"Attendance",
+		},
+	}
+	return req
 }
 
 func CreateEventRequestPointTransaction(
@@ -571,6 +631,38 @@ func CreateEventRequestPointConditionElements(
 	return req
 }
 
+func CreateEventRequestCounter(
+	requestPram *apiInputReader.Request,
+	eventCounter *apiInputReader.EventCounter,
+) EventReq {
+	req := EventReq{
+		Header: Header{
+			Event: eventCounter.Event,
+			Counter: []Counter{
+				{
+				},
+			},
+		},
+		Accepter: []string{
+			"Counter",
+		},
+	}
+	return req
+}
+
+func CreateEventRequestCountersByEvents(
+	requestPram *apiInputReader.Request,
+	eventHeaders []Header,
+) EventReq {
+	req := EventReq{
+		Headers: eventHeaders,
+		Accepter: []string{
+			"CountersByEvents",
+		},
+	}
+	return req
+}
+
 func EventReads(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Event,
@@ -598,6 +690,18 @@ func EventReads(
 		request = CreateEventRequestHeaders(
 			requestPram,
 			&apiInputReader.EventHeader{
+				IsReleased:          input.EventHeader.IsReleased,
+				IsCancelled:         input.EventHeader.IsCancelled,
+				IsMarkedForDeletion: input.EventHeader.IsMarkedForDeletion,
+			},
+		)
+	}
+
+	if accepter == "HeadersByEventOwner" {
+		request = CreateEventRequestHeadersByEventOwner(
+			requestPram,
+			&apiInputReader.EventHeader{
+				EventOwner:			 input.EventHeader.EventOwner,
 				IsReleased:          input.EventHeader.IsReleased,
 				IsCancelled:         input.EventHeader.IsCancelled,
 				IsMarkedForDeletion: input.EventHeader.IsMarkedForDeletion,
@@ -718,46 +822,77 @@ func EventReads(
 		)
 	}
 
+	if accepter == "Participation" {
+		request = CreateEventRequestParticipation(
+			requestPram,
+			&apiInputReader.EventParticipation{
+				Event:                          input.EventParticipation.Event,
+				Participator:                   input.EventParticipation.Participator,
+				IsCancelled:					input.EventParticipation.IsCancelled,
+			},
+		)
+	}
+	
+	if accepter == "Attendance" {
+		request = CreateEventRequestAttendance(
+			requestPram,
+			&apiInputReader.EventAttendance{
+				Event:                          input.EventAttendance.Event,
+				Attender:       	            input.EventAttendance.Attender,
+				IsCancelled:					input.EventAttendance.IsCancelled,
+			},
+		)
+	}
+
 	if accepter == "PointTransaction" {
-  		request = CreateEventRequestPointTransaction(
-    		requestPram,
-    		&apiInputReader.EventPointTransaction{
-      			Event: 							input.EventPointTransaction.Event,
-      			Sender:							input.EventPointTransaction.Sender,
-      			Receiver:						input.EventPointTransaction.Receiver,
-      			PointConditionRecord:			input.EventPointTransaction.PointConditionRecord,
-      			PointConditionSequentialNumber:	input.EventPointTransaction.PointConditionSequentialNumber,
-    		},
-  		)
+		request = CreateEventRequestPointTransaction(
+			requestPram,
+			&apiInputReader.EventPointTransaction{
+				Event:                          input.EventPointTransaction.Event,
+				Sender:                         input.EventPointTransaction.Sender,
+				Receiver:                       input.EventPointTransaction.Receiver,
+				PointConditionRecord:           input.EventPointTransaction.PointConditionRecord,
+				PointConditionSequentialNumber: input.EventPointTransaction.PointConditionSequentialNumber,
+			},
+		)
 	}
 
 	if accepter == "PointTransactions" {
-  		request = CreateEventRequestPointTransactions(
-    		requestPram,
-    		&apiInputReader.EventPointTransaction{
-      			Event: input.EventPointTransaction.Event,
-    		},
-  		)
+		request = CreateEventRequestPointTransactions(
+			requestPram,
+			&apiInputReader.EventPointTransaction{
+				Event: input.EventPointTransaction.Event,
+			},
+		)
 	}
 
 	if accepter == "PointConditionElement" {
-    	request = CreateEventRequestPointConditionElement(
-      		requestPram,
-      		&apiInputReader.EventPointConditionElement{
-          		Event: 							input.EventPointConditionElement.Event,
-          		PointConditionRecord:			input.EventPointConditionElement.PointConditionRecord,
-          		PointConditionSequentialNumber:	input.EventPointConditionElement.PointConditionSequentialNumber,
-      		},
-    	)
+		request = CreateEventRequestPointConditionElement(
+			requestPram,
+			&apiInputReader.EventPointConditionElement{
+				Event:                          input.EventPointConditionElement.Event,
+				PointConditionRecord:           input.EventPointConditionElement.PointConditionRecord,
+				PointConditionSequentialNumber: input.EventPointConditionElement.PointConditionSequentialNumber,
+			},
+		)
 	}
 
 	if accepter == "PointConditionElements" {
-    	request = CreateEventRequestPointConditionElements(
-      		requestPram,
-      		&apiInputReader.EventPointConditionElement{
-          		Event: input.EventPointConditionElement.Event,
-      		},
-    	)
+		request = CreateEventRequestPointConditionElements(
+			requestPram,
+			&apiInputReader.EventPointConditionElement{
+				Event: input.EventPointConditionElement.Event,
+			},
+		)
+	}
+
+	if accepter == "Counter" {
+		request = CreateEventRequestCounter(
+			requestPram,
+			&apiInputReader.EventCounter{
+				Event:                          input.EventCounter.Event,
+			},
+		)
 	}
 
 	marshaledRequest, err := json.Marshal(request)
@@ -774,6 +909,96 @@ func EventReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func EventReadsHeadersByEvents(
+	requestPram *apiInputReader.Request,
+	input []Header,
+	controller *beego.Controller,
+) []byte {
+
+	//if accepter == "HeadersByEvents" {
+	//	request = CreateEventRequestHeadersByEvents(
+	//		requestPram,
+	//		&apiInputReader.EventHeader{
+	//			Event:               input.EventHeader.Event,
+	//			IsReleased:          input.EventHeader.IsReleased,
+	//			IsCancelled:         input.EventHeader.IsCancelled,
+	//			IsMarkedForDeletion: input.EventHeader.IsMarkedForDeletion,
+	//		},
+	//	)
+	//}
+
+	aPIServiceName := "DPFM_API_EVENT_SRV"
+	aPIType := "reads"
+
+	request := CreateEventRequestHeadersByEvents(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func EventReadsCountersByEvents(
+	requestPram *apiInputReader.Request,
+	input []Header,
+	controller *beego.Controller,
+) []byte {
+
+	//if accepter == "CountersByEvents" {
+	//	request = CreateEventRequestCountersByEvents(
+	//		requestPram,
+	//		&apiInputReader.EventCounter{
+	//			Event:               input.EventCounter.Event,
+	//		},
+	//	)
+	//}
+
+	aPIServiceName := "DPFM_API_EVENT_SRV"
+	aPIType := "reads"
+
+	request := CreateEventRequestCountersByEvents(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody

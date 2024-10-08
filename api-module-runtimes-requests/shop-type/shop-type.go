@@ -10,9 +10,9 @@ import (
 )
 
 type ShopTypeReq struct {
-	ShopType   ShopType    `json:"ShopType"`
-	ShopTypes  []ShopType  `json:"ShopTypes"`
-	Accepter   []string    `json:"accepter"`
+	ShopType  ShopType   `json:"ShopType"`
+	ShopTypes []ShopType `json:"ShopTypes"`
+	Accepter  []string   `json:"accepter"`
 }
 
 type ShopType struct {
@@ -54,7 +54,7 @@ func CreateShopTypeRequestShopTypes(
 	req := ShopTypeReq{
 		ShopTypes: []ShopType{
 			{
-				ShopType:           input.ShopType,
+				ShopType:            input.ShopType,
 				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		},
@@ -141,6 +141,7 @@ func ShopTypeReadsShopTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func ShopTypeReadsShopTypesByShopTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func ShopTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func ShopTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

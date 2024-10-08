@@ -10,26 +10,26 @@ import (
 )
 
 type MessageTypeReq struct {
-	MessageType     MessageType    `json:"MessageType"`
-	MessageTypes    []MessageType  `json:"MessageTypes"`
-	Accepter        []string       `json:"accepter"`
+	MessageType  MessageType   `json:"MessageType"`
+	MessageTypes []MessageType `json:"MessageTypes"`
+	Accepter     []string      `json:"accepter"`
 }
 
 type MessageType struct {
-	MessageType             string  `json:"MessageType"`
-	CreationDate            *string `json:"CreationDate"`
-	LastChangeDate          *string `json:"LastChangeDate"`
-	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
-	Text                    []Text  `json:"Text"`
+	MessageType         string  `json:"MessageType"`
+	CreationDate        *string `json:"CreationDate"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
+	Text                []Text  `json:"Text"`
 }
 
 type Text struct {
-	MessageType             string  `json:"MessageType"`
-	Language                string  `json:"Language"`
-	MessageTypeName         *string `json:"MessageTypeName"`
-	CreationDate            *string `json:"CreationDate"`
-	LastChangeDate          *string `json:"LastChangeDate"`
-	IsMarkedForDeletion     *bool   `json:"IsMarkedForDeletion"`
+	MessageType         string  `json:"MessageType"`
+	Language            string  `json:"Language"`
+	MessageTypeName     *string `json:"MessageTypeName"`
+	CreationDate        *string `json:"CreationDate"`
+	LastChangeDate      *string `json:"LastChangeDate"`
+	IsMarkedForDeletion *bool   `json:"IsMarkedForDeletion"`
 }
 
 func CreateMessageTypeRequestMessageTypesByMessageTypes(
@@ -73,8 +73,8 @@ func CreateMessageTypeRequestText(
 
 	req := MessageTypeReq{
 		MessageType: MessageType{
-			MessageType:            input.MessageType,
-			IsMarkedForDeletion:    &isMarkedForDeletion,
+			MessageType:         input.MessageType,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -96,8 +96,8 @@ func CreateMessageTypeRequestTexts(
 	isMarkedForDeletion := false
 
 	req := MessageTypeReq{
-		MessageType:        MessageType{
-			MessageType:    input.MessageType,
+		MessageType: MessageType{
+			MessageType: input.MessageType,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func MessageTypeReadsMessageTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func MessageTypeReadsMessageTypesByMessageTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func MessageTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func MessageTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

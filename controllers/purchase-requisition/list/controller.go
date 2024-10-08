@@ -31,7 +31,12 @@ func (controller *PurchaseRequisitionListController) Get() {
 	//aPIType := controller.Ctx.Input.Param(":aPIType")
 	isCancelled, _ := controller.GetBool("isCancelled")
 	isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "purchase-requisition"
 	redisKeyCategory2 := "list"
 	userType := controller.GetString(":userType") // buyer

@@ -208,6 +208,7 @@ func FunctionMillSheetPdfGenerates(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		nil,
 	)
 
 	return responseBody

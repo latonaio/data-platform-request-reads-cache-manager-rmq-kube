@@ -2,6 +2,8 @@ package services
 
 import (
 	apiModuleRuntimesResponsesActPurpose "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/act-purpose"
+	apiModuleRuntimesResponsesArticle "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/article"
+	apiModuleRuntimesResponsesArticleType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/article-type"
 	apiModuleRuntimesResponsesBatchMasterRecord "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/batch-master-record"
 	apiModuleRuntimesResponsesBillOfMaterial "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/bill-of-material"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
@@ -16,18 +18,23 @@ import (
 	apiModuleRuntimesResponsesLanguage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/language"
 	apiModuleRuntimesResponsesLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-region"
 	apiModuleRuntimesResponsesLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-sub-region"
+	apiModuleRuntimesResponsesMessage "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/message"
 	apiModuleRuntimesResponsesMessageType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/message-type"
+	apiModuleRuntimesResponsesObjectType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/object-type"
 	apiModuleRuntimesResponsesOrders "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/orders"
 	apiModuleRuntimesResponsesPaymentTerms "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/payment-terms"
 	apiModuleRuntimesResponsesPlant "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/plant"
 	apiModuleRuntimesResponsesPointConditionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-condition-type"
 	apiModuleRuntimesResponsesPointConsumptionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-consumption-type"
 	apiModuleRuntimesResponsesPointTransactionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-transaction-type"
+	apiModuleRuntimesResponsesPost "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/post"
 	apiModuleRuntimesResponsesProductMaster "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/product-master"
 	apiModuleRuntimesResponsesProject "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/project"
+	apiModuleRuntimesResponsesRank "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/rank"
+	apiModuleRuntimesResponsesShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop"
+	apiModuleRuntimesResponsesShopType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop-type"
 	apiModuleRuntimesResponsesSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site"
 	apiModuleRuntimesResponsesSiteType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site-type"
-	apiModuleRuntimesResponsesShopType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop-type"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"strconv"
 )
@@ -79,6 +86,117 @@ func SiteMapper(
 	return siteMapper
 }
 
+func ShopMapper(
+	shops *apiModuleRuntimesResponsesShop.ShopRes,
+) map[int]apiModuleRuntimesResponsesShop.Header {
+	shopMapper := map[int]apiModuleRuntimesResponsesShop.Header{}
+
+	for _, v := range *shops.Message.Header {
+		shopMapper[v.Shop] = apiModuleRuntimesResponsesShop.Header{
+			Shop:        v.Shop,
+			Description: v.Description,
+		}
+	}
+
+	return shopMapper
+}
+
+func EventHeadersMapper(
+	eventHeaderRes *apiModuleRuntimesResponsesEvent.EventRes,
+) map[string]apiModuleRuntimesResponsesEvent.Header {
+	eventHeadersMapper := map[string]apiModuleRuntimesResponsesEvent.Header{}
+
+	for _, v := range *eventHeaderRes.Message.Header {
+		eventHeadersMapper[strconv.Itoa(v.Event)] = v
+	}
+
+	return eventHeadersMapper
+}
+
+func EventCountersMapper(
+	eventCounterRes *apiModuleRuntimesResponsesEvent.EventRes,
+) map[string]apiModuleRuntimesResponsesEvent.Counter {
+	eventCountersMapper := map[string]apiModuleRuntimesResponsesEvent.Counter{}
+
+	for _, v := range *eventCounterRes.Message.Counter {
+		eventCountersMapper[strconv.Itoa(v.Event)] = v
+	}
+
+	return eventCountersMapper
+}
+
+func ArticleHeadersMapper(
+	articleHeaderRes *apiModuleRuntimesResponsesArticle.ArticleRes,
+) map[string]apiModuleRuntimesResponsesArticle.Header {
+	articleHeadersMapper := map[string]apiModuleRuntimesResponsesArticle.Header{}
+
+	for _, v := range *articleHeaderRes.Message.Header {
+		articleHeadersMapper[strconv.Itoa(v.Article)] = v
+	}
+
+	return articleHeadersMapper
+}
+
+func ArticleCountersMapper(
+	articleCounterRes *apiModuleRuntimesResponsesArticle.ArticleRes,
+) map[string]apiModuleRuntimesResponsesArticle.Counter {
+	articleCountersMapper := map[string]apiModuleRuntimesResponsesArticle.Counter{}
+
+	for _, v := range *articleCounterRes.Message.Counter {
+		articleCountersMapper[strconv.Itoa(v.Article)] = v
+	}
+
+	return articleCountersMapper
+}
+
+func SiteHeadersMapper(
+	siteHeaderRes *apiModuleRuntimesResponsesSite.SiteRes,
+) map[string]apiModuleRuntimesResponsesSite.Header {
+	siteHeadersMapper := map[string]apiModuleRuntimesResponsesSite.Header{}
+
+	for _, v := range *siteHeaderRes.Message.Header {
+		siteHeadersMapper[strconv.Itoa(v.Site)] = v
+	}
+
+	return siteHeadersMapper
+}
+
+func SiteCountersMapper(
+	siteCounterRes *apiModuleRuntimesResponsesSite.SiteRes,
+) map[string]apiModuleRuntimesResponsesSite.Counter {
+	siteCountersMapper := map[string]apiModuleRuntimesResponsesSite.Counter{}
+
+	for _, v := range *siteCounterRes.Message.Counter {
+		siteCountersMapper[strconv.Itoa(v.Site)] = v
+	}
+
+	return siteCountersMapper
+}
+
+func ShopHeadersMapper(
+	shopHeaderRes *apiModuleRuntimesResponsesShop.ShopRes,
+) map[string]apiModuleRuntimesResponsesShop.Header {
+	shopHeadersMapper := map[string]apiModuleRuntimesResponsesShop.Header{}
+
+	for _, v := range *shopHeaderRes.Message.Header {
+		shopHeadersMapper[strconv.Itoa(v.Shop)] = v
+	}
+
+	return shopHeadersMapper
+}
+
+func PostHeadersMapper(
+	postHeaderRes *apiModuleRuntimesResponsesPost.PostRes,
+) map[string]apiModuleRuntimesResponsesPost.Header {
+	postHeadersMapper := map[string]apiModuleRuntimesResponsesPost.Header{}
+
+	for _, v := range *postHeaderRes.Message.Header {
+		postHeadersMapper[strconv.Itoa(v.Post)] = v
+	}
+
+	return postHeadersMapper
+}
+
 func ActPurposeTextMapper(
 	actPurposeText *[]apiModuleRuntimesResponsesActPurpose.Text,
 ) map[string]apiModuleRuntimesResponsesActPurpose.Text {
@@ -109,6 +227,22 @@ func EventTypeTextMapper(
 	}
 
 	return eventTypeTextMapper
+}
+
+func ArticleTypeTextMapper(
+	articleTypeText *[]apiModuleRuntimesResponsesArticleType.Text,
+) map[string]apiModuleRuntimesResponsesArticleType.Text {
+	articleTypeTextMapper := map[string]apiModuleRuntimesResponsesArticleType.Text{}
+
+	for _, v := range *articleTypeText {
+		articleTypeTextMapper[v.ArticleType] = apiModuleRuntimesResponsesArticleType.Text{
+			ArticleType:     v.ArticleType,
+			Language:        v.Language,
+			ArticleTypeName: v.ArticleTypeName,
+		}
+	}
+
+	return articleTypeTextMapper
 }
 
 func SiteTypeTextMapper(
@@ -207,6 +341,22 @@ func PointTransactionTypeTextMapper(
 	return pointTransactionTypeTextMapper
 }
 
+func ObjectTypeTextMapper(
+	objectTypeText *[]apiModuleRuntimesResponsesObjectType.Text,
+) map[string]apiModuleRuntimesResponsesObjectType.Text {
+	objectTypeTextMapper := map[string]apiModuleRuntimesResponsesObjectType.Text{}
+
+	for _, v := range *objectTypeText {
+		objectTypeTextMapper[v.ObjectType] = apiModuleRuntimesResponsesObjectType.Text{
+			ObjectType:     v.ObjectType,
+			Language:       v.Language,
+			ObjectTypeName: v.ObjectTypeName,
+		}
+	}
+
+	return objectTypeTextMapper
+}
+
 func MessageTypeTextMapper(
 	messageTypeText *[]apiModuleRuntimesResponsesMessageType.Text,
 ) map[string]apiModuleRuntimesResponsesMessageType.Text {
@@ -214,9 +364,9 @@ func MessageTypeTextMapper(
 
 	for _, v := range *messageTypeText {
 		messageTypeTextMapper[v.MessageType] = apiModuleRuntimesResponsesMessageType.Text{
-			MessageType:		v.MessageType,
-			Language:			v.Language,
-			MessageTypeName:	v.MessageTypeName,
+			MessageType:     v.MessageType,
+			Language:        v.Language,
+			MessageTypeName: v.MessageTypeName,
 		}
 	}
 
@@ -265,9 +415,9 @@ func CountryTextMapper(
 
 	for _, v := range *countryText {
 		countryTextMapper[v.Country] = apiModuleRuntimesResponsesCountry.Text{
-			Country:		v.Country,
-			Language:		v.Language,
-			CountryName:	v.CountryName,
+			Country:     v.Country,
+			Language:    v.Language,
+			CountryName: v.CountryName,
 		}
 	}
 
@@ -281,26 +431,31 @@ func LanguageTextMapper(
 
 	for _, v := range *languageText {
 		languageTextMapper[v.Language] = apiModuleRuntimesResponsesLanguage.Text{
-			Language:				v.Language,
-			CorrespondenceLanguage:	v.CorrespondenceLanguage,
-			LanguageName:			v.LanguageName,
+			Language:               v.Language,
+			CorrespondenceLanguage: v.CorrespondenceLanguage,
+			LanguageName:           v.LanguageName,
 		}
 	}
 
 	return languageTextMapper
 }
 
-//func AddressMapper(
-//	address *[]apiModuleRuntimesResponsesAddress.Address,
-//) map[string]apiModuleRuntimesResponsesAddress.Address {
-//	addressMapper := map[string]apiModuleRuntimesResponsesAddress.Address{}
-//
-//	for _, v := range *address {
-//		addressMapper[v.Address] = v
-//	}
-//
-//	return addressMapper
-//}
+func RankTextMapper(
+	rankText *[]apiModuleRuntimesResponsesRank.Text,
+) map[int]apiModuleRuntimesResponsesRank.Text {
+	rankTextMapper := map[int]apiModuleRuntimesResponsesRank.Text{}
+
+	for _, v := range *rankText {
+		rankTextMapper[v.Rank] = apiModuleRuntimesResponsesRank.Text{
+			RankType: v.RankType,
+			Rank:     v.Rank,
+			Language: v.Language,
+			RankName: v.RankName,
+		}
+	}
+
+	return rankTextMapper
+}
 
 func ProductDescriptionMapper(
 	productDescription *[]apiModuleRuntimesResponsesProductMaster.ProductDescription,
@@ -340,6 +495,18 @@ func PlantMapper(
 	}
 
 	return plantMapper
+}
+
+func BusinessPartnerPersonMapper(
+	businessPartnerPerson *[]apiModuleRuntimesResponsesBusinessPartner.Person,
+) map[int]apiModuleRuntimesResponsesBusinessPartner.Person {
+	businessPartnerPersonMapper := map[int]apiModuleRuntimesResponsesBusinessPartner.Person{}
+
+	for _, v := range *businessPartnerPerson {
+		businessPartnerPersonMapper[v.BusinessPartner] = v
+	}
+
+	return businessPartnerPersonMapper
 }
 
 func ProjectMapper(
@@ -507,6 +674,28 @@ func ReadEventImage(
 	return img
 }
 
+func ReadArticleImage(
+	articleRes *apiModuleRuntimesResponsesArticle.ArticleDocRes,
+	article int,
+) *apiOutputFormatter.ArticleImage {
+	img := &apiOutputFormatter.ArticleImage{}
+
+	for _, articleResHeaderV := range *articleRes.Message.HeaderDoc {
+
+		if &article != nil &&
+			articleResHeaderV.Article == article {
+			img = &apiOutputFormatter.ArticleImage{
+				BusinessPartnerID: articleResHeaderV.DocIssuerBusinessPartner,
+				DocID:             articleResHeaderV.DocID,
+				FileExtension:     articleResHeaderV.FileExtension,
+			}
+		}
+
+	}
+
+	return img
+}
+
 func ReadSiteImage(
 	siteRes *apiModuleRuntimesResponsesSite.SiteDocRes,
 	site int,
@@ -529,6 +718,28 @@ func ReadSiteImage(
 	return img
 }
 
+func ReadShopImage(
+	shopRes *apiModuleRuntimesResponsesShop.ShopDocRes,
+	shop int,
+) *apiOutputFormatter.ShopImage {
+	img := &apiOutputFormatter.ShopImage{}
+
+	for _, shopResHeaderV := range *shopRes.Message.HeaderDoc {
+
+		if &shop != nil &&
+			shopResHeaderV.Shop == shop {
+			img = &apiOutputFormatter.ShopImage{
+				BusinessPartnerID: shopResHeaderV.DocIssuerBusinessPartner,
+				DocID:             shopResHeaderV.DocID,
+				FileExtension:     shopResHeaderV.FileExtension,
+			}
+		}
+
+	}
+
+	return img
+}
+
 func ReadBusinessPartnerImage(
 	businessPartnerRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerDocRes,
 	businessPartner int,
@@ -543,6 +754,28 @@ func ReadBusinessPartnerImage(
 				BusinessPartnerID: businessPartnerResGeneralV.DocIssuerBusinessPartner,
 				DocID:             businessPartnerResGeneralV.DocID,
 				FileExtension:     businessPartnerResGeneralV.FileExtension,
+			}
+		}
+
+	}
+
+	return img
+}
+
+func ReadMessageImage(
+	messageRes *apiModuleRuntimesResponsesMessage.MessageDocRes,
+	message int,
+) *apiOutputFormatter.MessageImage {
+	img := &apiOutputFormatter.MessageImage{}
+
+	for _, messageResHeaderV := range *messageRes.Message.HeaderDoc {
+
+		if &message != nil &&
+			messageResHeaderV.Message == message {
+			img = &apiOutputFormatter.MessageImage{
+				BusinessPartnerID: messageResHeaderV.DocIssuerBusinessPartner,
+				DocID:             messageResHeaderV.DocID,
+				FileExtension:     messageResHeaderV.FileExtension,
 			}
 		}
 
@@ -603,6 +836,25 @@ func ReadDocumentImageEvent(
 	return nil
 }
 
+func ReadDocumentImageArticle(
+	articleHeaderDocRes *apiModuleRuntimesResponsesArticle.ArticleDocRes,
+	article int,
+) *apiOutputFormatter.DocumentImageArticle {
+	for _, headerDoc := range *articleHeaderDocRes.Message.HeaderDoc {
+		if headerDoc.Article == article {
+			if headerDoc.DocType == "IMAGE" {
+				return &apiOutputFormatter.DocumentImageArticle{
+					Article:       headerDoc.Article,
+					DocID:         headerDoc.DocID,
+					FileExtension: headerDoc.FileExtension,
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
 func ReadDocumentImageSite(
 	siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
 	site int,
@@ -612,6 +864,25 @@ func ReadDocumentImageSite(
 			if headerDoc.DocType == "IMAGE" {
 				return &apiOutputFormatter.DocumentImageSite{
 					Site:          headerDoc.Site,
+					DocID:         headerDoc.DocID,
+					FileExtension: headerDoc.FileExtension,
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func ReadDocumentImageShop(
+	shopHeaderDocRes *apiModuleRuntimesResponsesShop.ShopDocRes,
+	shop int,
+) *apiOutputFormatter.DocumentImageShop {
+	for _, headerDoc := range *shopHeaderDocRes.Message.HeaderDoc {
+		if headerDoc.Shop == shop {
+			if headerDoc.DocType == "IMAGE" {
+				return &apiOutputFormatter.DocumentImageShop{
+					Shop:          headerDoc.Shop,
 					DocID:         headerDoc.DocID,
 					FileExtension: headerDoc.FileExtension,
 				}
@@ -721,26 +992,19 @@ func ReadDocumentImageInspectionLot(
 	return nil
 }
 
-func EventHeadersMapper(
-	eventHeaderRes *apiModuleRuntimesResponsesEvent.EventRes,
-) map[string]apiModuleRuntimesResponsesEvent.Header {
-	eventHeadersMapper := map[string]apiModuleRuntimesResponsesEvent.Header{}
-
-	for _, v := range *eventHeaderRes.Message.Header {
-		eventHeadersMapper[strconv.Itoa(v.Event)] = v
+func ReadPostImage(
+	postDocRes *apiModuleRuntimesResponsesPost.PostDocRes,
+	post int,
+) *apiOutputFormatter.PostImage {
+	for _, headerDoc := range *postDocRes.Message.HeaderDoc {
+		if headerDoc.Post == post {
+			return &apiOutputFormatter.PostImage{
+				Post:          headerDoc.Post,
+				DocID:         headerDoc.DocID,
+				FileExtension: headerDoc.FileExtension,
+			}
+		}
 	}
 
-	return eventHeadersMapper
-}
-
-func SiteHeadersMapper(
-	siteHeaderRes *apiModuleRuntimesResponsesSite.SiteRes,
-) map[string]apiModuleRuntimesResponsesSite.Header {
-	siteHeadersMapper := map[string]apiModuleRuntimesResponsesSite.Header{}
-
-	for _, v := range *siteHeaderRes.Message.Header {
-		siteHeadersMapper[strconv.Itoa(v.Site)] = v
-	}
-
-	return siteHeadersMapper
+	return nil
 }

@@ -10,7 +10,10 @@ import (
 	apiModuleRuntimesRequestsEventDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/event/event-doc"
 	apiModuleRuntimesRequestsLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-region"
 	apiModuleRuntimesRequestsLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/local-sub-region"
+	apiModuleRuntimesRequestsPointBalance "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/point-balance"
 	apiModuleRuntimesRequestsPointConditionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/point-condition-type"
+	apiModuleRuntimesRequestsShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/shop/shop"
+	apiModuleRuntimesRequestsShopDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/shop/shop-doc"
 	apiModuleRuntimesRequestsSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site"
 	apiModuleRuntimesRequestsSiteDoc "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-requests/site/site-doc"
 	apiModuleRuntimesResponsesBusinessPartner "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/business-partner"
@@ -20,7 +23,9 @@ import (
 	apiModuleRuntimesResponsesEventType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/event-type"
 	apiModuleRuntimesResponsesLocalRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-region"
 	apiModuleRuntimesResponsesLocalSubRegion "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/local-sub-region"
+	apiModuleRuntimesResponsesPointBalance "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-balance"
 	apiModuleRuntimesResponsesPointConditionType "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/point-condition-type"
+	apiModuleRuntimesResponsesShop "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/shop"
 	apiModuleRuntimesResponsesSite "data-platform-request-reads-cache-manager-rmq-kube/api-module-runtimes-responses/site"
 	apiOutputFormatter "data-platform-request-reads-cache-manager-rmq-kube/api-output-formatter"
 	"data-platform-request-reads-cache-manager-rmq-kube/cache"
@@ -41,28 +46,45 @@ type EventSingleUnitController struct {
 }
 
 type EventSingleUnit struct {
-	EventHeader                []apiOutputFormatter.EventHeader                `json:"EventHeader"`
-	EventAddress               []apiOutputFormatter.EventAddress               `json:"EventAddress"`
-	EventPointConditionElement []apiOutputFormatter.EventPointConditionElement `json:"EventPointConditionElement"`
-	SiteHeader                 []apiOutputFormatter.SiteHeader                 `json:"SiteHeader"`
-	SiteAddress                []apiOutputFormatter.SiteAddress                `json:"SiteAddress"`
+	EventHeader                      []apiOutputFormatter.EventHeader                `json:"EventHeader"`
+	EventAddress                     []apiOutputFormatter.EventAddress               `json:"EventAddress"`
+	EventPointConditionElement       []apiOutputFormatter.EventPointConditionElement `json:"EventPointConditionElement"`
+	EventParticipation               []apiOutputFormatter.EventParticipation         `json:"EventParticipation"`
+	EventAttendance                  []apiOutputFormatter.EventAttendance            `json:"EventAttendance"`
+	EventCounter                     []apiOutputFormatter.EventCounter               `json:"EventCounter"`
+	SiteHeader                       []apiOutputFormatter.SiteHeader                 `json:"SiteHeader"`
+	SiteAddress                      []apiOutputFormatter.SiteAddress                `json:"SiteAddress"`
+	ShopHeader                       []apiOutputFormatter.ShopHeader                 `json:"ShopHeader"`
+	PointBalancePointBalanceReceiver []apiOutputFormatter.PointBalancePointBalance   `json:"PointBalancePointBalanceReceiver"`
+	PointBalancePointBalanceSender   []apiOutputFormatter.PointBalancePointBalance   `json:"PointBalancePointBalanceSender"`
+	PointBalanceByShopSender         []apiOutputFormatter.PointBalanceByShop         `json:"PointBalanceByShopSender"`
 }
 
 func (controller *EventSingleUnitController) Get() {
 	//isReleased, _ := controller.GetBool("isReleased")
 	//isMarkedForDeletion, _ := controller.GetBool("isMarkedForDeletion")
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "event"
-	redisKeyCategory2 := "event-single-unit"
+	redisKeyCategory2 := "single-unit"
 	event, _ := controller.GetInt("event")
+	businessPartner, _ := controller.GetInt("businessPartner")
 
 	EventSingleUnitEvent := apiInputReader.Event{}
+
+	PointBalanceReceiver := apiInputReader.PointBalanceGlobal{}
 
 	isReleased := true
 	isCancelled := false
 	isMarkedForDeletion := false
+	pointSymbol := "POYPO"
 
-	//docType := "QRCODE"
+	docTypeIMAGE := "IMAGE"
+	docTypeQRCODE := "QRCODE"
 
 	EventSingleUnitEvent = apiInputReader.Event{
 		EventHeader: &apiInputReader.EventHeader{
@@ -80,10 +102,35 @@ func (controller *EventSingleUnitController) Get() {
 		EventAddress: &apiInputReader.EventAddress{
 			Event: event,
 		},
-		EventDocHeaderDoc: &apiInputReader.EventDocHeaderDoc{
+		EventParticipation: &apiInputReader.EventParticipation{
+			Event:        event,
+			Participator: businessPartner,
+			IsCancelled:  &isCancelled,
+		},
+		EventAttendance: &apiInputReader.EventAttendance{
+			Event:       event,
+			Attender:    businessPartner,
+			IsCancelled: &isCancelled,
+		},
+		EventCounter: &apiInputReader.EventCounter{
 			Event: event,
-			//DocType:					&docType,
-			DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
+		},
+		EventDocHeaderDocIMAGE: &apiInputReader.EventDocHeaderDoc{
+			Event:						event,
+			DocType:					&docTypeIMAGE,
+			DocIssuerBusinessPartner:	controller.UserInfo.BusinessPartner,
+		},
+		EventDocHeaderDocQRCODE: &apiInputReader.EventDocHeaderDoc{
+			Event:						event,
+			DocType:					&docTypeQRCODE,
+			DocIssuerBusinessPartner:	controller.UserInfo.BusinessPartner,
+		},
+	}
+
+	PointBalanceReceiver = apiInputReader.PointBalanceGlobal{
+		PointBalance: &apiInputReader.PointBalance{
+			BusinessPartner: businessPartner,
+			PointSymbol:     pointSymbol,
 		},
 	}
 
@@ -119,10 +166,10 @@ func (controller *EventSingleUnitController) Get() {
 
 	if cacheData != nil {
 		go func() {
-			controller.request(EventSingleUnitEvent)
+			controller.request(EventSingleUnitEvent, PointBalanceReceiver)
 		}()
 	} else {
-		controller.request(EventSingleUnitEvent)
+		controller.request(EventSingleUnitEvent, PointBalanceReceiver)
 	}
 }
 
@@ -182,7 +229,7 @@ func (
 
 func (
 	controller *EventSingleUnitController,
-) createEventDocRequest(
+) createEventDocRequestIMAGE(
 	requestPram *apiInputReader.Request,
 	input apiInputReader.Event,
 ) *apiModuleRuntimesResponsesEvent.EventDocRes {
@@ -201,7 +248,34 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("createEventDocRequest Unmarshal error")
+		controller.CustomLogger.Error("createEventDocRequestIMAGE Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createEventDocRequestQRCODE(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.Event,
+) *apiModuleRuntimesResponsesEvent.EventDocRes {
+	responseJsonData := apiModuleRuntimesResponsesEvent.EventDocRes{}
+	responseBody := apiModuleRuntimesRequestsEventDoc.EventDocReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"HeaderDoc",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createEventDocRequestQRCODE Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -240,6 +314,120 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("createEventRequestAddresses Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createEventRequestParticipation(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.Event,
+) *apiModuleRuntimesResponsesEvent.EventRes {
+	responseJsonData := apiModuleRuntimesResponsesEvent.EventRes{}
+	responseBody := apiModuleRuntimesRequestsEvent.EventReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Participation",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	//	if len(*responseJsonData.Message.Participation) == 0 {
+	//		status := 500
+	//		services.HandleError(
+	//			&controller.Controller,
+	//			"このイベントにはすでに参加済です",
+	//			&status,
+	//		)
+	//		return nil
+	//	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createEventRequestParticipation Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createEventRequestAttendance(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.Event,
+) *apiModuleRuntimesResponsesEvent.EventRes {
+	responseJsonData := apiModuleRuntimesResponsesEvent.EventRes{}
+	responseBody := apiModuleRuntimesRequestsEvent.EventReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Attendance",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	//	if len(*responseJsonData.Message.Attendance) == 0 {
+	//		status := 500
+	//		services.HandleError(
+	//			&controller.Controller,
+	//			"このイベントにはすでに現地参加済です",
+	//			&status,
+	//		)
+	//		return nil
+	//	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createEventRequestAttendance Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createEventRequestCounter(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.Event,
+) *apiModuleRuntimesResponsesEvent.EventRes {
+	responseJsonData := apiModuleRuntimesResponsesEvent.EventRes{}
+	responseBody := apiModuleRuntimesRequestsEvent.EventReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Counter",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	if len(*responseJsonData.Message.Counter) == 0 {
+		status := 500
+		services.HandleError(
+			&controller.Controller,
+			"イベントにカウンタデータがありません",
+			&status,
+		)
+		return nil
+	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createEventRequestCounter Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -387,6 +575,80 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("createSiteDocRequest Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createShopRequestHeader(
+	requestPram *apiInputReader.Request,
+	eventHeaderRes apiModuleRuntimesResponsesEvent.EventRes,
+) *apiModuleRuntimesResponsesShop.ShopRes {
+	header := eventHeaderRes.Message.Header
+
+	var input = apiInputReader.Shop{}
+
+	input.ShopHeader = &apiInputReader.ShopHeader{
+		Shop:                *(*header)[0].Shop,
+		IsReleased:          (*header)[0].IsReleased,
+		IsMarkedForDeletion: (*header)[0].IsMarkedForDeletion,
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesShop.ShopRes{}
+	responseBody := apiModuleRuntimesRequestsShop.ShopReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Header",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createShopRequestHeader Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createShopDocRequest(
+	requestPram *apiInputReader.Request,
+	eventHeaderRes apiModuleRuntimesResponsesEvent.EventRes,
+) *apiModuleRuntimesResponsesShop.ShopDocRes {
+	var input = apiInputReader.Shop{}
+
+	for _, v := range *eventHeaderRes.Message.Header {
+		input = apiInputReader.Shop{
+			ShopDocHeaderDoc: &apiInputReader.ShopDocHeaderDoc{
+				Shop: *v.Shop,
+			},
+		}
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesShop.ShopDocRes{}
+	responseBody := apiModuleRuntimesRequestsShopDoc.ShopDocReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"HeaderDoc",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createShopDocRequest Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -550,7 +812,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("LocalSubRegionReadsText Unmarshal error")
+		controller.CustomLogger.Error("CreateLocalSubRegionRequestText Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -593,7 +855,7 @@ func (
 			err,
 			nil,
 		)
-		controller.CustomLogger.Error("LocalRegionReadsText Unmarshal error")
+		controller.CustomLogger.Error("CreateLocalRegionRequestText Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -649,21 +911,107 @@ func (
 
 func (
 	controller *EventSingleUnitController,
+) createPointBalanceRequestPointBalanceReceiver(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.PointBalanceGlobal,
+) *apiModuleRuntimesResponsesPointBalance.PointBalanceRes {
+
+	responseJsonData := apiModuleRuntimesResponsesPointBalance.PointBalanceRes{}
+	responseBody := apiModuleRuntimesRequestsPointBalance.PointBalanceReadsPointBalance(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createPointBalanceRequestPointBalanceReceiver Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
+) createPointBalanceRequestByShopSender(
+	requestPram *apiInputReader.Request,
+	headerRes apiModuleRuntimesResponsesEvent.EventRes,
+) *apiModuleRuntimesResponsesPointBalance.PointBalanceRes {
+	var input apiInputReader.PointBalanceGlobal
+
+	for _, v := range *headerRes.Message.Header {
+		input = apiInputReader.PointBalanceGlobal{
+			PointBalance: &apiInputReader.PointBalance{
+				ByShop: []apiInputReader.ByShop{
+					{
+						BusinessPartner: v.EventOwner,
+						PointSymbol:     "POYPO",
+						Shop:            *v.Shop,
+					},
+				},
+			},
+		}
+	}
+
+	responseJsonData := apiModuleRuntimesResponsesPointBalance.PointBalanceRes{}
+	responseBody := apiModuleRuntimesRequestsPointBalance.PointBalanceReadsByShop(
+		requestPram,
+		input,
+		&controller.Controller,
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	if responseJsonData.Message.ByShop == nil {
+		status := 500
+		services.HandleError(
+			&controller.Controller,
+			"店舗のポイント残高が見つかりませんでした",
+			&status,
+		)
+		return nil
+	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createPointBalanceRequestByShopSender Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *EventSingleUnitController,
 ) request(
-	input apiInputReader.Event,
+	inputEvent apiInputReader.Event,
+	inputPointBalanceReceiver apiInputReader.PointBalanceGlobal,
 ) {
 	defer services.Recover(controller.CustomLogger, &controller.Controller)
 
 	var wg sync.WaitGroup
-	wg.Add(11)
+	wg.Add(18)
 
 	var pointConditionElementRes apiModuleRuntimesResponsesEvent.EventRes
 	var addressRes apiModuleRuntimesResponsesEvent.EventRes
+	var participationRes apiModuleRuntimesResponsesEvent.EventRes
+	var attendanceRes apiModuleRuntimesResponsesEvent.EventRes
+	var counterRes apiModuleRuntimesResponsesEvent.EventRes
 
 	var businessPartnerGeneralRes apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes
 	var businessPartnerRoleTextRes *apiModuleRuntimesResponsesBusinessPartnerRole.BusinessPartnerRoleRes
 
 	var siteHeaderRes apiModuleRuntimesResponsesSite.SiteRes
+
+	var shopHeaderRes apiModuleRuntimesResponsesShop.ShopRes
 
 	var eventTypeTextRes *apiModuleRuntimesResponsesEventType.EventTypeRes
 
@@ -673,6 +1021,8 @@ func (
 
 	var siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes
 
+	var shopHeaderDocRes *apiModuleRuntimesResponsesShop.ShopDocRes
+
 	var headerDocRes *apiModuleRuntimesResponsesEvent.EventDocRes
 
 	var siteAddressRes *apiModuleRuntimesResponsesSite.SiteRes
@@ -680,16 +1030,20 @@ func (
 	var localSubRegionTextRes *apiModuleRuntimesResponsesLocalSubRegion.LocalSubRegionRes
 	var localRegionTextRes *apiModuleRuntimesResponsesLocalRegion.LocalRegionRes
 
+	var pointBalanceReceiverRes apiModuleRuntimesResponsesPointBalance.PointBalanceRes
+
+	var pointBalanceSenderRes apiModuleRuntimesResponsesPointBalance.PointBalanceRes
+
 	headerRes := *controller.createEventRequestHeader(
 		controller.UserInfo,
-		input,
+		inputEvent,
 	)
 
 	go func() {
 		defer wg.Done()
 		pointConditionElementRes = *controller.createEventRequestPointConditionElement(
 			controller.UserInfo,
-			input,
+			inputEvent,
 		)
 		controller.CustomLogger.Debug("complete pointConditionElementRes")
 	}()
@@ -698,7 +1052,7 @@ func (
 		defer wg.Done()
 		addressRes = *controller.createEventRequestAddresses(
 			controller.UserInfo,
-			input,
+			inputEvent,
 		)
 
 		localSubRegionTextRes = controller.CreateLocalSubRegionRequestText(
@@ -714,9 +1068,33 @@ func (
 
 	go func() {
 		defer wg.Done()
+		participationRes = *controller.createEventRequestParticipation(
+			controller.UserInfo,
+			inputEvent,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		attendanceRes = *controller.createEventRequestAttendance(
+			controller.UserInfo,
+			inputEvent,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		counterRes = *controller.createEventRequestCounter(
+			controller.UserInfo,
+			inputEvent,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
 		headerDocRes = controller.createEventDocRequest(
 			controller.UserInfo,
-			input,
+			inputEvent,
 		)
 		controller.CustomLogger.Debug("complete headerDocRes")
 	}()
@@ -740,6 +1118,14 @@ func (
 	go func() {
 		defer wg.Done()
 		siteHeaderRes = *controller.createSiteRequestHeader(
+			controller.UserInfo,
+			headerRes,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		shopHeaderRes = *controller.createShopRequestHeader(
 			controller.UserInfo,
 			headerRes,
 		)
@@ -779,7 +1165,31 @@ func (
 
 	go func() {
 		defer wg.Done()
+		shopHeaderDocRes = controller.createShopDocRequest(
+			controller.UserInfo,
+			headerRes,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
 		siteAddressRes = controller.createSiteRequestAddresses(
+			controller.UserInfo,
+			headerRes,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		pointBalanceReceiverRes = *controller.createPointBalanceRequestPointBalanceReceiver(
+			controller.UserInfo,
+			inputPointBalanceReceiver,
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		pointBalanceSenderRes = *controller.createPointBalanceRequestByShopSender(
 			controller.UserInfo,
 			headerRes,
 		)
@@ -791,9 +1201,13 @@ func (
 		&headerRes,
 		&pointConditionElementRes,
 		&addressRes,
+		&participationRes,
+		&attendanceRes,
+		&counterRes,
 		&businessPartnerGeneralRes,
 		businessPartnerRoleTextRes,
 		&siteHeaderRes,
+		&shopHeaderRes,
 		eventTypeTextRes,
 		distributionProfileTextRes,
 		pointConditionTypeTextRes,
@@ -801,7 +1215,10 @@ func (
 		localRegionTextRes,
 		headerDocRes,
 		siteHeaderDocRes,
+		shopHeaderDocRes,
 		siteAddressRes,
+		&pointBalanceReceiverRes,
+		&pointBalanceSenderRes,
 	)
 }
 
@@ -811,9 +1228,13 @@ func (
 	headerRes *apiModuleRuntimesResponsesEvent.EventRes,
 	pointConditionElementRes *apiModuleRuntimesResponsesEvent.EventRes,
 	addressRes *apiModuleRuntimesResponsesEvent.EventRes,
+	participationRes *apiModuleRuntimesResponsesEvent.EventRes,
+	attendanceRes *apiModuleRuntimesResponsesEvent.EventRes,
+	counterRes *apiModuleRuntimesResponsesEvent.EventRes,
 	businessPartnerGeneralRes *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	businessPartnerRoleTextRes *apiModuleRuntimesResponsesBusinessPartnerRole.BusinessPartnerRoleRes,
 	siteHeaderRes *apiModuleRuntimesResponsesSite.SiteRes,
+	shopHeaderRes *apiModuleRuntimesResponsesShop.ShopRes,
 	eventTypeTextRes *apiModuleRuntimesResponsesEventType.EventTypeRes,
 	distributionProfileTextRes *apiModuleRuntimesResponsesDistributionProfile.DistributionProfileRes,
 	pointConditionTypeTextRes *apiModuleRuntimesResponsesPointConditionType.PointConditionTypeRes,
@@ -821,7 +1242,10 @@ func (
 	localRegionTextRes *apiModuleRuntimesResponsesLocalRegion.LocalRegionRes,
 	headerDocRes *apiModuleRuntimesResponsesEvent.EventDocRes,
 	siteHeaderDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
+	shopHeaderDocRes *apiModuleRuntimesResponsesShop.ShopDocRes,
 	siteAddressRes *apiModuleRuntimesResponsesSite.SiteRes,
+	pointBalanceReceiverRes *apiModuleRuntimesResponsesPointBalance.PointBalanceRes,
+	pointBalanceSenderRes *apiModuleRuntimesResponsesPointBalance.PointBalanceRes,
 ) {
 	businessPartnerNameMapper := services.BusinessPartnerNameMapper(
 		businessPartnerGeneralRes,
@@ -833,6 +1257,10 @@ func (
 
 	siteMapper := services.SiteMapper(
 		siteHeaderRes,
+	)
+
+	shopMapper := services.ShopMapper(
+		shopHeaderRes,
 	)
 
 	eventTypeTextMapper := services.EventTypeTextMapper(
@@ -873,6 +1301,8 @@ func (
 			v.Event,
 		)
 
+		shopDescription := shopMapper[*v.Shop].Description
+
 		data.EventHeader = append(data.EventHeader,
 			apiOutputFormatter.EventHeader{
 				Event:                             v.Event,
@@ -882,6 +1312,7 @@ func (
 				EventOwnerName:                    businessPartnerNameMapper[v.EventOwner].BusinessPartnerName,
 				EventOwnerBusinessPartnerRoleName: businessPartnerRoleTextMapper[v.EventOwnerBusinessPartnerRole].BusinessPartnerRoleName,
 				PersonResponsible:                 v.PersonResponsible,
+				URL:							   v.URL,
 				ValidityStartDate:                 v.ValidityStartDate,
 				ValidityStartTime:                 v.ValidityStartTime,
 				ValidityEndDate:                   v.ValidityEndDate,
@@ -895,6 +1326,9 @@ func (
 				Introduction:                      v.Introduction,
 				Site:                              v.Site,
 				SiteDescription:                   siteMapper[v.Site].Description,
+				Capacity:                          v.Capacity,
+				Shop:                              v.Shop,
+				ShopDescription:                   &shopDescription,
 				Tag1:                              v.Tag1,
 				Tag2:                              v.Tag2,
 				Tag3:                              v.Tag3,
@@ -956,6 +1390,40 @@ func (
 		)
 	}
 
+	for _, v := range *participationRes.Message.Participation {
+		data.EventParticipation = append(data.EventParticipation,
+			apiOutputFormatter.EventParticipation{
+				Event:         v.Event,
+				Participator:  v.Participator,
+				Participation: v.Participation,
+				IsCancelled:   v.IsCancelled,
+			},
+		)
+	}
+
+	for _, v := range *attendanceRes.Message.Attendance {
+		data.EventAttendance = append(data.EventAttendance,
+			apiOutputFormatter.EventAttendance{
+				Event:         v.Event,
+				Attender:      v.Attender,
+				Attendance:    v.Attendance,
+				Participation: v.Participation,
+				IsCancelled:   v.IsCancelled,
+			},
+		)
+	}
+
+	for _, v := range *counterRes.Message.Counter {
+		data.EventCounter = append(data.EventCounter,
+			apiOutputFormatter.EventCounter{
+				Event:                  v.Event,
+				NumberOfLikes:          v.NumberOfLikes,
+				NumberOfParticipations: v.NumberOfParticipations,
+				NumberOfAttendances:    v.NumberOfAttendances,
+			},
+		)
+	}
+
 	for _, v := range *siteHeaderRes.Message.Header {
 
 		img := services.ReadSiteImage(
@@ -999,6 +1467,61 @@ func (
 				StreetName:         v.StreetName,
 				CityName:           v.CityName,
 				Building:           v.Building,
+			},
+		)
+	}
+
+	for _, v := range *shopHeaderRes.Message.Header {
+
+		img := services.ReadShopImage(
+			shopHeaderDocRes,
+			v.Shop,
+		)
+
+		qrcode := services.CreateQRCodeShopDocImage(
+			shopHeaderDocRes,
+			v.Shop,
+		)
+
+		documentImage := services.ReadDocumentImageShop(
+			shopHeaderDocRes,
+			v.Shop,
+		)
+
+		data.ShopHeader = append(data.ShopHeader,
+			apiOutputFormatter.ShopHeader{
+				Shop:        v.Shop,
+				Description: v.Description,
+				Images: apiOutputFormatter.Images{
+					Shop:              img,
+					QRCode:            qrcode,
+					DocumentImageShop: documentImage,
+				},
+			},
+		)
+	}
+
+	for _, v := range *pointBalanceReceiverRes.Message.PointBalance {
+
+		data.PointBalancePointBalanceReceiver = append(data.PointBalancePointBalanceReceiver,
+			apiOutputFormatter.PointBalancePointBalance{
+				BusinessPartner: v.BusinessPartner,
+				PointSymbol:     v.PointSymbol,
+				CurrentBalance:  v.CurrentBalance,
+				LimitBalance:    v.LimitBalance,
+			},
+		)
+	}
+
+	for _, v := range *pointBalanceSenderRes.Message.ByShop {
+
+		data.PointBalanceByShopSender = append(data.PointBalanceByShopSender,
+			apiOutputFormatter.PointBalanceByShop{
+				BusinessPartner: v.BusinessPartner,
+				PointSymbol:     v.PointSymbol,
+				Shop:            v.Shop,
+				CurrentBalance:  v.CurrentBalance,
+				LimitBalance:    v.LimitBalance,
 			},
 		)
 	}

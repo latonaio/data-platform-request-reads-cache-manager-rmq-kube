@@ -6,6 +6,7 @@ type Site struct {
 	SiteAddress            []SiteAddress            `json:"SiteAddress"`
 	SiteAddressWithHeader  []SiteAddressWithHeader  `json:"SiteAddressWithHeader"`
 	SitePartnerWithAddress []SitePartnerWithAddress `json:"SitePartnerWithAddress"`
+	SiteCounter		   	   []SiteCounter			`json:"SiteCounter"`
 	MountPath              *string                  `json:"mount_path"`
 	Accepter               []string                 `json:"Accepter"`
 }
@@ -36,12 +37,15 @@ type SiteHeader struct {
 	Tag2                             *string `json:"Tag2"`
 	Tag3                             *string `json:"Tag3"`
 	Tag4                             *string `json:"Tag4"`
+	LastChangeDate					 string  `json:"LastChangeDate"`
+	LastChangeTime					 string  `json:"LastChangeTime"`
 	CreateUser						 int	 `json:"CreateUser"`
 	CreateUserFullName				 *string `json:"CreateUserFullName"`
 	CreateUserNickName				 *string `json:"CreateUserNickName"`
 	LastChangeUser					 int 	 `json:"LastChangeUser"`
 	LastChangeUserFullName			 *string `json:"LastChangeUserFullName"`
 	LastChangeUserNickName			 *string `json:"LastChangeUserNickName"`
+	NumberOfLikes					 *int	 `json:"NumberOfLikes"`
 	Images                           Images  `json:"Images"`
 }
 
@@ -87,6 +91,11 @@ type SiteAddress struct {
 	ZCoordinate			*float32 `json:"ZCoordinate"`
 }
 
+type SiteCounter struct {
+	Site					int		`json:"Site"`
+	NumberOfLikes			int		`json:"NumberOfLikes"`
+}
+
 type SiteAddressWithHeader struct {
 	Site              int     `json:"Site"`
 	AddressID         int     `json:"AddressID"`
@@ -106,6 +115,9 @@ type SiteAddressWithHeader struct {
 	Tag2              *string `json:"Tag2"`
 	Tag3              *string `json:"Tag3"`
 	Tag4              *string `json:"Tag4"`
+	LastChangeDate	  string  `json:"LastChangeDate"`
+	LastChangeTime	  string  `json:"LastChangeTime"`
+	NumberOfLikes	  *int	  `json:"NumberOfLikes"`
 	PostalCode  	  string  `json:"PostalCode"`
 	Country     	  string  `json:"Country"`
 	GlobalRegion   	  string  `json:"GlobalRegion"`

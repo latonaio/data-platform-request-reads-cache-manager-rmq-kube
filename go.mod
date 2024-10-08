@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/astaxie/beego v1.12.3
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/google/uuid v1.6.0
 	github.com/latonaio/golang-logging-library-for-data-platform v1.0.8
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 )

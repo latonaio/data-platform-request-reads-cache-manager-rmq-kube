@@ -10,9 +10,9 @@ import (
 )
 
 type PointConditionTypeReq struct {
-	PointConditionType   PointConditionType    `json:"PointConditionType"`
-	PointConditionTypes  []PointConditionType  `json:"PointConditionTypes"`
-	Accepter              []string `json:"accepter"`
+	PointConditionType  PointConditionType   `json:"PointConditionType"`
+	PointConditionTypes []PointConditionType `json:"PointConditionTypes"`
+	Accepter            []string             `json:"accepter"`
 }
 
 type PointConditionType struct {
@@ -24,12 +24,12 @@ type PointConditionType struct {
 }
 
 type Text struct {
-	PointConditionType         string  `json:"PointConditionType"`
-	Language                   string  `json:"Language"`
-	PointConditionTypeName     *string `json:"PointConditionTypeName"`
-	CreationDate               *string `json:"CreationDate"`
-	LastChangeDate             *string `json:"LastChangeDate"`
-	IsMarkedForDeletion        *bool   `json:"IsMarkedForDeletion"`
+	PointConditionType     string  `json:"PointConditionType"`
+	Language               string  `json:"Language"`
+	PointConditionTypeName *string `json:"PointConditionTypeName"`
+	CreationDate           *string `json:"CreationDate"`
+	LastChangeDate         *string `json:"LastChangeDate"`
+	IsMarkedForDeletion    *bool   `json:"IsMarkedForDeletion"`
 }
 
 func CreatePointConditionTypeRequestPointConditionTypesByPointConditionTypes(
@@ -73,8 +73,8 @@ func CreatePointConditionTypeRequestText(
 
 	req := PointConditionTypeReq{
 		PointConditionType: PointConditionType{
-			PointConditionType:     input.PointConditionType,
-			IsMarkedForDeletion:    &isMarkedForDeletion,
+			PointConditionType:  input.PointConditionType,
+			IsMarkedForDeletion: &isMarkedForDeletion,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -96,8 +96,8 @@ func CreatePointConditionTypeRequestTexts(
 	isMarkedForDeletion := false
 
 	req := PointConditionTypeReq{
-		PointConditionType:        PointConditionType{
-			PointConditionType:    input.PointConditionType,
+		PointConditionType: PointConditionType{
+			PointConditionType: input.PointConditionType,
 			Text: []Text{
 				{
 					Language:            *requestPram.Language,
@@ -141,6 +141,7 @@ func PointConditionTypeReadsPointConditionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func PointConditionTypeReadsPointConditionTypesByPointConditionTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func PointConditionTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func PointConditionTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

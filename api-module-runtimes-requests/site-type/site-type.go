@@ -10,9 +10,9 @@ import (
 )
 
 type SiteTypeReq struct {
-	SiteType   SiteType    `json:"SiteType"`
-	SiteTypes  []SiteType  `json:"SiteTypes"`
-	Accepter   []string    `json:"accepter"`
+	SiteType  SiteType   `json:"SiteType"`
+	SiteTypes []SiteType `json:"SiteTypes"`
+	Accepter  []string   `json:"accepter"`
 }
 
 type SiteType struct {
@@ -54,8 +54,8 @@ func CreateSiteTypeRequestSiteTypes(
 	req := SiteTypeReq{
 		SiteTypes: []SiteType{
 			{
-				SiteType:				input.SiteType,
-				IsMarkedForDeletion:	&isMarkedForDeletion,
+				SiteType:            input.SiteType,
+				IsMarkedForDeletion: &isMarkedForDeletion,
 			},
 		},
 		Accepter: []string{
@@ -141,6 +141,7 @@ func SiteTypeReadsSiteTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -175,6 +176,7 @@ func SiteTypeReadsSiteTypesBySiteTypes(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -209,6 +211,7 @@ func SiteTypeReadsText(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -243,6 +246,7 @@ func SiteTypeReadsTexts(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

@@ -33,15 +33,21 @@ type SiteSingleUnitController struct {
 type SiteSingleUnit struct {
 	SiteHeader                          []apiOutputFormatter.SiteHeader             `json:"SiteHeader"`
 	SiteAddress                         []apiOutputFormatter.SiteAddress            `json:"SiteAddress"`
+	SiteCounter                         []apiOutputFormatter.SiteCounter            `json:"SiteCounter"`
 	BusinessPartnerGeneralSiteOwner     []apiOutputFormatter.BusinessPartnerGeneral `json:"BusinessPartnerGeneralSiteOwner"`
 	BusinessPartnerPersonCreateUser     []apiOutputFormatter.BusinessPartnerPerson  `json:"BusinessPartnerPersonCreateUser"`
 	BusinessPartnerPersonLastChangeUser []apiOutputFormatter.BusinessPartnerPerson  `json:"BusinessPartnerPersonLastChangeUser"`
 }
 
 func (controller *SiteSingleUnitController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "site"
-	redisKeyCategory2 := "site-single-unit"
+	redisKeyCategory2 := "single-unit"
 	site, _ := controller.GetInt("site")
 
 	isReleased := true
@@ -62,9 +68,12 @@ func (controller *SiteSingleUnitController) Get() {
 		SiteAddress: &apiInputReader.SiteAddress{
 			Site: site,
 		},
+		SiteCounter: &apiInputReader.SiteCounter{
+			Site: site,
+		},
 		SiteDocHeaderDoc: &apiInputReader.SiteDocHeaderDoc{
 			Site: site,
-			//DocType:				    &docType,
+			//DocType:					&docType,
 			DocIssuerBusinessPartner: controller.UserInfo.BusinessPartner,
 		},
 	}
@@ -206,6 +215,44 @@ func (
 			nil,
 		)
 		controller.CustomLogger.Error("createSiteRequestAddresses Unmarshal error")
+	}
+
+	return &responseJsonData
+}
+
+func (
+	controller *SiteSingleUnitController,
+) createSiteRequestCounter(
+	requestPram *apiInputReader.Request,
+	input apiInputReader.Site,
+) *apiModuleRuntimesResponsesSite.SiteRes {
+	responseJsonData := apiModuleRuntimesResponsesSite.SiteRes{}
+	responseBody := apiModuleRuntimesRequestsSite.SiteReads(
+		requestPram,
+		input,
+		&controller.Controller,
+		"Counter",
+	)
+
+	err := json.Unmarshal(responseBody, &responseJsonData)
+
+	if len(*responseJsonData.Message.Counter) == 0 {
+		status := 500
+		services.HandleError(
+			&controller.Controller,
+			"サイトにカウンタデータがありません",
+			&status,
+		)
+		return nil
+	}
+
+	if err != nil {
+		services.HandleError(
+			&controller.Controller,
+			err,
+			nil,
+		)
+		controller.CustomLogger.Error("createSiteRequestCounter Unmarshal error")
 	}
 
 	return &responseJsonData
@@ -459,6 +506,11 @@ func (
 		inputSiteHeader,
 	)
 
+	counterRes := *controller.createSiteRequestCounter(
+		controller.UserInfo,
+		inputSiteHeader,
+	)
+
 	headerDocRes := controller.createSiteDocRequest(
 		controller.UserInfo,
 		inputSiteHeader,
@@ -497,6 +549,7 @@ func (
 	controller.fin(
 		&headerRes,
 		&addressRes,
+		&counterRes,
 		headerDocRes,
 		&businessPartnerGeneralResSiteOwner,
 		&businessPartnerPersonResCreateUser,
@@ -512,6 +565,7 @@ func (
 ) fin(
 	headerRes *apiModuleRuntimesResponsesSite.SiteRes,
 	addressRes *apiModuleRuntimesResponsesSite.SiteRes,
+	counterRes *apiModuleRuntimesResponsesSite.SiteRes,
 	headerDocRes *apiModuleRuntimesResponsesSite.SiteDocRes,
 	businessPartnerGeneralResSiteOwner *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
 	businessPartnerPersonResCreateUser *apiModuleRuntimesResponsesBusinessPartner.BusinessPartnerRes,
@@ -558,7 +612,6 @@ func (
 				SiteTypeName: siteTypeTextMapper[v.SiteType].SiteTypeName,
 				Brand:        v.Brand,
 				//BrandDescription:				  	v.BrandDescription,
-				PersonResponsible:       *v.PersonResponsible,
 				URL:                     v.URL,
 				DailyOperationStartTime: v.DailyOperationStartTime,
 				DailyOperationEndTime:   v.DailyOperationEndTime,
@@ -603,6 +656,15 @@ func (
 				StreetName:         v.StreetName,
 				CityName:           v.CityName,
 				Building:           v.Building,
+			},
+		)
+	}
+
+	for _, v := range *counterRes.Message.Counter {
+		data.SiteCounter = append(data.SiteCounter,
+			apiOutputFormatter.SiteCounter{
+				Site:          v.Site,
+				NumberOfLikes: v.NumberOfLikes,
 			},
 		)
 	}

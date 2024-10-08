@@ -165,7 +165,7 @@ func BillOfMaterialReads(
 		request = CreateBillOfMaterialRequestItems(
 			requestPram,
 			&apiInputReader.BillOfMaterialItems{
-				BillOfMaterial:      input.BillOfMaterialItems.BillOfMaterial,
+				BillOfMaterial: input.BillOfMaterialItems.BillOfMaterial,
 				//IsMarkedForDeletion: input.BillOfMaterialItems.IsMarkedForDeletion,
 			},
 		)
@@ -185,6 +185,7 @@ func BillOfMaterialReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody

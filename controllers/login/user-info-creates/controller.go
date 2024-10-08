@@ -29,15 +29,20 @@ type UserInfoCreatesController struct {
 }
 
 type UserInfoCreates struct {
-	LocalRegionText		[]apiOutputFormatter.LocalRegionText    `json:"LocalRegionText"`
-	LocalSubRegionText	[]apiOutputFormatter.LocalSubRegionText `json:"LocalSubRegionText"`
-	CountryText			[]apiOutputFormatter.CountryText		`json:"CountryText"`
-	LanguageText		[]apiOutputFormatter.LanguageText       `json:"LanguageText"`
-	ActPurposeText		[]apiOutputFormatter.ActPurposeText		`json:"ActPurposeText"`
+	LocalRegionText    []apiOutputFormatter.LocalRegionText    `json:"LocalRegionText"`
+	LocalSubRegionText []apiOutputFormatter.LocalSubRegionText `json:"LocalSubRegionText"`
+	CountryText        []apiOutputFormatter.CountryText        `json:"CountryText"`
+	LanguageText       []apiOutputFormatter.LanguageText       `json:"LanguageText"`
+	ActPurposeText     []apiOutputFormatter.ActPurposeText     `json:"ActPurposeText"`
 }
 
 func (controller *UserInfoCreatesController) Get() {
-	controller.UserInfo = services.UserRequestParams(&controller.Controller)
+	controller.UserInfo = services.UserRequestParams(
+		services.RequestWrapperController{
+			Controller:   &controller.Controller,
+			CustomLogger: controller.CustomLogger,
+		},
+	)
 	redisKeyCategory1 := "login"
 	redisKeyCategory2 := "user-info"
 
@@ -45,7 +50,7 @@ func (controller *UserInfoCreatesController) Get() {
 
 	UserInfoCreatesLocalRegion := apiInputReader.LocalRegionGlobal{}
 	UserInfoCreatesLocalSubRegion := apiInputReader.LocalSubRegionGlobal{}
-	UserInfoCreatesCountry:= apiInputReader.CountryGlobal{}
+	UserInfoCreatesCountry := apiInputReader.CountryGlobal{}
 	UserInfoCreatesLanguage := apiInputReader.LanguageGlobal{}
 	UserInfoCreatesActPurpose := apiInputReader.ActPurposeGlobal{}
 
@@ -387,13 +392,13 @@ func (
 			},
 		)
 	}
-	
+
 	for _, v := range *countryTextRes.Message.Text {
 		data.CountryText = append(data.CountryText,
 			apiOutputFormatter.CountryText{
-				Country:		v.Country,
-				Language:		v.Language,
-				CountryName:	v.CountryName,
+				Country:     v.Country,
+				Language:    v.Language,
+				CountryName: v.CountryName,
 			},
 		)
 	}
@@ -407,13 +412,13 @@ func (
 			},
 		)
 	}
-	
+
 	for _, v := range *actPurposeTextRes.Message.Text {
 		data.ActPurposeText = append(data.ActPurposeText,
 			apiOutputFormatter.ActPurposeText{
-				ActPurpose:		v.ActPurpose,
-				Language:		v.Language,
-				ActPurposeName:	v.ActPurposeName,
+				ActPurpose:     v.ActPurpose,
+				Language:       v.Language,
+				ActPurposeName: v.ActPurposeName,
 			},
 		)
 	}

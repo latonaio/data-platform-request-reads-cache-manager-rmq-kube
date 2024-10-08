@@ -21,21 +21,21 @@ type Header struct {
 	ShopType                     *string   `json:"ShopType"`
 	ShopOwner                    *int      `json:"ShopOwner"`
 	ShopOwnerBusinessPartnerRole *string   `json:"ShopOwnerBusinessPartnerRole"`
-	Brand						 *int	   `json:"Brand"`
+	Brand                        *int      `json:"Brand"`
 	PersonResponsible            *string   `json:"PersonResponsible"`
-	URL							 *string   `json:"URL"`
+	URL                          *string   `json:"URL"`
 	ValidityStartDate            *string   `json:"ValidityStartDate"`
 	ValidityStartTime            *string   `json:"ValidityStartTime"`
 	ValidityEndDate              *string   `json:"ValidityEndDate"`
 	ValidityEndTime              *string   `json:"ValidityEndTime"`
-	DailyOperationStartTime		 *string   `json:"DailyOperationStartTime"`
-	DailyOperationEndTime		 *string   `json:"DailyOperationEndTime"`
+	DailyOperationStartTime      *string   `json:"DailyOperationStartTime"`
+	DailyOperationEndTime        *string   `json:"DailyOperationEndTime"`
 	Description                  *string   `json:"Description"`
 	LongText                     *string   `json:"LongText"`
 	Introduction                 *string   `json:"Introduction"`
-	OperationRemarks			 *string   `json:"OperationRemarks"`
-	PhoneNumber					 *string   `json:"PhoneNumber"`
-	Site						 *int	   `json:"Site"`
+	OperationRemarks             *string   `json:"OperationRemarks"`
+	PhoneNumber                  *string   `json:"PhoneNumber"`
+	Site                         *int      `json:"Site"`
 	Project                      *int      `json:"Project"`
 	WBSElement                   *int      `json:"WBSElement"`
 	Tag1                         *string   `json:"Tag1"`
@@ -47,9 +47,9 @@ type Header struct {
 	CreationTime                 *string   `json:"CreationTime"`
 	LastChangeDate               *string   `json:"LastChangeDate"`
 	LastChangeTime               *string   `json:"LastChangeTime"`
-	CreateUser					 *int      `json:"CreateUser"`
-	LastChangeUser				 *int      `json:"LastChangeUser"`
-	IsReleased					 *bool	   `json:"IsReleased"`
+	CreateUser                   *int      `json:"CreateUser"`
+	LastChangeUser               *int      `json:"LastChangeUser"`
+	IsReleased                   *bool     `json:"IsReleased"`
 	IsMarkedForDeletion          *bool     `json:"IsMarkedForDeletion"`
 	Partner                      []Partner `json:"Partner"`
 	Address                      []Address `json:"Address"`
@@ -88,17 +88,17 @@ type Address struct {
 	XCoordinate    *float32 `json:"XCoordinate"`
 	YCoordinate    *float32 `json:"YCoordinate"`
 	ZCoordinate    *float32 `json:"ZCoordinate"`
-	Site		   *int		`json:"Site"`
+	Site           *int     `json:"Site"`
 }
 
 func CreateShopRequestHeader(
 	requestPram *apiInputReader.Request,
-	shopHeader *apiInputReader.ShopHeader,
+	shopHeader Header,
 ) ShopReq {
 	req := ShopReq{
 		Header: Header{
 			Shop:                shopHeader.Shop,
-			IsReleased:			 shopHeader.IsReleased,
+			IsReleased:          shopHeader.IsReleased,
 			IsMarkedForDeletion: shopHeader.IsMarkedForDeletion,
 		},
 		Accepter: []string{
@@ -114,8 +114,8 @@ func CreateShopRequestHeaders(
 ) ShopReq {
 	req := ShopReq{
 		Header: Header{
-			IsReleased:				shopHeaders.IsReleased,
-			IsMarkedForDeletion:	shopHeaders.IsMarkedForDeletion,
+			IsReleased:          shopHeaders.IsReleased,
+			IsMarkedForDeletion: shopHeaders.IsMarkedForDeletion,
 		},
 		Accepter: []string{
 			"Headers",
@@ -132,6 +132,23 @@ func CreateShopRequestHeadersByShops(
 		Headers: shopHeaders,
 		Accepter: []string{
 			"HeadersByShops",
+		},
+	}
+	return req
+}
+
+func CreateShopRequestHeadersByShopOwner(
+	requestPram *apiInputReader.Request,
+	shopHeader Header,
+) ShopReq {
+	req := ShopReq{
+		Header: Header{
+			ShopOwner:           shopHeader.ShopOwner,
+			IsReleased:          shopHeader.IsReleased,
+			IsMarkedForDeletion: shopHeader.IsMarkedForDeletion,
+		},
+		Accepter: []string{
+			"HeadersByShopOwner",
 		},
 	}
 	return req
@@ -200,7 +217,7 @@ func CreateShopRequestAddress(
 
 func CreateShopRequestAddresses(
 	requestPram *apiInputReader.Request,
-	shopAddresses *apiInputReader.ShopAddress,
+	shopAddresses Header,
 ) ShopReq {
 	req := ShopReq{
 		Header: Header{
@@ -297,7 +314,7 @@ func CreateShopRequestAddressesByLocalRegions(
 
 func ShopReadsHeader(
 	requestPram *apiInputReader.Request,
-	input []Header,
+	input Header,
 	controller *beego.Controller,
 ) []byte {
 
@@ -323,6 +340,7 @@ func ShopReadsHeader(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -356,6 +374,41 @@ func ShopReadsHeadersByShops(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
+	)
+
+	return responseBody
+}
+
+func ShopReadsHeadersByShopOwner(
+	requestPram *apiInputReader.Request,
+	input Header,
+	controller *beego.Controller,
+) []byte {
+
+	aPIServiceName := "DPFM_API_SHOP_SRV"
+	aPIType := "reads"
+
+	request := CreateShopRequestHeadersByShopOwner(
+		requestPram,
+		input,
+	)
+
+	marshaledRequest, err := json.Marshal(request)
+	if err != nil {
+		services.HandleError(
+			controller,
+			err,
+			nil,
+		)
+	}
+
+	responseBody := services.Request(
+		aPIServiceName,
+		aPIType,
+		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
+		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -363,7 +416,7 @@ func ShopReadsHeadersByShops(
 
 func ShopReadsAddresses(
 	requestPram *apiInputReader.Request,
-	input []Header,
+	input Header,
 	controller *beego.Controller,
 ) []byte {
 
@@ -389,6 +442,7 @@ func ShopReadsAddresses(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
@@ -408,7 +462,7 @@ func ShopReads(
 	if accepter == "Header" {
 		request = CreateShopRequestHeader(
 			requestPram,
-			&apiInputReader.ShopHeader{
+			Header{
 				Shop:                input.ShopHeader.Shop,
 				IsReleased:          input.ShopHeader.IsReleased,
 				IsMarkedForDeletion: input.ShopHeader.IsMarkedForDeletion,
@@ -459,7 +513,7 @@ func ShopReads(
 	if accepter == "Addresses" {
 		request = CreateShopRequestAddresses(
 			requestPram,
-			&apiInputReader.ShopAddress{
+			Header{
 				Shop: input.ShopAddress.Shop,
 			},
 		)
@@ -515,6 +569,7 @@ func ShopReads(
 		aPIType,
 		ioutil.NopCloser(strings.NewReader(string(marshaledRequest))),
 		controller,
+		requestPram,
 	)
 
 	return responseBody
